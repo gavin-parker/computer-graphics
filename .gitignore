@@ -1,29 +1,12 @@
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+# The binary folder
+/bin
 
-# Precompiled Headers
-*.gch
-*.pch
+# The build folder
+/build
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+# Generated files
+screenshot.bmp
 
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+# IDE Files
+Computer_Graphics.pro
+Computer_Graphics.pro.user
