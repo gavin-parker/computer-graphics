@@ -1,5 +1,5 @@
 # Header files
-HDIR = include
+HDIR := include $(GLMDIR)
 
 # Source files
 SRCDIR = src
@@ -15,7 +15,7 @@ BINARYNAME = computer_graphics
 BINARY = $(BINDIR)/$(BINARYNAME)
 
 # Compilation options
-CXXFLAGS = -std=c++11 -Wall -Wextra -Werror -ggdb -g3 -I$(HDIR) $(shell sdl-config --cflags)
+CXXFLAGS = -std=c++11 -Wall -Wextra -Werror -ggdb -g3 $(addprefix -I, $(HDIR)) $(shell sdl-config --cflags)
 COMPILE = $(CXX) -o $@ -c $^ $(CXXFLAGS)
 
 # Link Options
