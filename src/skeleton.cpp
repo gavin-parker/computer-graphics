@@ -61,13 +61,25 @@ void Draw()
 	if( SDL_MUSTLOCK(screen) )
 		SDL_LockSurface(screen);
 
+	vec3 topLeft(1, 0, 0);
+	vec3 topRight(0, 0, 1);
+	vec3 bottomLeft(1, 1, 0);
+	vec3 bottomRight(0, 1, 0);
+
+	vector<vec3> leftSide(SCREEN_HEIGHT);
+	vector<vec3> rightSide(SCREEN_HEIGHT);
+
+	Interpolate(topLeft, bottomLeft, leftSide);
+	Interpolate(topRight, bottomRight, rightSide);
+
 	for( int y=0; y<SCREEN_HEIGHT; ++y )
 	{
-
+		vector<vec3> row(SCREEN_WIDTH);
+		Interpolate(leftSide[y], rightSide[y], row);
 		for( int x=0; x<SCREEN_WIDTH; ++x )
 		{
 			//vec3 color( 0.0, 1.0, 0.0 );
-			PutPixelSDL( screen, x, y, result[x] );
+			PutPixelSDL( screen, x, y, row[x] );
 		}
 	}
 
