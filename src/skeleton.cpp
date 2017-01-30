@@ -19,7 +19,7 @@ int t;
 /* ----------------------------------------------------------------------------*/
 /* FUNCTIONS                                                                   */
 
-void Update();
+void Update(vector<vec3>& stars);
 void Draw(vector<vec3>& stars);
 void Interpolate(float a, float b, vector<float>& result);
 void Interpolate(vec3 a, vec3 b, vector<vec3>& result);
@@ -43,7 +43,7 @@ int main()
 
 	while( NoQuitMessageSDL() )
 	{
-		Update();
+		Update(stars);
 		Draw(stars);
 	}
 
@@ -51,12 +51,23 @@ int main()
 	return 0;
 }
 
-void Update()
+void Update(vector<vec3>& stars)
 {
 	// Compute frame time:
 	int t2 = SDL_GetTicks();
 	float dt = float(t2-t);
 	t = t2;
+	float v = 0.05;
+	//calculate star transform
+	for(size_t i=0; i < stars.size(); i++){
+		stars[i].z -= v*dt;
+		if(stars[i].z <= 0){
+			stars[i].z += 1;
+		}
+		if(stars[i].z > 1){
+			stars[i].z -= 1;
+		}
+	}
 	cout << "Render time: " << dt << " ms." << endl;
 }
 
@@ -71,7 +82,8 @@ void Draw(vector<vec3>& stars)
 	for(size_t i=0; i < stars.size(); i++){
 		int u = focal_length*(stars[i][0]/stars[i][2]) + SCREEN_WIDTH/2;
 		int v = focal_length*(stars[i][1]/stars[i][2]) + SCREEN_HEIGHT/2;
-		PutPixelSDL(screen, u, v, vec3(1.0, 1.0, 1.0));
+		vec3 color = 0.2f * vec3(1,1,1) / (stars[i].z*stars[i].z);
+		PutPixelSDL(screen, u, v, color);
 	}
 
 	if( SDL_MUSTLOCK(screen) )
