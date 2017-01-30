@@ -5,6 +5,7 @@
 /build
 
 # Generated files
+/dependencies
 screenshot.bmp
 
 # IDE Files
