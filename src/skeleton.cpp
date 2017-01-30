@@ -27,6 +27,14 @@ int main()
 {
 	screen = InitializeSDL( SCREEN_WIDTH, SCREEN_HEIGHT );
 	t = SDL_GetTicks();	// Set start value for timer.
+	
+	//Test linear interpolation
+	vector<float> result(10);
+	Interpolate(5, 14, result);
+	for(unsigned int i=0; i < result.size(); i++){
+		cout << result[i] << " ";
+	}
+	cout << "\n";
 
 	while( NoQuitMessageSDL() )
 	{
@@ -54,11 +62,9 @@ void Draw()
 
 	for( int y=0; y<SCREEN_HEIGHT; ++y )
 	{
-		vector<float> result(SCREEN_WIDTH);
-		Interpolate(0.0, 1.0, result);
 		for( int x=0; x<SCREEN_WIDTH; ++x )
 		{
-			vec3 color( 0.0, result[x], 0.0 );
+			vec3 color( 0.0, 1.0, 0.0 );
 			PutPixelSDL( screen, x, y, color );
 		}
 	}
@@ -69,8 +75,13 @@ void Draw()
 	SDL_UpdateRect( screen, 0, 0, 0, 0 );
 }
 
+//Linearly interpolate between two values
 void Interpolate(float a, float b, vector<float>& result){
-	float step = (b - a) / result.size();
+	if(result.size() == 1){
+		result[0] = (a + b)/2;
+		return;
+	}
+	float step = (b + 1 - a) / result.size();
 	for(unsigned int i=0; i < result.size(); i++){
 		result[i] = a + step*i;
 	}
