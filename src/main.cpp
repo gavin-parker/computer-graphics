@@ -1,4 +1,6 @@
 #include "starscreen.h"
+#include "triangle.h"
+#include "TestModel.h"
 #include "raytracer.h"
 
 int main(int argc, char* argv[])
@@ -9,7 +11,7 @@ int main(int argc, char* argv[])
 	screen.run();
 
 	screen.saveBMP("screenshot.bmp");
-	}else if(strcmp(argv[1], "raytracer")){
+	}else {
 		cout << "running raytracer\n";
 		RayTracer screen(500, 500, false);
 		screen.run();

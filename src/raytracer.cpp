@@ -2,7 +2,7 @@
 
 RayTracer::RayTracer(int width, int height,  bool fullscreen):
 	SdlScreen(width, height, fullscreen){
-
+    LoadTestModel(triangles);
 }
 
 void RayTracer::update(float dt) {
@@ -10,10 +10,19 @@ void RayTracer::update(float dt) {
 }
 
 void RayTracer::draw() {
-
+    float f = getHeight()/2;
+    Intersection closestIntersection;
+    for(int y=0; y < getHeight(); y++){
+        for(int x=0; x < getWidth(); x++){
+            vec3 d(x - getWidth()/2, y-getWidth()/2, f);
+            if(ClosestIntersection(vec3(0,0,0), d, triangles, closestIntersection)){
+                drawPixel(x,y, triangles[closestIntersection.triangleIndex].color);
+            }
+        }
+    }
 }
 
-bool ClosestIntersection(vec3 start, vec3 dir, const vector<Triangle> &triangles, Intersection& closestIntersection){
+bool RayTracer::ClosestIntersection(vec3 start, vec3 dir, const vector<Triangle> &triangles, Intersection& closestIntersection){
     closestIntersection.distance = numeric_limits<float>::max();
     for(size_t i = 0; i < triangles.size(); i++){
         Triangle triangle = triangles[i];
