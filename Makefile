@@ -19,7 +19,7 @@ BINARYNAME = computer_graphics
 BINARY = $(BINDIR)/$(BINARYNAME)
 
 # Compilation options
-CXXFLAGS = -std=c++11 -Wall -Werror -ggdb -g3 $(addprefix -I, $(HDIR)) $(shell sdl-config --cflags) $(DEPFLAGS)
+CXXFLAGS = -std=c++11 -Wall -Werror -ggdb -g3 $(addprefix -I, $(HDIR)) $(shell sdl-config --cflags)
 COMPILE = $(CXX) -o $@ -c $< $(CXXFLAGS)
 
 # Link Options
