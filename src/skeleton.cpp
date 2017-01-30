@@ -20,9 +20,10 @@ int t;
 /* FUNCTIONS                                                                   */
 
 void Update();
-void Draw();
+void Draw(vector<vec3>& stars);
 void Interpolate(float a, float b, vector<float>& result);
 void Interpolate(vec3 a, vec3 b, vector<vec3>& result);
+void StarField(vector<vec3>& stars);
 
 int main()
 {
@@ -37,10 +38,13 @@ int main()
 	}
 	cout << "\n";
 
+	vector<vec3> stars(1000);
+	StarField(stars);
+
 	while( NoQuitMessageSDL() )
 	{
 		Update();
-		Draw();
+		Draw(stars);
 	}
 
 	SDL_SaveBMP( screen, "screenshot.bmp" );
@@ -56,31 +60,18 @@ void Update()
 	cout << "Render time: " << dt << " ms." << endl;
 }
 
-void Draw()
+void Draw(vector<vec3>& stars)
 {
+	SDL_FillRect( screen, 0, 0 );
 	if( SDL_MUSTLOCK(screen) )
 		SDL_LockSurface(screen);
 
-	vec3 topLeft(1, 0, 0);
-	vec3 topRight(0, 0, 1);
-	vec3 bottomLeft(1, 1, 0);
-	vec3 bottomRight(0, 1, 0);
-
-	vector<vec3> leftSide(SCREEN_HEIGHT);
-	vector<vec3> rightSide(SCREEN_HEIGHT);
-
-	Interpolate(topLeft, bottomLeft, leftSide);
-	Interpolate(topRight, bottomRight, rightSide);
-
-	for( int y=0; y<SCREEN_HEIGHT; ++y )
-	{
-		vector<vec3> row(SCREEN_WIDTH);
-		Interpolate(leftSide[y], rightSide[y], row);
-		for( int x=0; x<SCREEN_WIDTH; ++x )
-		{
-			//vec3 color( 0.0, 1.0, 0.0 );
-			PutPixelSDL( screen, x, y, row[x] );
-		}
+	//calculate projections of stars
+	int focal_length = SCREEN_HEIGHT/2;
+	for(size_t i=0; i < stars.size(); i++){
+		int u = focal_length*(stars[i][0]/stars[i][2]) + SCREEN_WIDTH/2;
+		int v = focal_length*(stars[i][1]/stars[i][2]) + SCREEN_HEIGHT/2;
+		PutPixelSDL(screen, u, v, vec3(1.0, 1.0, 1.0));
 	}
 
 	if( SDL_MUSTLOCK(screen) )
@@ -111,4 +102,14 @@ void Interpolate(vec3 a, vec3 b, vector<vec3>& result){
 	for(unsigned int i = 0; i < result.size(); i++){
 		result[i] = a + step* (float)i;
 	}
+}
+//generate random star locations
+void StarField(vector<vec3> &stars){
+	for(int i=0; i < 1000; i ++){
+		float x =  (float(rand()) / float(RAND_MAX))*2.0f - 1;
+		float y =  (float(rand()) / float(RAND_MAX))*2.0f - 1;
+		float z =  float(rand()) / float(RAND_MAX);
+		stars[i] = vec3(x,y,z);
+	}
+
 }
