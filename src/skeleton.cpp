@@ -21,6 +21,7 @@ int t;
 
 void Update();
 void Draw();
+void Interpolate(float a, float b, vector<float>& result);
 
 int main()
 {
@@ -55,7 +56,7 @@ void Draw()
 	{
 		for( int x=0; x<SCREEN_WIDTH; ++x )
 		{
-			vec3 color( 1.0, 0.0, 0.0 );
+			vec3 color( 0.0, 1.0, 0.0 );
 			PutPixelSDL( screen, x, y, color );
 		}
 	}
