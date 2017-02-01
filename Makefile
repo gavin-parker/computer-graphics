@@ -26,13 +26,16 @@ COMPILE = $(CXX) -o $@ -c $< $(CXXFLAGS)
 LDFLAGS += $(shell sdl-config --libs)
 LINK = $(CXX) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 
-.PHONY: all clean
+.PHONY: all clean folders
 all: $(BINARY)
 clean:
 	@$(RM) $(BUILDDIR)/*.o $(DEPDIR)/*.d $(BINARY) screenshot.bmp
 
+folders:
+	@mkdir -p $(BUILDDIR) $(DEPDIR) $(BINDIR)
+
 # Compiling Objects
-$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
+$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp folders
 	$(info $@)
 	@$(COMPILE)
 
