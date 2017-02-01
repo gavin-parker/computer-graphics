@@ -7,6 +7,7 @@
 #include "lerp.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
+#include "pointlight.h"
 
 using std::numeric_limits;
 using std::vector;
@@ -23,6 +24,7 @@ private:
 	bool ClosestIntersection(Ray ray, const vector<Triangle> &triangles, Intersection& closestIntersection);
 	vector<Triangle> triangles;
     Camera camera;
+	PointLight light;
 protected:
 	void update(float dt) override;
 	void draw(int width, int height) override;
