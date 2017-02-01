@@ -1,8 +1,5 @@
 #include "TestModel.h"
-// Loads the Cornell Box. It is scaled to fill the volume:
-// -1 <= x <= +1
-// -1 <= y <= +1
-// -1 <= z <= +1
+
 vector<Triangle> LoadTestModel()
 {
 	vector<Triangle> triangles;
@@ -120,40 +117,5 @@ vector<Triangle> LoadTestModel()
 	triangles.push_back( Triangle(G,F,E,blue) );
 	triangles.push_back( Triangle(G,H,F,blue) );
 
-
-	// ----------------------------------------------
-	// Scale to the volume [-1,1]^3
-
-	vector<Triangle> scaledTriangles;
-
-
-	for( size_t i=0; i<triangles.size(); ++i )
-	{
-		//trainges[i] = Triangle()
-
-		vec3
-				v0 = triangles[i].v0,
-				v1 = triangles[i].v1,
-				v2 = triangles[i].v2;
-
-		v0 *= 2/L;
-		v1 *= 2/L;
-		v2 *= 2/L;
-
-		v0 -= vec3(1,1,1);
-		v1 -= vec3(1,1,1);
-		v2 -= vec3(1,1,1);
-
-		v0.x *= -1;
-		v1.x *= -1;
-		v2.x *= -1;
-
-		v0.y *= -1;
-		v1.y *= -1;
-		v2.y *= -1;
-
-		scaledTriangles.push_back(Triangle(v0, v1, v2, triangles[i].color));
-	}
-
-	return scaledTriangles;
+	return triangles;
 }

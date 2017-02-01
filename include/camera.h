@@ -21,7 +21,7 @@ private:
 	mat3 rotation;
 	const float viewOffset;
 
-	const float velocity = 1.0f;
+	const float velocity = 100.0f;
 	const float yawVeclocity = 1.0f;
 
 public:

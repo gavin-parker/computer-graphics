@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 		screen.saveBMP("screenshot.bmp");
 	} else {
 		cout << "running raytracer" << endl;
-		RayTracer screen(500, 500, false);
+		RayTracer screen(250, 250, false);
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
 	}
