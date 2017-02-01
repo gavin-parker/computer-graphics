@@ -25,7 +25,7 @@ private:
 	const float yawVeclocity = 1.0f;
 
 public:
-	Camera(vec3 position, float viewAngle);
+	Camera(vec3 position, float yaw, float viewAngle);
 
 	void update(float dt);
 

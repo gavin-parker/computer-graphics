@@ -1,6 +1,6 @@
-#include "TestModel.h"
+#include "testmodel.h"
 
-vector<Triangle> LoadTestModel()
+vector<Triangle> loadTestModel()
 {
 	vector<Triangle> triangles;
 

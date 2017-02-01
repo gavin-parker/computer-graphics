@@ -7,5 +7,5 @@
 
 using std::vector;
 
-vector<Triangle> LoadTestModel();
+vector<Triangle> loadTestModel();
 

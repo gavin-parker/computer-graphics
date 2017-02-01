@@ -6,7 +6,7 @@
 #include "camera.h"
 #include "lerp.h"
 #include "sdlscreen.h"
-#include "TestModel.h"
+#include "testmodel.h"
 
 using std::numeric_limits;
 using std::vector;

@@ -1,9 +1,9 @@
 #include "camera.h"
 
-Camera::Camera(vec3 position, float viewAngle):
+Camera::Camera(vec3 position, float yaw, float viewAngle):
 	position(position),
-	yaw(0.0f),
-	viewOffset(static_cast<float>(tan(viewAngle * M_PI / 180.f))){
+	yaw(yaw),
+	viewOffset(static_cast<float>(tan(viewAngle * M_PI / 180.f))) {
 }
 
 void Camera::update(float dt)
