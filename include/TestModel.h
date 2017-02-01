@@ -7,5 +7,5 @@
 #include <vector>
 #include "triangle.h"
 
-void LoadTestModel( std::vector<Triangle>& triangles );
+std::vector<Triangle> LoadTestModel();
 #endif
