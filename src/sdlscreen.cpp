@@ -65,9 +65,9 @@ int SdlScreen::getHeight() {
 
 void SdlScreen::run() {
 	while (noQuitMessageSDL()) {
-		Uint32 newTime = SDL_GetTicks();
+		const Uint32 newTime = SDL_GetTicks();
 
-		Uint32 dt = newTime - time;
+		const Uint32 dt = newTime - time;
 
 		update(dt / 1000.0f);
 
@@ -78,7 +78,11 @@ void SdlScreen::run() {
 		if (SDL_MUSTLOCK(surface))
 			SDL_LockSurface(surface);
 
+		const Uint32 drawTime = SDL_GetTicks();
+
 		draw();
+
+		std::cout << std::setfill('0') << std::setw(5) << (SDL_GetTicks() - drawTime) << "ms" << std::endl;
 
 		if (SDL_MUSTLOCK(surface))
 			SDL_UnlockSurface(surface);
