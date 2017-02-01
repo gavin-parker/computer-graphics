@@ -1,6 +1,10 @@
 #pragma once
 
 // Linearly interpolate between a and b
-float lerp(float a, float b, float t);
+inline float lerp(float a, float b, float t) {
+	return a + (b - a) * t;
+}
 
-float deLerp(float a, float b, float t);
+inline float deLerp(float a, float b, float t) {
+	return (t - a) / (b - a);
+}

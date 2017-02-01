@@ -20,7 +20,7 @@ struct Intersection
 
 class RayTracer: public SdlScreen {
 private:
-	bool ClosestIntersection(vec3 start, vec3 dir, const vector<Triangle> &triangles, Intersection& closestIntersection);
+	bool ClosestIntersection(Ray ray, const vector<Triangle> &triangles, Intersection& closestIntersection);
 	vector<Triangle> triangles;
     Camera camera;
 protected:
