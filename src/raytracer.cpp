@@ -3,6 +3,7 @@
 RayTracer::RayTracer(int width, int height,  bool fullscreen):
 	SdlScreen(width, height, fullscreen){
     LoadTestModel(triangles);
+    camera = vec3(0,0,0);
 }
 
 void RayTracer::update(float dt) {
@@ -10,12 +11,12 @@ void RayTracer::update(float dt) {
 }
 
 void RayTracer::draw() {
-    float f = getHeight()/2;
-    Intersection closestIntersection;
+    float focal_length = getHeight()/2;
     for(int y=0; y < getHeight(); y++){
         for(int x=0; x < getWidth(); x++){
-            vec3 d(x - getWidth()/2, y-getWidth()/2, f);
-            if(ClosestIntersection(vec3(0,0,0), d, triangles, closestIntersection)){
+            Intersection closestIntersection;
+            vec3 d(x - getWidth()/2, y-getWidth()/2, focal_length);
+            if(ClosestIntersection(camera, d, triangles, closestIntersection)){
                 drawPixel(x,y, triangles[closestIntersection.triangleIndex].color);
             }
         }
