@@ -15,6 +15,7 @@ void RayTracer::draw() {
     for(int y=0; y < getHeight(); y++){
         for(int x=0; x < getWidth(); x++){
             Intersection closestIntersection;
+            closestIntersection.triangleIndex = 0;
             vec3 d(x - getWidth()/2, y-getWidth()/2, focal_length);
             if(ClosestIntersection(camera, d, triangles, closestIntersection)){
                 drawPixel(x,y, triangles[closestIntersection.triangleIndex].color);
