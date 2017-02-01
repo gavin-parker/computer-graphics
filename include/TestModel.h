@@ -1,11 +1,11 @@
-#ifndef TEST_MODEL_CORNEL_BOX_H
-#define TEST_MODEL_CORNEL_BOX_H
-
-// Defines a simple test model: The Cornel Box
 #pragma once
-#include <glm/glm.hpp>
+// Defines a simple test model: The Cornel Box
+
 #include <vector>
+
 #include "triangle.h"
 
-std::vector<Triangle> LoadTestModel();
-#endif
+using std::vector;
+
+vector<Triangle> LoadTestModel();
+

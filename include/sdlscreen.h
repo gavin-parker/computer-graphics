@@ -1,9 +1,15 @@
 #pragma once
 
+#include <glm/glm.hpp>
 #include <iomanip>
 #include <iostream>
-#include <glm/glm.hpp>
 #include <SDL.h>
+
+using glm::vec3;
+using std::cout;
+using std::endl;
+using std::setfill;
+using std::setw;
 
 class SdlScreen {
 private:
@@ -13,18 +19,15 @@ private:
 	bool noQuitMessageSDL();
 
 protected:
-	void drawPixel(int x, int y, glm::vec3 color);
+	void drawPixel(int x, int y, vec3 color);
 
 	virtual void update(float dt) = 0;
-	virtual void draw() = 0;
+	virtual void draw(int width, int height) = 0;
 
 public:
 	SdlScreen(int width, int height, bool fullscreen = false);
 
 	virtual ~SdlScreen();
-
-	int getWidth();
-	int getHeight();
 
 	void run();
 

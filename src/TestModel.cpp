@@ -3,11 +3,9 @@
 // -1 <= x <= +1
 // -1 <= y <= +1
 // -1 <= z <= +1
-std::vector<Triangle> LoadTestModel()
+vector<Triangle> LoadTestModel()
 {
-	using glm::vec3;
-
-	std::vector<Triangle> triangles;
+	vector<Triangle> triangles;
 
 	// Defines colors:
 	vec3 red(    0.75f, 0.15f, 0.15f );
@@ -126,7 +124,7 @@ std::vector<Triangle> LoadTestModel()
 	// ----------------------------------------------
 	// Scale to the volume [-1,1]^3
 
-	std::vector<Triangle> scaledTriangles;
+	vector<Triangle> scaledTriangles;
 
 
 	for( size_t i=0; i<triangles.size(); ++i )

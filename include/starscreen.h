@@ -5,6 +5,8 @@
 #include "lerp.h"
 #include "sdlscreen.h"
 
+using std::vector;
+
 class StarScreen: public SdlScreen {
 private:
 	vector<vec3> stars;
@@ -12,8 +14,8 @@ private:
 
 protected:
 	void update(float dt) override;
-	void draw() override;
+	void draw(int width, int height) override;
 
 public:
-	StarScreen(int width, int height, std::vector<vec3>::size_type starCount, float starVelocity,  bool fullscreen = false);
+	StarScreen(int width, int height, vector<vec3>::size_type starCount, float starVelocity,  bool fullscreen = false);
 };

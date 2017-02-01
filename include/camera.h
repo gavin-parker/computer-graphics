@@ -1,21 +1,19 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#pragma once
 
 #include <iostream>
 #include <glm/glm.hpp>
 #include <SDL.h>
 
-class Camera
-{
+using glm::vec3;
+
+class Camera {
 public:
-	glm::vec3 position;
+	vec3 position;
 	float focalLength;
 
 	const float velocity = 1.0f;
 
-	Camera(glm::vec3 position, float focalLength);
+	Camera(vec3 position, float focalLength);
 
 	void Update(float dt);
 };
-
-#endif

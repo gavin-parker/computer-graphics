@@ -1,6 +1,6 @@
 #include "starscreen.h"
 
-StarScreen::StarScreen(int width, int height, std::vector<vec3>::size_type starCount, float starVelocity,  bool fullscreen):
+StarScreen::StarScreen(int width, int height, vector<vec3>::size_type starCount, float starVelocity,  bool fullscreen):
 	SdlScreen(width, height, fullscreen),
 	starVelocity(starVelocity) {
 
@@ -29,12 +29,12 @@ void StarScreen::update(float dt) {
 	}
 }
 
-void StarScreen::draw() {
+void StarScreen::draw(int width, int height) {
 	//calculate projections of stars
-	int focal_length = getHeight() / 2;
-	for (vec3 &star: stars) {
-		int u = focal_length * (star.x / star.z) + getWidth() / 2.0f;
-		int v = focal_length * (star.y / star.z) + getHeight() / 2.0f;
+	int focal_length = height / 2;
+	for (const vec3 &star: stars) {
+		int u = focal_length * (star.x / star.z) + width / 2.0f;
+		int v = focal_length * (star.y / star.z) + height / 2.0f;
 		vec3 color = 0.2f * vec3(1,1,1) / (star.z * star.z);
 
 		drawPixel(u, v, color);

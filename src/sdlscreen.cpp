@@ -17,7 +17,7 @@ bool SdlScreen::noQuitMessageSDL() {
 	return true;
 }
 
-void SdlScreen::drawPixel(int x, int y, glm::vec3 color) {
+void SdlScreen::drawPixel(int x, int y, vec3 color) {
 	if( x < 0 || surface->w <= x || y < 0 || surface->h <= y )
 		return;
 
@@ -31,7 +31,7 @@ void SdlScreen::drawPixel(int x, int y, glm::vec3 color) {
 
 SdlScreen::SdlScreen(int width, int height, bool fullscreen) {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
-		std::cout << "Could not init SDL: " << SDL_GetError() << std::endl;
+		cout << "Could not init SDL: " << SDL_GetError() << endl;
 		exit(EXIT_FAILURE);
 	}
 
@@ -44,7 +44,7 @@ SdlScreen::SdlScreen(int width, int height, bool fullscreen) {
 
 	if (surface == 0)
 	{
-		std::cout << "Could not set video mode: " << SDL_GetError() << std::endl;
+		cout << "Could not set video mode: " << SDL_GetError() << endl;
 		exit(EXIT_FAILURE);
 	}
 
@@ -53,14 +53,6 @@ SdlScreen::SdlScreen(int width, int height, bool fullscreen) {
 
 SdlScreen::~SdlScreen() {
 	SDL_Quit();
-}
-
-int SdlScreen::getWidth() {
-	return surface->w;
-}
-
-int SdlScreen::getHeight() {
-	return surface->h;
 }
 
 void SdlScreen::run() {
@@ -80,9 +72,9 @@ void SdlScreen::run() {
 
 		const Uint32 drawTime = SDL_GetTicks();
 
-		draw();
+		draw(surface->w, surface->h);
 
-		std::cout << std::setfill('0') << std::setw(5) << (SDL_GetTicks() - drawTime) << "ms" << std::endl;
+		cout << setfill('0') << setw(5) << (SDL_GetTicks() - drawTime) << "ms" << endl;
 
 		if (SDL_MUSTLOCK(surface))
 			SDL_UnlockSurface(surface);
