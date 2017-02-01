@@ -16,12 +16,18 @@ struct Intersection
     int triangleIndex;
 };
 
+struct Camera
+{
+    vec3 position;
+    glm::mat3 rotation;
+    float focal_length;
+};
 
 class RayTracer: public SdlScreen {
 private:
     bool ClosestIntersection(vec3 start, vec3 dir, const vector<Triangle> &triangles, Intersection& closestIntersection);
     vector<Triangle> triangles;
-    vec3 camera;
+    Camera camera;
 protected:
 	void update(float dt) override;
 	void draw() override;
