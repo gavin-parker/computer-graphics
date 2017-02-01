@@ -3,9 +3,11 @@
 // -1 <= x <= +1
 // -1 <= y <= +1
 // -1 <= z <= +1
-void LoadTestModel( std::vector<Triangle>& triangles )
+std::vector<Triangle> LoadTestModel()
 {
 	using glm::vec3;
+
+	std::vector<Triangle> triangles;
 
 	// Defines colors:
 	vec3 red(    0.75f, 0.15f, 0.15f );
@@ -124,24 +126,36 @@ void LoadTestModel( std::vector<Triangle>& triangles )
 	// ----------------------------------------------
 	// Scale to the volume [-1,1]^3
 
+	std::vector<Triangle> scaledTriangles;
+
+
 	for( size_t i=0; i<triangles.size(); ++i )
 	{
-		triangles[i].v0 *= 2/L;
-		triangles[i].v1 *= 2/L;
-		triangles[i].v2 *= 2/L;
+		//trainges[i] = Triangle()
 
-		triangles[i].v0 -= vec3(1,1,1);
-		triangles[i].v1 -= vec3(1,1,1);
-		triangles[i].v2 -= vec3(1,1,1);
+		vec3
+				v0 = triangles[i].v0,
+				v1 = triangles[i].v1,
+				v2 = triangles[i].v2;
 
-		triangles[i].v0.x *= -1;
-		triangles[i].v1.x *= -1;
-		triangles[i].v2.x *= -1;
+		v0 *= 2/L;
+		v1 *= 2/L;
+		v2 *= 2/L;
 
-		triangles[i].v0.y *= -1;
-		triangles[i].v1.y *= -1;
-		triangles[i].v2.y *= -1;
+		v0 -= vec3(1,1,1);
+		v1 -= vec3(1,1,1);
+		v2 -= vec3(1,1,1);
 
-		triangles[i].normal = Triangle::getNormal(triangles[i].v0, triangles[i].v1, triangles[i].v2);
+		v0.x *= -1;
+		v1.x *= -1;
+		v2.x *= -1;
+
+		v0.y *= -1;
+		v1.y *= -1;
+		v2.y *= -1;
+
+		scaledTriangles.push_back(Triangle(v0, v1, v2, triangles[i].color));
 	}
+
+	return scaledTriangles;
 }

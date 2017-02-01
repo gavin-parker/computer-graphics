@@ -2,8 +2,8 @@
 
 RayTracer::RayTracer(int width, int height,  bool fullscreen):
 	SdlScreen(width, height, fullscreen){
-    LoadTestModel(triangles);
     camera = vec3(0,0,0);
+	triangles = LoadTestModel();
 }
 
 void RayTracer::update(float dt) {
