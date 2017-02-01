@@ -2,22 +2,45 @@
 
 RayTracer::RayTracer(int width, int height,  bool fullscreen):
 	SdlScreen(width, height, fullscreen){
-    camera = vec3(0,0,-1);
+    camera.position =  vec3(0,0,-1);
+    camera.focal_length = getHeight()/2;
 	triangles = LoadTestModel();
 }
 
 void RayTracer::update(float dt) {
+    cout << "Render time: " << dt << " s" << endl;
+    Uint8* keystate = SDL_GetKeyState( 0 );
+    if( keystate[SDLK_UP] )
+    {
+        camera.position.y += 0.1f;
+    // Move camera forward
+    }
+    if( keystate[SDLK_DOWN] )
+    {
+        camera.position.y -= 0.1f;
 
+    // Move camera backward
+    }
+    if( keystate[SDLK_LEFT] )
+    {
+        camera.position.x -= 0.1f;
+
+    // Move camera to the left
+    }
+    if( keystate[SDLK_RIGHT] )
+    {
+        camera.position.x += 0.1f;
+    // Move camera to the right
+    }
 }
 
 void RayTracer::draw() {
-    float focal_length = getHeight()/2;
     for(int y=0; y < getHeight(); y++){
         for(int x=0; x < getWidth(); x++){
             Intersection closestIntersection;
             closestIntersection.triangleIndex = 0;
-            vec3 d(x - getWidth()/2, y-getWidth()/2, focal_length);
-            if(ClosestIntersection(camera, d, triangles, closestIntersection)){
+            vec3 d(x - getWidth()/2, y-getWidth()/2, camera.focal_length);
+            if(ClosestIntersection(camera.position, d, triangles, closestIntersection)){
                 drawPixel(x,y, triangles[closestIntersection.triangleIndex].color);
             }
         }
