@@ -21,8 +21,8 @@ private:
 	mat3 rotation;
 	const float viewOffset;
 
-	const float velocity = 100.0f;
-	const float yawVeclocity = 1.0f;
+	const float velocity = 200.0f;
+	const float yawVeclocity = 2.0f;
 
 public:
 	Camera(vec3 position, float yaw, float viewAngle);
