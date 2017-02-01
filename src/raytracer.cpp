@@ -47,13 +47,11 @@ bool RayTracer::ClosestIntersection(Ray ray, const vector<Triangle> &triangles, 
 			if(t >= 0 && t < closestIntersection.distance){
 				float u = glm::determinant(glm::mat3(-ray.direction, b, e2)) / det_A;
 				float v = glm::determinant(glm::mat3(-ray.direction, e1, b)) / det_A;
-				vec3 x(t,u,v);
 
-				//bit dodge
-				if(x[1] >= 0 && x[2] >= 0 && (x[1] + x[2]) < 1){
-					closestIntersection.distance = x[0];
+				if(u >= 0 && v >= 0 && (u + v) < 1){
+					closestIntersection.distance = t;
 					closestIntersection.triangle = &triangle;
-					closestIntersection.position = x;
+					closestIntersection.position = vec3(t, u, v);
 
 					anyIntersection = true;
 				}
