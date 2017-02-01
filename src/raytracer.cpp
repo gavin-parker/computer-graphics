@@ -7,7 +7,7 @@ RayTracer::RayTracer(int width, int height,  bool fullscreen):
 }
 
 void RayTracer::update(float dt) {
-	camera.Update(dt);
+	camera.update(dt);
 }
 
 void RayTracer::draw(int width, int height) {
