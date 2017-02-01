@@ -1,21 +1,35 @@
+#include <string>
+
 #include "starscreen.h"
 #include "raytracer.h"
 
-int main(int argc, char* argv[])
-{
-	if (argc == 1) {
-		StarScreen screen(500, 500, 1000, 0.5, false);
+using std::string;
 
-		screen.run();
+int main(int argc, char* argv[]) {
+	if (argc == 2) {
+		string mode(argv[1]);
 
-		screen.saveBMP("screenshot.bmp");
+		if (mode == "stars") {
+			StarScreen screen(500, 500, 1000, 0.5, false);
+			screen.run();
+			screen.saveBMP("screenshot.bmp");
+
+			return EXIT_SUCCESS;
+		} else if (mode == "ray") {
+			RayTracer screen(250, 250, false);
+			screen.run();
+			screen.saveBMP("screenshot.bmp");
+		} else {
+			cout << "Unknown mode \"" << mode << "\"" << endl;
+		}
 	} else {
-		cout << "running raytracer" << endl;
-		RayTracer screen(250, 250, false);
-		screen.run();
-		screen.saveBMP("screenshot.bmp");
-	}
+		cout
+				<< "Please enter a mode:" << endl
+				<< "\tstars - starts" << endl
+				<< "\tray - raytracer" << endl
+				//<< "\trast - rasterizer" << endl
+				;
 
-	return EXIT_SUCCESS;
+	}
 }
 
