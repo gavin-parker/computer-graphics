@@ -20,5 +20,7 @@ public:
 
 	void update(float dt);
 
+	void calculateRay(Ray &ray, vec3 target);
+
 	vec3 directLight(const Ray &ray);
 };

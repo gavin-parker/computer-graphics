@@ -16,7 +16,10 @@ class RayTracer: public SdlScreen {
 private:
 	bool ClosestIntersection(Ray &ray, const vector<Triangle> &triangles);
 	vector<Triangle> triangles;
+
     Camera camera;
+
+	const vec3 ambientLight = vec3(0.15f, 0.15f, 0.15f);
 	PointLight light;
 protected:
 	void update(float dt) override;

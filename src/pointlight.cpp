@@ -6,14 +6,18 @@ PointLight::PointLight(vec3 position, vec3 color, float power):
 	power(power){
 }
 
-void PointLight::update(float dt)
-{
+void PointLight::update(float dt) {
 	Uint8* keystate = SDL_GetKeyState(0);
 
 	position += velocity * dt * vec3(
 				static_cast<float>(keystate[SDLK_j] - keystate[SDLK_l]),
 				static_cast<float>(keystate[SDLK_o] - keystate[SDLK_u]),
 				static_cast<float>(keystate[SDLK_i] - keystate[SDLK_k]));
+}
+
+void PointLight::calculateRay(Ray &ray, glm::vec3 target) {
+	ray.position = position;
+	ray.direction = target - position;
 }
 
 
