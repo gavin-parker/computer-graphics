@@ -12,16 +12,9 @@
 using std::numeric_limits;
 using std::vector;
 
-struct Intersection
-{
-	vec3 position;
-	float distance;
-	Triangle const *triangle;
-};
-
 class RayTracer: public SdlScreen {
 private:
-	bool ClosestIntersection(Ray ray, const vector<Triangle> &triangles, Intersection& closestIntersection);
+	bool ClosestIntersection(Ray &ray, const vector<Triangle> &triangles);
 	vector<Triangle> triangles;
     Camera camera;
 	PointLight light;

@@ -1,18 +1,10 @@
 #pragma once
 
 #include <iostream>
-#include <glm/glm.hpp>
 #include <SDL.h>
 
 #include "lerp.h"
-
-using glm::vec3;
-using glm::mat3;
-
-struct Ray {
-	vec3 position;
-	vec3 direction;
-};
+#include "ray.h"
 
 class Camera {
 private:
