@@ -8,7 +8,7 @@ Camera::Camera(vec3 position, float yaw, float viewAngle):
 
 void Camera::update(float dt)
 {
-	Uint8* keystate = SDL_GetKeyState( 0 );
+	Uint8* keystate = SDL_GetKeyState(0);
 
 	yaw += (keystate[SDLK_RIGHT] - keystate[SDLK_LEFT]) * yawVeclocity * dt;
 

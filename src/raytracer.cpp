@@ -3,11 +3,12 @@
 RayTracer::RayTracer(int width, int height,  bool fullscreen):
 	SdlScreen(width, height, fullscreen),
 	camera(vec3(277.5f, 277.5f, -480.64), static_cast<float>(M_PI), 30.0f),
-	light(vec3(0.0f, 0.5f, -0.7f), 14.f*vec3(1, 1, 1)) {
+	light(vec3(400.0f, 100.0f, 100.0f), vec3(1.0, 1.0f, 1.0f), 1000000.0f) {
 	triangles = loadTestModel();
 }
 
 void RayTracer::update(float dt) {
+	light.update(dt);
 	camera.update(dt);
 }
 
@@ -21,10 +22,13 @@ void RayTracer::draw(int width, int height) {
 			camera.calculateRay(ray, static_cast<float>(x) / width, static_cast<float>(y) / height);
 
 			if (ClosestIntersection(ray, triangles, closestIntersection)) {
-				//vec3 n = Triangle::getNormal(closestIntersection.triangle->v0, closestIntersection.triangle->v1, closestIntersection.triangle->v2);
-				//vec3 color = light.directLight(closestIntersection.position, n);
-				//drawPixel(x, y, color);
-				drawPixel(x,y, closestIntersection.triangle->color);
+				vec3 triangleColour = closestIntersection.triangle->color;
+				vec3 lightColour = light.directLight(closestIntersection.position, closestIntersection.triangle->normal);
+				drawPixel(x, y, vec3(
+							  std::min(triangleColour.r * lightColour.r, 1.0f),
+							  std::min(triangleColour.g * lightColour.g, 1.0f),
+							  std::min(triangleColour.b * lightColour.b, 1.0f)
+							  ));
             }
         }
     }
@@ -55,7 +59,7 @@ bool RayTracer::ClosestIntersection(Ray ray, const vector<Triangle> &triangles, 
 				if(u >= 0 && v >= 0 && (u + v) < 1){
 					closestIntersection.distance = t;
 					closestIntersection.triangle = &triangle;
-					closestIntersection.position = vec3(t, u, v);
+					closestIntersection.position = triangle.v0 + u * e1 + v * e2;
 
 					anyIntersection = true;
 				}
