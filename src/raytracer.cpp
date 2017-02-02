@@ -20,12 +20,12 @@ void RayTracer::draw(int width, int height) {
 			camera.calculateRay(ray, static_cast<float>(x) / width, static_cast<float>(y) / height);
 
 			if (ClosestIntersection(ray, triangles)) {
-				vec3 triangleColour = ray.collision->color;
-				vec3 lightColour = light.directLight(ray.collisionLocation, ray.collision->normal);
+				vec3 rayColour = ray.collision->color;
+				vec3 lightColour = light.directLight(ray);
 				drawPixel(x, y, vec3(
-							  std::min(triangleColour.r * lightColour.r, 1.0f),
-							  std::min(triangleColour.g * lightColour.g, 1.0f),
-							  std::min(triangleColour.b * lightColour.b, 1.0f)
+							  std::min(rayColour.r * lightColour.r, 1.0f),
+							  std::min(rayColour.g * lightColour.g, 1.0f),
+							  std::min(rayColour.b * lightColour.b, 1.0f)
 							  ));
             }
         }

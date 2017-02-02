@@ -19,11 +19,11 @@ void PointLight::update(float dt)
 
 //Uses equation 27 on https://www.cs.bris.ac.uk/Teaching/Resources/COMS30115/Assignment/2017-COMS30115-1.pdf
 //To calculate power of light at an intersection
-vec3 PointLight::directLight(vec3 point, vec3 normal) {
-	vec3 offset = position - point;
+vec3 PointLight::directLight(const Ray &ray) {
+	vec3 offset = position - ray.collisionLocation;
 
 	vec3 light_direction = glm::normalize(offset);
 	float radius = glm::length(offset);
 
-	return (std::max(glm::dot(light_direction, normal), 0.0f) * power / (4.0f*(static_cast<float>(M_PI)) * radius * radius)) * color;
+	return (std::max(glm::dot(light_direction, ray.collision->normal), 0.0f) * power / (4.0f*(static_cast<float>(M_PI)) * radius * radius)) * color;
 }

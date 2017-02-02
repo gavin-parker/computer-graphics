@@ -1,14 +1,11 @@
 #pragma once
 
 #include <algorithm>
-#include <glm/glm.hpp>
 #include <math.h>
 #include <SDL.h>
 
 #include "lerp.h"
-
-using glm::vec3;
-using glm::mat3;
+#include "ray.h"
 
 class PointLight {
 private:
@@ -23,5 +20,5 @@ public:
 
 	void update(float dt);
 
-	vec3 directLight(vec3 point, vec3 normal);
+	vec3 directLight(const Ray &ray);
 };
