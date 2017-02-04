@@ -4,9 +4,7 @@ Triangle::Triangle(vec3 v0, vec3 v1, vec3 v2, vec3 color, vector<unsigned char>&
 	v0(v0), e1(v1 - v0), e2(v2 - v0),
 	normal(glm::normalize(glm::cross(v2 - v0, v1 - v0))),
 	color(color),
-	texture(texture),
-	width(glm::length(e1)),
-	height(glm::length(e2)){
+	texture(texture){
 
 }
 

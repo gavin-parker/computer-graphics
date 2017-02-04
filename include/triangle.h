@@ -20,8 +20,6 @@ public:
 	const vec3 normal;
 	const vec3 color;
 	const vector<unsigned char> texture;
-	const float width;
-	const float height;
 
 	Triangle(vec3 v0, vec3 v1, vec3 v2, vec3 color, vector<unsigned char> &texture);
 
