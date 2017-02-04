@@ -2,7 +2,7 @@
 
 #include <limits>
 #include <vector>
-
+#include <omp.h>
 #include "camera.h"
 #include "lerp.h"
 #include "sdlscreen.h"

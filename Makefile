@@ -19,11 +19,11 @@ BINARYNAME = computer_graphics
 BINARY = $(BINDIR)/$(BINARYNAME)
 
 # Compilation options
-CXXFLAGS = -std=c++11 -O3 -Wall -Werror -ggdb -g3 $(addprefix -I, $(HDIR)) $(shell sdl-config --cflags) $(DEPFLAGS)
+CXXFLAGS = -std=c++11 -O3 -fopenmp -Wall -Werror -ggdb -g3 $(addprefix -I, $(HDIR)) $(shell sdl-config --cflags) $(DEPFLAGS)
 COMPILE = $(CXX) -o $@ -c $< $(CXXFLAGS)
 
 # Link Options
-LDFLAGS += $(shell sdl-config --libs)
+LDFLAGS += $(shell sdl-config --libs) -fopenmp
 LINK = $(CXX) -o $@ $^ $(LDFLAGS) $(LDLIBS)
 
 .PHONY: all clean

@@ -13,6 +13,7 @@ void RayTracer::update(float dt) {
 }
 
 void RayTracer::draw(int width, int height) {
+	#pragma omp parallel for
 	for (int y = 0; y < height; ++y) {
 		for (int x = 0; x < width; ++x) {
 			Ray cameraRay, lightRay;
