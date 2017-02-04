@@ -8,7 +8,6 @@
 #include "sdlscreen.h"
 #include "testmodel.h"
 #include "pointlight.h"
-
 using std::numeric_limits;
 using std::vector;
 

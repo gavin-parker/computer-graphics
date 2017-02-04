@@ -30,7 +30,7 @@ void RayTracer::draw(int width, int height) {
 					lightColour += light.directLight(cameraRay);
 				}
 
-				vec3 rayColour = cameraRay.collision->color;
+				vec3 rayColour = cameraRay.collisionColor;
 				drawPixel(x, y, vec3(
 							  std::min(rayColour.r * lightColour.r, 1.0f),
 							  std::min(rayColour.g * lightColour.g, 1.0f),

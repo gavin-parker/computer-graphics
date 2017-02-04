@@ -3,7 +3,11 @@
 vector<Triangle> loadTestModel()
 {
 	vector<Triangle> triangles;
-
+	TextureLoader textureLoader = TextureLoader();
+	vector<unsigned char> texture;
+	if(textureLoader.LoadTexture("texture.png", texture)){
+		std::cout << "loaded a texture of size:" << texture.size();
+	}
 	// Defines colors:
 	vec3 red(    0.75f, 0.15f, 0.15f );
 	vec3 yellow( 0.75f, 0.75f, 0.15f );
@@ -32,24 +36,24 @@ vector<Triangle> loadTestModel()
 	vec3 H(0,L,L);
 
 	// Floor:
-	triangles.push_back( Triangle( C, B, A, green ) );
-	triangles.push_back( Triangle( C, D, B, green ) );
+	triangles.push_back( Triangle( C, B, A, green, texture ) );
+	triangles.push_back( Triangle( C, D, B, green, texture ) );
 
 	// Left wall
-	triangles.push_back( Triangle( A, E, C, purple ) );
-	triangles.push_back( Triangle( C, E, G, purple ) );
+	triangles.push_back( Triangle( A, E, C, purple, texture ) );
+	triangles.push_back( Triangle( C, E, G, purple, texture ) );
 
 	// Right wall
-	triangles.push_back( Triangle( F, B, D, yellow ) );
-	triangles.push_back( Triangle( H, F, D, yellow ) );
+	triangles.push_back( Triangle( F, B, D, yellow, texture ) );
+	triangles.push_back( Triangle( H, F, D, yellow, texture ) );
 
 	// Ceiling
-	triangles.push_back( Triangle( E, F, G, cyan ) );
-	triangles.push_back( Triangle( F, H, G, cyan ) );
+	triangles.push_back( Triangle( E, F, G, cyan, texture ) );
+	triangles.push_back( Triangle( F, H, G, cyan, texture ) );
 
 	// Back wall
-	triangles.push_back( Triangle( G, D, C, white ) );
-	triangles.push_back( Triangle( G, H, D, white ) );
+	triangles.push_back( Triangle( G, D, C, white, texture ) );
+	triangles.push_back( Triangle( G, H, D, white, texture ) );
 
 	// ---------------------------------------------------------------------------
 	// Short block
@@ -65,24 +69,24 @@ vector<Triangle> loadTestModel()
 	H = vec3( 82,165,225);
 
 	// Front
-	triangles.push_back( Triangle(E,B,A,red) );
-	triangles.push_back( Triangle(E,F,B,red) );
+	triangles.push_back( Triangle(E,B,A,red, texture) );
+	triangles.push_back( Triangle(E,F,B,red, texture) );
 
 	// Front
-	triangles.push_back( Triangle(F,D,B,red) );
-	triangles.push_back( Triangle(F,H,D,red) );
+	triangles.push_back( Triangle(F,D,B,red, texture) );
+	triangles.push_back( Triangle(F,H,D,red, texture) );
 
 	// BACK
-	triangles.push_back( Triangle(H,C,D,red) );
-	triangles.push_back( Triangle(H,G,C,red) );
+	triangles.push_back( Triangle(H,C,D,red, texture) );
+	triangles.push_back( Triangle(H,G,C,red, texture) );
 
 	// LEFT
-	triangles.push_back( Triangle(G,E,C,red) );
-	triangles.push_back( Triangle(E,A,C,red) );
+	triangles.push_back( Triangle(G,E,C,red, texture) );
+	triangles.push_back( Triangle(E,A,C,red, texture) );
 
 	// TOP
-	triangles.push_back( Triangle(G,F,E,red) );
-	triangles.push_back( Triangle(G,H,F,red) );
+	triangles.push_back( Triangle(G,F,E,red, texture) );
+	triangles.push_back( Triangle(G,H,F,red, texture) );
 
 	// ---------------------------------------------------------------------------
 	// Tall block
@@ -98,24 +102,24 @@ vector<Triangle> loadTestModel()
 	H = vec3(314,330,456);
 
 	// Front
-	triangles.push_back( Triangle(E,B,A,blue) );
-	triangles.push_back( Triangle(E,F,B,blue) );
+	triangles.push_back( Triangle(E,B,A,blue, texture) );
+	triangles.push_back( Triangle(E,F,B,blue, texture) );
 
 	// Front
-	triangles.push_back( Triangle(F,D,B,blue) );
-	triangles.push_back( Triangle(F,H,D,blue) );
+	triangles.push_back( Triangle(F,D,B,blue, texture) );
+	triangles.push_back( Triangle(F,H,D,blue, texture) );
 
 	// BACK
-	triangles.push_back( Triangle(H,C,D,blue) );
-	triangles.push_back( Triangle(H,G,C,blue) );
+	triangles.push_back( Triangle(H,C,D,blue, texture) );
+	triangles.push_back( Triangle(H,G,C,blue, texture) );
 
 	// LEFT
-	triangles.push_back( Triangle(G,E,C,blue) );
-	triangles.push_back( Triangle(E,A,C,blue) );
+	triangles.push_back( Triangle(G,E,C,blue, texture) );
+	triangles.push_back( Triangle(E,A,C,blue, texture) );
 
 	// TOP
-	triangles.push_back( Triangle(G,F,E,blue) );
-	triangles.push_back( Triangle(G,H,F,blue) );
+	triangles.push_back( Triangle(G,F,E,blue, texture) );
+	triangles.push_back( Triangle(G,H,F,blue, texture) );
 
 	return triangles;
 }
