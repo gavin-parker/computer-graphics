@@ -3,8 +3,10 @@
 #include <algorithm>
 #include <glm/glm.hpp>
 #include <vector>
-
+#include <iostream>
 using glm::vec3;
+using glm::vec2;
+using glm::mat3x2;
 using std::vector;
 
 class Triangle;
@@ -20,8 +22,8 @@ public:
 	const vec3 normal;
 	const vec3 color;
 	const vector<unsigned char> texture;
-
-	Triangle(vec3 v0, vec3 v1, vec3 v2, vec3 color, vector<unsigned char> &texture);
+	const mat3x2 colorMap;
+	Triangle(vec3 v0, vec3 v1, vec3 v2, vec3 color, vector<unsigned char> &texture, mat3x2 colorMap);
 
 	bool calculateIntection(Ray &ray) const;
 

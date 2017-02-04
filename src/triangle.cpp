@@ -1,10 +1,11 @@
 #include "triangle.h"
 
-Triangle::Triangle(vec3 v0, vec3 v1, vec3 v2, vec3 color, vector<unsigned char>& texture):
+Triangle::Triangle(vec3 v0, vec3 v1, vec3 v2, vec3 color, vector<unsigned char>& texture, mat3x2 colorMap ):
 	v0(v0), e1(v1 - v0), e2(v2 - v0),
 	normal(glm::normalize(glm::cross(v2 - v0, v1 - v0))),
 	color(color),
-	texture(texture){
+	texture(texture),
+	colorMap(colorMap){
 
 }
 
@@ -36,8 +37,12 @@ bool Triangle::calculateIntection(Ray &ray) const
 }
 
 vec3 Triangle::getColor(float u, float v) const{
-	int x = static_cast<int>(u*128.f);
-	int y = static_cast<int>(v*128.f);
+	vec2 uv1 = colorMap[1] - colorMap[0];
+	vec2 uv2 = colorMap[2] - colorMap[0];
+
+	vec2 uv = colorMap[0] + u*uv1 + v*uv2;
+	int x = static_cast<int>(uv.x);
+	int y = static_cast<int>(uv.y);
 	int offset = (128*y+x)*4;
 	int r  = static_cast<int>(texture[offset]);
 	int g  = static_cast<int>(texture[offset+1]);

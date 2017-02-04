@@ -8,6 +8,7 @@
 #include "textureloader.h"
 
 using std::vector;
-
+using glm::mat3x2;
+using glm::vec2;
 vector<Triangle> loadTestModel();
 

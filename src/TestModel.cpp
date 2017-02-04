@@ -17,6 +17,14 @@ vector<Triangle> loadTestModel()
 	vec3 purple( 0.75f, 0.15f, 0.75f );
 	vec3 white(  0.75f, 0.75f, 0.75f );
 
+
+	//defining UVs
+
+	vec2 bl(0,128);
+	vec2 br(128,128);
+	vec2 tl(0,0);
+	vec2 tr(128,0);
+
 	triangles.clear();
 	triangles.reserve( 5*2*3 );
 
@@ -35,25 +43,28 @@ vector<Triangle> loadTestModel()
 	vec3 G(L,L,L);
 	vec3 H(0,L,L);
 
+
+	//UV ordering = corner, width, height
+
 	// Floor:
-	triangles.push_back( Triangle( C, B, A, green, texture ) );
-	triangles.push_back( Triangle( C, D, B, green, texture ) );
+	triangles.push_back( Triangle( C, B, A, green, texture, mat3x2(tl, tr, br) ) );
+	triangles.push_back( Triangle( C, D, B, green, texture, mat3x2(tl, br, bl) ) );
 
 	// Left wall
-	triangles.push_back( Triangle( A, E, C, purple, texture ) );
-	triangles.push_back( Triangle( C, E, G, purple, texture ) );
+	triangles.push_back( Triangle( A, E, C, purple, texture, mat3x2(tl, br, tr) ) );
+	triangles.push_back( Triangle( C, E, G, purple, texture, mat3x2(tl, bl, br) ) );
 
 	// Right wall
-	triangles.push_back( Triangle( F, B, D, yellow, texture ) );
-	triangles.push_back( Triangle( H, F, D, yellow, texture ) );
+	triangles.push_back( Triangle( F, B, D, yellow, texture, mat3x2(tl, br, tr) ) );
+	triangles.push_back( Triangle( H, F, D, yellow, texture, mat3x2(tl, bl, br) ) );
 
 	// Ceiling
-	triangles.push_back( Triangle( E, F, G, cyan, texture ) );
-	triangles.push_back( Triangle( F, H, G, cyan, texture ) );
+	triangles.push_back( Triangle( E, F, G, cyan, texture, mat3x2(tl, br, tr) ) );
+	triangles.push_back( Triangle( F, H, G, cyan, texture, mat3x2(tl, bl, br) ) );
 
 	// Back wall
-	triangles.push_back( Triangle( G, D, C, white, texture ) );
-	triangles.push_back( Triangle( G, H, D, white, texture ) );
+	triangles.push_back( Triangle( G, D, C, white, texture, mat3x2(tl, br, tr) ) );
+	triangles.push_back( Triangle( G, H, D, white, texture, mat3x2(tl, bl, br) ) );
 
 	// ---------------------------------------------------------------------------
 	// Short block
@@ -69,24 +80,24 @@ vector<Triangle> loadTestModel()
 	H = vec3( 82,165,225);
 
 	// Front
-	triangles.push_back( Triangle(E,B,A,red, texture) );
-	triangles.push_back( Triangle(E,F,B,red, texture) );
+	triangles.push_back( Triangle(E,B,A,red, texture, mat3x2(tl, br, tr)) );
+	triangles.push_back( Triangle(E,F,B,red, texture, mat3x2(tl, bl, br)) );
 
 	// Front
-	triangles.push_back( Triangle(F,D,B,red, texture) );
-	triangles.push_back( Triangle(F,H,D,red, texture) );
+	triangles.push_back( Triangle(F,D,B,red, texture, mat3x2(tl, br, tr)) );
+	triangles.push_back( Triangle(F,H,D,red, texture, mat3x2(tl, bl, br)) );
 
 	// BACK
-	triangles.push_back( Triangle(H,C,D,red, texture) );
-	triangles.push_back( Triangle(H,G,C,red, texture) );
+	triangles.push_back( Triangle(H,C,D,red, texture, mat3x2(tl, br, tr)) );
+	triangles.push_back( Triangle(H,G,C,red, texture, mat3x2(tl, bl, br)) );
 
 	// LEFT
-	triangles.push_back( Triangle(G,E,C,red, texture) );
-	triangles.push_back( Triangle(E,A,C,red, texture) );
+	triangles.push_back( Triangle(G,E,C,red, texture, mat3x2(tl, br, tr)) );
+	triangles.push_back( Triangle(E,A,C,red, texture, mat3x2(tl, bl, br)) );
 
 	// TOP
-	triangles.push_back( Triangle(G,F,E,red, texture) );
-	triangles.push_back( Triangle(G,H,F,red, texture) );
+	triangles.push_back( Triangle(G,F,E,red, texture, mat3x2(tl, br, tr)) );
+	triangles.push_back( Triangle(G,H,F,red, texture, mat3x2(tl, bl, br)) );
 
 	// ---------------------------------------------------------------------------
 	// Tall block
@@ -102,24 +113,24 @@ vector<Triangle> loadTestModel()
 	H = vec3(314,330,456);
 
 	// Front
-	triangles.push_back( Triangle(E,B,A,blue, texture) );
-	triangles.push_back( Triangle(E,F,B,blue, texture) );
+	triangles.push_back( Triangle(E,B,A,blue, texture, mat3x2(tl, br, tr)) );
+	triangles.push_back( Triangle(E,F,B,blue, texture, mat3x2(tl, bl, br)) );
 
 	// Front
-	triangles.push_back( Triangle(F,D,B,blue, texture) );
-	triangles.push_back( Triangle(F,H,D,blue, texture) );
+	triangles.push_back( Triangle(F,D,B,blue, texture, mat3x2(tl, br, tr)) );
+	triangles.push_back( Triangle(F,H,D,blue, texture, mat3x2(tl, bl, br)) );
 
 	// BACK
-	triangles.push_back( Triangle(H,C,D,blue, texture) );
-	triangles.push_back( Triangle(H,G,C,blue, texture) );
+	triangles.push_back( Triangle(H,C,D,blue, texture, mat3x2(tl, br, tr)) );
+	triangles.push_back( Triangle(H,G,C,blue, texture, mat3x2(tl, bl, br)) );
 
 	// LEFT
-	triangles.push_back( Triangle(G,E,C,blue, texture) );
-	triangles.push_back( Triangle(E,A,C,blue, texture) );
+	triangles.push_back( Triangle(G,E,C,blue, texture, mat3x2(tl, br, tr)) );
+	triangles.push_back( Triangle(E,A,C,blue, texture, mat3x2(tl, bl, br)) );
 
 	// TOP
-	triangles.push_back( Triangle(G,F,E,blue, texture) );
-	triangles.push_back( Triangle(G,H,F,blue, texture) );
+	triangles.push_back( Triangle(G,F,E,blue, texture, mat3x2(tl, br, tr)) );
+	triangles.push_back( Triangle(G,H,F,blue, texture, mat3x2(tl, bl, br)) );
 
 	return triangles;
 }
