@@ -8,9 +8,5 @@
 /dependencies
 screenshot.bmp
 
-# IDE Files
-Computer_Graphics.pro*
-Computer_Graphics.pro.user*
-
 # Windows Files
 Thumbs.db

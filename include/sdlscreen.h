@@ -1,9 +1,9 @@
 #pragma once
 
+#include <SDL.h>
 #include <glm/glm.hpp>
 #include <iomanip>
 #include <iostream>
-#include <SDL.h>
 
 using glm::vec3;
 using std::cout;
@@ -13,23 +13,23 @@ using std::setw;
 
 class SdlScreen {
 private:
-	SDL_Surface* surface;
-	Uint32 time;
+  SDL_Surface *surface;
+  Uint32 time;
 
-	bool noQuitMessageSDL();
+  bool noQuitMessageSDL();
 
 protected:
-	void drawPixel(int x, int y, vec3 color);
+  void drawPixel(int x, int y, vec3 color);
 
-	virtual void update(float dt) = 0;
-	virtual void draw(int width, int height) = 0;
+  virtual void update(float dt) = 0;
+  virtual void draw(int width, int height) = 0;
 
 public:
-	SdlScreen(int width, int height, bool fullscreen = false);
+  SdlScreen(int width, int height, bool fullscreen = false);
 
-	virtual ~SdlScreen();
+  virtual ~SdlScreen();
 
-	void run();
+  void run();
 
-	void saveBMP(const char* fileName);
+  void saveBMP(const char *fileName);
 };

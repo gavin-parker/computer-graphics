@@ -7,15 +7,16 @@
 
 using std::vector;
 
-class StarScreen: public SdlScreen {
+class StarScreen : public SdlScreen {
 private:
-	vector<vec3> stars;
-	float starVelocity;
+  vector<vec3> stars;
+  float starVelocity;
 
 protected:
-	void update(float dt) override;
-	void draw(int width, int height) override;
+  void update(float dt) override;
+  void draw(int width, int height) override;
 
 public:
-	StarScreen(int width, int height, vector<vec3>::size_type starCount, float starVelocity,  bool fullscreen = false);
+  StarScreen(int width, int height, vector<vec3>::size_type starCount,
+             float starVelocity, bool fullscreen = false);
 };

@@ -1,5 +1,23 @@
+// Place your settings in this file to overwrite default and user settings.
 {
-    "files.associations": {
-        "iostream": "cpp"
-    }
+	"editor.insertSpaces": true,
+	"editor.formatOnType": true,
+	"editor.formatOnPaste": true,
+	"files.associations": {
+		"iostream": "cpp",
+		"omp.h": "cpp"
+	},
+	"files.exclude": {
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/.DS_Store": true,
+		"bin": true,
+		"build": true,
+		"dependencies": true
+	},
+	"files.insertFinalNewline": true,
+	"files.trimTrailingWhitespace": true,
+	"C_Cpp.clang_format_formatOnSave": true,
+	"C_Cpp.clang_format_fallbackStyle": "LLVM"
 }

@@ -1,29 +1,31 @@
 #pragma once
 
-#include <limits>
-#include <vector>
-#include <omp.h>
 #include "camera.h"
 #include "lerp.h"
+#include "pointlight.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
-#include "pointlight.h"
+#include <limits>
+#include <omp.h>
+#include <vector>
+
 using std::numeric_limits;
 using std::vector;
 
-class RayTracer: public SdlScreen {
+class RayTracer : public SdlScreen {
 private:
-	bool ClosestIntersection(Ray &ray, const vector<Triangle> &triangles);
-	vector<Triangle> triangles;
+  bool ClosestIntersection(Ray &ray, const vector<Triangle> &triangles);
+  vector<Triangle> triangles;
 
-    Camera camera;
+  Camera camera;
 
-	const vec3 ambientLight = vec3(0.15f, 0.15f, 0.15f);
-	PointLight light;
+  const vec3 ambientLight = vec3(0.15f, 0.15f, 0.15f);
+  PointLight light;
+
 protected:
-	void update(float dt) override;
-	void draw(int width, int height) override;
+  void update(float dt) override;
+  void draw(int width, int height) override;
 
 public:
-	RayTracer(int width, int height, bool fullscreen = false);
+  RayTracer(int width, int height, bool fullscreen = false);
 };
