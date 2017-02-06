@@ -4,8 +4,6 @@
 #include "pointlight.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
-#include "vertex.h"
-
 #include <limits>
 #include <omp.h>
 
@@ -19,12 +17,13 @@ private:
 
   const shared_ptr<const vector<Triangle>> triangles;
   Camera camera;
+  PointLight light;
 
   void computePolygonRows(const vector<Pixel> &vertexPixels,
                           vector<Pixel> &leftPixels,
                           vector<Pixel> &rightPixels);
   void drawPolygonRows(int width, int height, vector<Pixel> &leftPixels,
-                       vector<Pixel> &rightPixels, vec3 color);
+                       vector<Pixel> &rightPixels);
 
   Pixel VertexShader(Vertex v, int width, int height);
 

@@ -7,6 +7,13 @@ inline float lerpF(float a, float b, float t) { return a + (b - a) * t; }
 
 inline float deLerpF(float a, float b, float t) { return (t - a) / (b - a); }
 
+inline float deLerp(vec3 a, vec3 b, float t) {
+  return glm::length(
+      vec3(deLerpF(a.x, b.x, t), deLerpF(a.y, b.y, t), deLerpF(a.z, b.z, t)));
+}
+
+inline vec3 lerp(vec3 a, vec3 b, float t) { return a + (b - a) * t; }
+
 inline int lerpI(int a, int b, float t) {
   return static_cast<int>(
       lerpF(static_cast<float>(a), static_cast<float>(b), t));
@@ -14,5 +21,6 @@ inline int lerpI(int a, int b, float t) {
 
 inline Pixel lerpP(Pixel a, Pixel b, float t) {
   return Pixel(lerpI(a.x, b.x, t), lerpI(a.y, b.y, t),
-               lerpF(a.depth, b.depth, t));
+               lerpF(a.depth, b.depth, t),
+               lerp(a.illumination, b.illumination, t));
 }

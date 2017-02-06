@@ -5,7 +5,6 @@ public:
   vec3 position;
   vec3 normal;
   vec2 reflectance;
-
   Vertex()
       : position(vec3(0, 0, 0)), normal(vec3(0, 0, 0)),
         reflectance(vec2(0, 0)) {}

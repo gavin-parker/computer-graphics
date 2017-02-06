@@ -6,6 +6,7 @@
 
 #include "lerp.h"
 #include "ray.h"
+#include "vertex.h"
 
 class PointLight {
 private:
@@ -23,4 +24,6 @@ public:
   void calculateRay(Ray &ray, vec3 target);
 
   vec3 directLight(const Ray &ray);
+
+  vec3 vertexLight(Vertex v);
 };
