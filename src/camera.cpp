@@ -31,8 +31,8 @@ void Camera::calculateRay(Ray &ray, float x, float y) {
   ray.direction = rotation * cameraSpaceDirection;
 }
 
-void Camera::VertexShader(const vec3 &v, vec2 &p) {
+void Camera::VertexShader(const vec3 &v, ivec2 &p) {
   vec3 newPos = rotation * (v - position);
   float f = 250;
-  p = vec2(f * (newPos.x / newPos.z) + 250, f * (newPos.y / newPos.z) + 250);
+  p = ivec2(f * (newPos.x / newPos.z) + 250, f * (newPos.y / newPos.z) + 250);
 }

@@ -6,7 +6,11 @@
     "files.associations": {
         "iostream": "cpp",
         "omp.h": "cpp",
-        "xiosbase": "cpp"
+        "xiosbase": "cpp",
+        "limits": "cpp",
+        "algorithm": "cpp",
+        "xutility": "cpp",
+        "vector": "cpp"
     },
 	"files.exclude": {
 		"**/.git": true,
