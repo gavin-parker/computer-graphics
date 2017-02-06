@@ -1,8 +1,8 @@
 #include <string>
 
+#include "rasteriser.h"
 #include "raytracer.h"
 #include "starscreen.h"
-
 using std::string;
 
 int main(int argc, char *argv[]) {
@@ -17,6 +17,10 @@ int main(int argc, char *argv[]) {
       return EXIT_SUCCESS;
     } else if (mode == "ray") {
       RayTracer screen(500, 500, false);
+      screen.run();
+      screen.saveBMP("screenshot.bmp");
+    } else if (mode == "rast") {
+      Rasteriser screen(500, 500, false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else {
