@@ -17,13 +17,13 @@ void Rasteriser::draw(int width, int height) {
   }
 
   for (const Triangle &triangle : *triangles) {
-    vector<Vertex> vertices = {Vertex(triangle.v0, triangle.normal),
-                               Vertex(triangle.v1, triangle.normal),
-                               Vertex(triangle.v2, triangle.normal)};
+    vector<Vertex> vertices = {
+        Vertex(triangle.v0, triangle.normal, vec2(1, 1), triangle.colour),
+        Vertex(triangle.v1, triangle.normal, vec2(1, 1), triangle.colour),
+        Vertex(triangle.v2, triangle.normal, vec2(1, 1), triangle.colour)};
     vector<Pixel> proj(vertices.size());
     for (size_t i = 0; i < vertices.size(); i++) {
       proj[i] = VertexShader(vertices[i], width, height);
-      proj[i].illumination *= triangle.colour;
     }
 
     int projE1X = proj[1].x - proj[0].x;
@@ -54,9 +54,8 @@ void Rasteriser::drawPolygonRows(int width, int height,
 
         if (pixelDepth < bufferDepth) {
           bufferDepth = pixelDepth;
-          vec3 color =
-              lerp(leftPixels[y].illumination, rightPixels[y].illumination,
-                   deLerpF(leftPixels[y].x, rightPixels[y].x, x));
+          Vertex pixelVert = lerpV(leftPixels[y].v ,  rightPixels[y].v, deLerpF(leftPixels[y].x, rightPixels[y].x, x));
+          vec3 color = light.vertexLight(pixelVert);
           drawPixel(x, leftPixels[y].y, color);
         }
       }
@@ -99,8 +98,7 @@ void Rasteriser::computePolygonRows(const vector<Pixel> &vertexPixels,
 
 Pixel Rasteriser::VertexShader(Vertex v, int width, int height) {
   vec3 camSpace = camera.projectVertex(v);
-  vec3 illumination = light.vertexLight(v);
   return Pixel(static_cast<int>(width * (1 - camSpace.x) / 2.0),
                static_cast<int>(height * (1 - camSpace.y) / 2.0), camSpace.z,
-               illumination);
+               v);
 }

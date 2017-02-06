@@ -19,8 +19,14 @@ inline int lerpI(int a, int b, float t) {
       lerpF(static_cast<float>(a), static_cast<float>(b), t));
 }
 
+inline Vertex lerpV(Vertex a, Vertex b, float t) {
+  return Vertex(lerp(a.position, b.position, t), a.normal, a.reflectance,
+                a.illumination);
+}
+
 inline Pixel lerpP(Pixel a, Pixel b, float t) {
   return Pixel(lerpI(a.x, b.x, t), lerpI(a.y, b.y, t),
                lerpF(a.depth, b.depth, t),
-               lerp(a.illumination, b.illumination, t));
+               Vertex(lerp(a.v.position, b.v.position, t), a.v.normal,
+                      a.v.reflectance, a.v.illumination));
 }

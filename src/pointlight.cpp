@@ -38,5 +38,5 @@ vec3 PointLight::vertexLight(Vertex v) {
 
   return (std::max(glm::dot(light_direction, v.normal), 0.0f) * power /
           (4.0f * (static_cast<float>(M_PI)) * radius * radius)) *
-         color;
+         color * v.illumination;
 }
