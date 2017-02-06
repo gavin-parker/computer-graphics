@@ -7,6 +7,14 @@ vector<Triangle> loadTestModel() {
   if (textureLoader.LoadTexture("texture.png", texture)) {
     std::cout << "loaded a texture of size:" << texture.size();
   }
+
+  vector<unsigned char> tiles_texture;
+
+  if (textureLoader.LoadTexture("tiles.png", tiles_texture)) {
+    std::cout << "loaded a texture of size:" << texture.size();
+  }
+
+  Material tiles(tiles_texture, 512, vec2(4, 4));
   Material doggo(texture, 128, vec2(1, 1));
 
   // Defines colors:
@@ -18,12 +26,18 @@ vector<Triangle> loadTestModel() {
   vec3 purple(0.75f, 0.15f, 0.75f);
   vec3 white(0.75f, 0.75f, 0.75f);
 
-  // defining UVs
+  // defining UVs for doggo
 
   vec2 bl(0, 128);
   vec2 br(128, 128);
   vec2 tl(0, 0);
   vec2 tr(128, 0);
+
+  // defining UVs for tiles
+  vec2 tiles_bl(0, 512);
+  vec2 tiles_br(512, 512);
+  vec2 tiles_tl(0, 0);
+  vec2 tiles_tr(512, 0);
 
   triangles.clear();
   triangles.reserve(5 * 2 * 3);
@@ -46,24 +60,34 @@ vector<Triangle> loadTestModel() {
   // UV ordering = corner, width, height
 
   // Floor:
-  triangles.push_back(Triangle(C, B, A, green, doggo, mat3x2(tl, tr, br)));
-  triangles.push_back(Triangle(C, D, B, green, doggo, mat3x2(tl, br, bl)));
+  triangles.push_back(
+      Triangle(C, B, A, green, tiles, mat3x2(tiles_tl, tiles_tr, tiles_br)));
+  triangles.push_back(
+      Triangle(C, D, B, green, tiles, mat3x2(tiles_tl, tiles_br, tiles_bl)));
 
   // Left wall
-  triangles.push_back(Triangle(A, E, C, purple, doggo, mat3x2(tl, br, tr)));
-  triangles.push_back(Triangle(C, E, G, purple, doggo, mat3x2(tl, bl, br)));
+  triangles.push_back(
+      Triangle(A, E, C, purple, tiles, mat3x2(tiles_tl, tiles_br, tiles_tr)));
+  triangles.push_back(
+      Triangle(C, E, G, purple, tiles, mat3x2(tiles_tl, tiles_bl, tiles_br)));
 
   // Right wall
-  triangles.push_back(Triangle(F, B, D, yellow, doggo, mat3x2(tl, br, tr)));
-  triangles.push_back(Triangle(H, F, D, yellow, doggo, mat3x2(tl, bl, br)));
+  triangles.push_back(
+      Triangle(F, B, D, yellow, tiles, mat3x2(tiles_tl, tiles_br, tiles_tr)));
+  triangles.push_back(
+      Triangle(H, F, D, yellow, tiles, mat3x2(tiles_tl, tiles_bl, tiles_br)));
 
   // Ceiling
-  triangles.push_back(Triangle(E, F, G, cyan, doggo, mat3x2(tl, br, tr)));
-  triangles.push_back(Triangle(F, H, G, cyan, doggo, mat3x2(tl, bl, br)));
+  triangles.push_back(
+      Triangle(E, F, G, cyan, tiles, mat3x2(tiles_tl, tiles_br, tiles_tr)));
+  triangles.push_back(
+      Triangle(F, H, G, cyan, tiles, mat3x2(tiles_tl, tiles_bl, tiles_br)));
 
   // Back wall
-  triangles.push_back(Triangle(G, D, C, white, doggo, mat3x2(tl, br, tr)));
-  triangles.push_back(Triangle(G, H, D, white, doggo, mat3x2(tl, bl, br)));
+  triangles.push_back(
+      Triangle(G, D, C, white, tiles, mat3x2(tiles_tl, tiles_br, tiles_tr)));
+  triangles.push_back(
+      Triangle(G, H, D, white, tiles, mat3x2(tiles_tl, tiles_bl, tiles_br)));
 
   // ---------------------------------------------------------------------------
   // Short block

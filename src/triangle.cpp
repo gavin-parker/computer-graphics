@@ -39,6 +39,7 @@ vec3 Triangle::getColor(float u, float v) const {
   vec2 uv = colorMap[0] + u * uv1 + v * uv2;
   int x = static_cast<int>(uv.x);
   int y = static_cast<int>(uv.y);
+
   int offset = (mat.size * y + x) * 4;
   int r = static_cast<int>(mat.texture[offset]);
   int g = static_cast<int>(mat.texture[offset + 1]);
