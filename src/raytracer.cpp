@@ -2,7 +2,7 @@
 
 RayTracer::RayTracer(int width, int height, bool fullscreen)
     : SdlScreen(width, height, fullscreen), triangles(loadTestModel()),
-      camera(vec3(277.5f, 277.5f, -480.64), static_cast<float>(M_PI), 30.0f),
+      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f),
       light(vec3(400.0f, 100.0f, 100.0f), vec3(1.0, 1.0f, 1.0f), 500000.0f) {}
 
 void RayTracer::update(float dt) {
