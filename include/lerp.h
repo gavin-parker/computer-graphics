@@ -26,7 +26,5 @@ inline Vertex lerpV(Vertex a, Vertex b, float t) {
 
 inline Pixel lerpP(Pixel a, Pixel b, float t) {
   return Pixel(lerpI(a.x, b.x, t), lerpI(a.y, b.y, t),
-               lerpF(a.depth, b.depth, t),
-               Vertex(lerp(a.v.position, b.v.position, t), a.v.normal,
-                      a.v.reflectance, a.v.illumination));
+               lerpF(a.depth, b.depth, t), lerpV(a.v, b.v, t));
 }

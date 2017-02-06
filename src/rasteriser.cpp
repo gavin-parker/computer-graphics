@@ -54,7 +54,11 @@ void Rasteriser::drawPolygonRows(int width, int height,
 
         if (pixelDepth < bufferDepth) {
           bufferDepth = pixelDepth;
+          vec3 adjust(pixelDepth, pixelDepth, pixelDepth);
+          // leftPixels[y].v.position *= adjust;
+          // rightPixels[y].v.position *= adjust;
           Vertex pixelVert = lerpV(leftPixels[y].v ,  rightPixels[y].v, deLerpF(leftPixels[y].x, rightPixels[y].x, x));
+          //pixelVert.position /= adjust;
           vec3 color = light.vertexLight(pixelVert);
           drawPixel(x, leftPixels[y].y, color);
         }
