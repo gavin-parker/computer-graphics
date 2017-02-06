@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 
+#include "material.h"
 #include "textureloader.h"
 #include "triangle.h"
 
