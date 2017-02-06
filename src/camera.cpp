@@ -32,8 +32,8 @@ void Camera::calculateRay(Ray &ray, float x, float y) {
   ray.direction = rotation * cameraSpaceDirection;
 }
 
-vec3 Camera::VertexShader(vec3 v) {
-  vec3 newPos = (v - position) * rotation;
+vec3 Camera::VertexShader(Vertex v) {
+  vec3 newPos = (v.position - position) * rotation;
 
   return vec3((newPos.x / newPos.z), (newPos.y / newPos.z), newPos.z);
 }

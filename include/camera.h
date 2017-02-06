@@ -6,6 +6,7 @@
 
 #include "lerp.h"
 #include "ray.h"
+#include "vertex.h"
 
 using glm::vec3;
 using glm::vec2;
@@ -26,5 +27,5 @@ public:
 
   void calculateRay(Ray &ray, float x, float y);
 
-  vec3 VertexShader(vec3 v);
+  vec3 VertexShader(Vertex v);
 };

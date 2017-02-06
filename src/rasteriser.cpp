@@ -13,7 +13,9 @@ void Rasteriser::draw(int width, int height) {
   }
 
   for (const Triangle &triangle : *triangles) {
-    vector<vec3> vertices = {triangle.v0, triangle.v1, triangle.v2};
+    vector<Vertex> vertices = {Vertex(triangle.v0, triangle.normal),
+                               Vertex(triangle.v1, triangle.normal),
+                               Vertex(triangle.v2, triangle.normal)};
     vector<Pixel> proj(vertices.size());
     for (size_t i = 0; i < vertices.size(); i++) {
       vec3 camSpace = camera.VertexShader(vertices[i]);

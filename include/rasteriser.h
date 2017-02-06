@@ -4,6 +4,7 @@
 #include "pointlight.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
+#include "vertex.h"
 
 #include <limits>
 #include <omp.h>
