@@ -61,9 +61,9 @@ vector<Triangle> loadTestModel() {
 
   // Floor:
   triangles.push_back(
-      Triangle(C, B, A, green, tiles, mat3x2(tiles_tl, tiles_tr, tiles_br)));
+      Triangle(C, B, A, green, tiles, mat3x2(tiles_tl, tiles_br, tiles_tr)));
   triangles.push_back(
-      Triangle(C, D, B, green, tiles, mat3x2(tiles_tl, tiles_br, tiles_bl)));
+      Triangle(C, D, B, green, tiles, mat3x2(tiles_tl, tiles_bl, tiles_br)));
 
   // Left wall
   triangles.push_back(

@@ -5,8 +5,6 @@
 using glm::vec2;
 using std::vector;
 
-class Material;
-
 class Material {
 public:
   const vector<unsigned char> texture;
