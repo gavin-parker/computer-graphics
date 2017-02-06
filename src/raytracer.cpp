@@ -1,11 +1,9 @@
 #include "raytracer.h"
 
 RayTracer::RayTracer(int width, int height, bool fullscreen)
-    : SdlScreen(width, height, fullscreen),
+    : SdlScreen(width, height, fullscreen), triangles(loadTestModel()),
       camera(vec3(277.5f, 277.5f, -480.64), static_cast<float>(M_PI), 30.0f),
-      light(vec3(400.0f, 100.0f, 100.0f), vec3(1.0, 1.0f, 1.0f), 500000.0f) {
-  triangles = loadTestModel();
-}
+      light(vec3(400.0f, 100.0f, 100.0f), vec3(1.0, 1.0f, 1.0f), 500000.0f) {}
 
 void RayTracer::update(float dt) {
   light.update(dt);
@@ -21,9 +19,9 @@ void RayTracer::draw(int width, int height) {
       camera.calculateRay(cameraRay, static_cast<float>(x) / width,
                           static_cast<float>(y) / height);
 
-      if (ClosestIntersection(cameraRay, triangles)) {
+      if (ClosestIntersection(cameraRay)) {
         light.calculateRay(lightRay, cameraRay.collisionLocation);
-        ClosestIntersection(lightRay, triangles);
+        ClosestIntersection(lightRay);
 
         vec3 lightColour = ambientLight;
 
@@ -41,13 +39,12 @@ void RayTracer::draw(int width, int height) {
   }
 }
 
-bool RayTracer::ClosestIntersection(Ray &ray,
-                                    const vector<Triangle> &triangles) {
+bool RayTracer::ClosestIntersection(Ray &ray) {
   ray.length = numeric_limits<float>::max();
 
   bool anyIntersection = false;
 
-  for (const Triangle &triangle : triangles) {
+  for (const Triangle &triangle : *triangles) {
     anyIntersection |= triangle.calculateIntection(ray);
   }
 

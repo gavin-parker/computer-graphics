@@ -7,15 +7,14 @@
 #include "testmodel.h"
 #include <limits>
 #include <omp.h>
-#include <vector>
 
 using std::numeric_limits;
 using std::vector;
 
 class RayTracer : public SdlScreen {
 private:
-  bool ClosestIntersection(Ray &ray, const vector<Triangle> &triangles);
-  vector<Triangle> triangles;
+  bool ClosestIntersection(Ray &ray);
+  const shared_ptr<const vector<Triangle>> triangles;
 
   Camera camera;
 

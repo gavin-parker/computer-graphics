@@ -1,13 +1,13 @@
 #include "testmodel.h"
 
-vector<Triangle> loadTestModel() {
-  vector<Triangle> triangles;
+const shared_ptr<const vector<Triangle>> loadTestModel() {
+  shared_ptr<vector<Triangle>> triangles(new vector<Triangle>());
 
   // Material tiles, doggo;
-  Material doggo;
+  shared_ptr<Material> doggo(new Material());
 
   // tiles.loadPNG("tiles.png");
-  doggo.loadPNG("texture.png");
+  doggo->loadPNG("texture.png");
 
   // Defines colors:
   vec3 red(0.75f, 0.15f, 0.15f);
@@ -23,8 +23,8 @@ vector<Triangle> loadTestModel() {
   vec2 tl(0.0f, 0.0f);
   vec2 tr(1.0f, 0.0f);
 
-  triangles.clear();
-  triangles.reserve(5 * 2 * 3);
+  triangles->clear();
+  triangles->reserve(5 * 2 * 3);
 
   // ---------------------------------------------------------------------------
   // Room
@@ -44,24 +44,24 @@ vector<Triangle> loadTestModel() {
   // UV ordering = corner, width, height
 
   // Floor:
-  triangles.push_back(Triangle(C, B, A, tl, br, bl, green, doggo));
-  triangles.push_back(Triangle(C, D, B, tl, tr, br, green, doggo));
+  triangles->push_back(Triangle(C, B, A, tl, br, bl, green, doggo));
+  triangles->push_back(Triangle(C, D, B, tl, tr, br, green, doggo));
 
   // Left wall
-  triangles.push_back(Triangle(A, E, C, bl, tl, br, purple, doggo));
-  triangles.push_back(Triangle(C, E, G, br, tl, tr, purple, doggo));
+  triangles->push_back(Triangle(A, E, C, bl, tl, br, purple, doggo));
+  triangles->push_back(Triangle(C, E, G, br, tl, tr, purple, doggo));
 
   // Right wall
-  triangles.push_back(Triangle(F, B, D, tr, br, bl, yellow, doggo));
-  triangles.push_back(Triangle(H, F, D, tl, tr, bl, yellow, doggo));
+  triangles->push_back(Triangle(F, B, D, tr, br, bl, yellow, doggo));
+  triangles->push_back(Triangle(H, F, D, tl, tr, bl, yellow, doggo));
 
   // Ceiling
-  triangles.push_back(Triangle(E, F, G, tl, tr, bl, cyan, doggo));
-  triangles.push_back(Triangle(F, H, G, tr, br, bl, cyan, doggo));
+  triangles->push_back(Triangle(E, F, G, tl, tr, bl, cyan, doggo));
+  triangles->push_back(Triangle(F, H, G, tr, br, bl, cyan, doggo));
 
   // Back wall
-  triangles.push_back(Triangle(G, D, C, tl, br, bl, white, doggo));
-  triangles.push_back(Triangle(G, H, D, tl, tr, br, white, doggo));
+  triangles->push_back(Triangle(G, D, C, tl, br, bl, white, doggo));
+  triangles->push_back(Triangle(G, H, D, tl, tr, br, white, doggo));
 
   // ---------------------------------------------------------------------------
   // Short block
@@ -77,24 +77,24 @@ vector<Triangle> loadTestModel() {
   H = vec3(82, 165, 225);
 
   // FRONT
-  triangles.push_back(Triangle(E, B, A, tl, br, bl, red, doggo));
-  triangles.push_back(Triangle(E, F, B, tl, tr, br, red, doggo));
+  triangles->push_back(Triangle(E, B, A, tl, br, bl, red, doggo));
+  triangles->push_back(Triangle(E, F, B, tl, tr, br, red, doggo));
 
   // RIGHT
-  triangles.push_back(Triangle(F, D, B, tl, br, bl, red, doggo));
-  triangles.push_back(Triangle(F, H, D, tl, tr, br, red, doggo));
+  triangles->push_back(Triangle(F, D, B, tl, br, bl, red, doggo));
+  triangles->push_back(Triangle(F, H, D, tl, tr, br, red, doggo));
 
   // BACK
-  triangles.push_back(Triangle(H, C, D, tl, br, bl, red, doggo));
-  triangles.push_back(Triangle(H, G, C, tl, tr, br, red, doggo));
+  triangles->push_back(Triangle(H, C, D, tl, br, bl, red, doggo));
+  triangles->push_back(Triangle(H, G, C, tl, tr, br, red, doggo));
 
   // LEFT
-  triangles.push_back(Triangle(G, E, C, tl, tr, bl, red, doggo));
-  triangles.push_back(Triangle(E, A, C, tr, br, bl, red, doggo));
+  triangles->push_back(Triangle(G, E, C, tl, tr, bl, red, doggo));
+  triangles->push_back(Triangle(E, A, C, tr, br, bl, red, doggo));
 
   // TOP
-  triangles.push_back(Triangle(G, F, E, tl, br, bl, red, doggo));
-  triangles.push_back(Triangle(G, H, F, tl, tr, br, red, doggo));
+  triangles->push_back(Triangle(G, F, E, tl, br, bl, red, doggo));
+  triangles->push_back(Triangle(G, H, F, tl, tr, br, red, doggo));
 
   // ---------------------------------------------------------------------------
   // Tall block
@@ -110,24 +110,24 @@ vector<Triangle> loadTestModel() {
   H = vec3(314, 330, 456);
 
   // FRONT
-  triangles.push_back(Triangle(E, B, A, tl, br, bl, blue, doggo));
-  triangles.push_back(Triangle(E, F, B, tl, tr, br, blue, doggo));
+  triangles->push_back(Triangle(E, B, A, tl, br, bl, blue, doggo));
+  triangles->push_back(Triangle(E, F, B, tl, tr, br, blue, doggo));
 
   // RIGHT
-  triangles.push_back(Triangle(F, D, B, tl, br, bl, blue, doggo));
-  triangles.push_back(Triangle(F, H, D, tl, tr, br, blue, doggo));
+  triangles->push_back(Triangle(F, D, B, tl, br, bl, blue, doggo));
+  triangles->push_back(Triangle(F, H, D, tl, tr, br, blue, doggo));
 
   // BACK
-  triangles.push_back(Triangle(H, C, D, tl, br, bl, blue, doggo));
-  triangles.push_back(Triangle(H, G, C, tl, tr, br, blue, doggo));
+  triangles->push_back(Triangle(H, C, D, tl, br, bl, blue, doggo));
+  triangles->push_back(Triangle(H, G, C, tl, tr, br, blue, doggo));
 
   // LEFT
-  triangles.push_back(Triangle(G, E, C, tl, tr, bl, blue, doggo));
-  triangles.push_back(Triangle(E, A, C, tr, br, bl, blue, doggo));
+  triangles->push_back(Triangle(G, E, C, tl, tr, bl, blue, doggo));
+  triangles->push_back(Triangle(E, A, C, tr, br, bl, blue, doggo));
 
   // TOP
-  triangles.push_back(Triangle(G, F, E, tl, br, bl, blue, doggo));
-  triangles.push_back(Triangle(G, H, F, tl, tr, br, blue, doggo));
+  triangles->push_back(Triangle(G, F, E, tl, br, bl, blue, doggo));
+  triangles->push_back(Triangle(G, H, F, tl, tr, br, blue, doggo));
 
   return triangles;
 }

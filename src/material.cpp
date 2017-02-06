@@ -3,12 +3,12 @@
 Material::Material() {}
 
 bool Material::loadPNG(string filename) {
-  std::cout << "loading texture: " << filename;
+  cout << "loading texture: " << filename << endl;
   unsigned error = lodepng::decode(texture, width, height, filename);
 
   if (error) {
-    std::cout << "Error loading texture: " << error << ":"
-              << lodepng_error_text(error);
+    cout << "Error loading texture: " << error << ":"
+         << lodepng_error_text(error) << endl;
     return false;
   } else {
     return true;

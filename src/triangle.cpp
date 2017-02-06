@@ -1,7 +1,7 @@
 #include "triangle.h"
 
 Triangle::Triangle(vec3 v0, vec3 v1, vec3 v2, vec2 vt0, vec2 vt1, vec2 vt2,
-                   vec3 colour, Material mat)
+                   vec3 colour, const shared_ptr<const Material> mat)
     : v0(v0), e1(v1 - v0), e2(v2 - v0), vt0(vt0), et1(vt1 - vt0),
       et2(vt2 - vt0), normal(glm::normalize(glm::cross(v2 - v0, v1 - v0))),
       colour(colour), mat(mat) {}
@@ -33,7 +33,7 @@ bool Triangle::calculateIntection(Ray &ray) const {
 }
 
 vec3 Triangle::getColour(vec2 uv) const {
-  vec3 matColour = mat.getColour(uv);
+  vec3 matColour = mat->getColour(uv);
   return vec3(matColour.r * colour.r, matColour.g * colour.g,
               matColour.b * colour.b);
 }
