@@ -18,10 +18,7 @@ void Rasteriser::draw(int width, int height) {
                                Vertex(triangle.v2, triangle.normal)};
     vector<Pixel> proj(vertices.size());
     for (size_t i = 0; i < vertices.size(); i++) {
-      vec3 camSpace = camera.VertexShader(vertices[i]);
-      proj[i] =
-          Pixel(static_cast<int>(width * (1 - camSpace.x) / 2.0),
-                static_cast<int>(height * (1 - camSpace.y) / 2.0), camSpace.z);
+      proj[i] = VertexShader(vertices[i], width, height);
     }
 
     int projE1X = proj[1].x - proj[0].x;
@@ -90,4 +87,10 @@ void Rasteriser::computePolygonRows(const vector<Pixel> &vertexPixels,
       }
     }
   }
+}
+
+Pixel Rasteriser::VertexShader(Vertex v, int width, int height) {
+  vec3 camSpace = camera.projectVertex(v);
+  return Pixel(static_cast<int>(width * (1 - camSpace.x) / 2.0),
+               static_cast<int>(height * (1 - camSpace.y) / 2.0), camSpace.z);
 }

@@ -26,6 +26,8 @@ private:
   void drawPolygonRows(int width, int height, vector<Pixel> &leftPixels,
                        vector<Pixel> &rightPixels, vec3 color);
 
+  Pixel VertexShader(Vertex v, int width, int height);
+
 protected:
   void update(float dt) override;
   void draw(int width, int height) override;
