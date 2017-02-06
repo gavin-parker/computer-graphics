@@ -51,13 +51,14 @@ void Rasteriser::computePolygonRows(const vector<ivec2> &vertexPixels,
     rightPixels.push_back(ivec2(-numeric_limits<int>::max(), min + i));
   }
   for (int i = 0; i < 3; i++) {
-    /*float step =
-        1 / glm::length(vec2(vertexPixels[i] - vertexPixels[(i + 1) % 3]));*/
-    for (int y = min; y <= max; ++y) {
-      float t = deLerp(min, max, y);
+    float step =
+        1.f /
+        (glm::length(vec2(vertexPixels[i] - vertexPixels[(i + 1) % 3])) + 1);
+    for (float t = 0; t < 1; t += step) {
       ivec2 pixel = lerp(vertexPixels[i], vertexPixels[(i + 1) % 3], t);
-      leftPixels[y - min].x = std::min(leftPixels[y - min].x, pixel.x);
-      rightPixels[y - min].x = std::max(rightPixels[y - min].x, pixel.x);
+      int y = pixel.y - min;
+      leftPixels[y].x = std::min(leftPixels[y].x, pixel.x);
+      rightPixels[y].x = std::max(rightPixels[y].x, pixel.x);
     }
   }
 }
