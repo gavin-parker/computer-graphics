@@ -5,7 +5,9 @@
 
 #include "lerp.h"
 #include "ray.h"
+
 using glm::ivec2;
+
 class Camera {
 private:
   vec3 position;

@@ -2,14 +2,9 @@
 
 #include "material.h"
 #include <algorithm>
-#include <glm/glm.hpp>
-#include <iostream>
 #include <memory>
 #include <vector>
 
-using glm::vec3;
-using glm::vec2;
-using glm::mat3x2;
 using std::shared_ptr;
 using std::vector;
 

@@ -1,5 +1,7 @@
 #pragma once
+
 #include <glm/glm.hpp>
+
 using glm::vec2;
 using glm::ivec2;
 

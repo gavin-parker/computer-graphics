@@ -2,12 +2,12 @@
 
 #include <glm/glm.hpp>
 
+using glm::vec3;
+using glm::mat3;
+
 struct Ray;
 
 #include "triangle.h"
-
-using glm::vec3;
-using glm::mat3;
 
 struct Ray {
   vec3 position;

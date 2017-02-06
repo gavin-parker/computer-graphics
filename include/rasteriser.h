@@ -1,10 +1,10 @@
 #pragma once
 
 #include "camera.h"
-#include "lerp.h"
 #include "pointlight.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
+
 #include <limits>
 #include <omp.h>
 

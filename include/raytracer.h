@@ -1,12 +1,12 @@
 #pragma once
 
+#include <limits>
+#include <omp.h>
+
 #include "camera.h"
-#include "lerp.h"
 #include "pointlight.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
-#include <limits>
-#include <omp.h>
 
 using std::numeric_limits;
 
