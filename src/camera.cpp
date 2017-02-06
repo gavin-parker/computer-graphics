@@ -12,12 +12,13 @@ void Camera::update(float dt) {
   rotation = mat3(cos(yaw), 0.0f, sin(yaw), 0.0f, 1.0f, 0.0f, -sin(yaw), 0.0f,
                   cos(yaw));
 
-  vec3 right = vec3(1.0f, 0.0f, 0.0f), upwards = vec3(0.0f, 1.0f, 0.0f),
-       forwards = vec3(0.0f, 0.0f, -1.0f);
+  const vec3 right = vec3(1.0f, 0.0f, 0.0f);
+  const vec3 upwards = vec3(0.0f, 1.0f, 0.0f);
+  const vec3 forwards = vec3(0.0f, 0.0f, 1.0f);
 
   position +=
       velocity * dt * rotation *
-      (static_cast<float>(keystate[SDLK_d] - keystate[SDLK_a]) * right +
+      (static_cast<float>(keystate[SDLK_a] - keystate[SDLK_d]) * right +
        static_cast<float>(keystate[SDLK_e] - keystate[SDLK_q]) * upwards +
        static_cast<float>(keystate[SDLK_w] - keystate[SDLK_s]) * forwards);
 }
@@ -25,8 +26,8 @@ void Camera::update(float dt) {
 void Camera::calculateRay(Ray &ray, float x, float y) {
   ray.position = position;
 
-  vec3 cameraSpaceDirection = vec3(lerp(-viewOffset, viewOffset, x),
-                                   lerp(viewOffset, -viewOffset, y), -1.0f);
+  vec3 cameraSpaceDirection = vec3(lerp(viewOffset, -viewOffset, x),
+                                   lerp(viewOffset, -viewOffset, y), 1.0f);
 
   ray.direction = rotation * cameraSpaceDirection;
 }

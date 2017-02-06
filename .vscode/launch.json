@@ -9,7 +9,7 @@
 			"args": [
 				"ray"
 			],
-			"stopAtEntry": true,
+			"stopAtEntry": false,
 			"cwd": "${workspaceRoot}",
 			"environment": [],
 			"externalConsole": true,

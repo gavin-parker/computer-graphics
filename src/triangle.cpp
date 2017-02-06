@@ -1,10 +1,10 @@
 #include "triangle.h"
 
-Triangle::Triangle(vec3 v0, vec3 v1, vec3 v2, vec3 color, Material &mat,
-                   mat3x2 colorMap)
-    : v0(v0), e1(v1 - v0), e2(v2 - v0),
-      normal(glm::normalize(glm::cross(v2 - v0, v1 - v0))), color(color),
-      mat(mat), colorMap(colorMap) {}
+Triangle::Triangle(vec3 v0, vec3 v1, vec3 v2, vec2 vt0, vec2 vt1, vec2 vt2,
+                   vec3 colour, const shared_ptr<const Material> mat)
+    : v0(v0), e1(v1 - v0), e2(v2 - v0), vt0(vt0), et1(vt1 - vt0),
+      et2(vt2 - vt0), normal(glm::normalize(glm::cross(v2 - v0, v1 - v0))),
+      colour(colour), mat(mat) {}
 
 bool Triangle::calculateIntection(Ray &ray) const {
   if (glm::dot(normal, ray.direction) < 0) {
@@ -23,7 +23,7 @@ bool Triangle::calculateIntection(Ray &ray) const {
         ray.length = t;
         ray.collision = this;
         ray.collisionLocation = v0 + u * e1 + v * e2;
-        ray.collisionColor = getColor(u, v);
+        ray.collisionUVLocation = vt0 + u * et1 + v * et2;
         return true;
       }
     }
@@ -32,17 +32,8 @@ bool Triangle::calculateIntection(Ray &ray) const {
   return false;
 }
 
-vec3 Triangle::getColor(float u, float v) const {
-  vec2 uv1 = colorMap[1] - colorMap[0];
-  vec2 uv2 = colorMap[2] - colorMap[0];
-
-  vec2 uv = colorMap[0] + u * uv1 + v * uv2;
-  int x = static_cast<int>(uv.x);
-  int y = static_cast<int>(uv.y);
-
-  int offset = (mat.size * y + x) * 4;
-  int r = static_cast<int>(mat.texture[offset]);
-  int g = static_cast<int>(mat.texture[offset + 1]);
-  int b = static_cast<int>(mat.texture[offset + 2]);
-  return vec3((float)r / 255, (float)g / 255, (float)b / 255);
+vec3 Triangle::getColour(vec2 uv) const {
+  vec3 matColour = mat->getColour(uv);
+  return vec3(matColour.r * colour.r, matColour.g * colour.g,
+              matColour.b * colour.b);
 }
