@@ -4,8 +4,8 @@
 #include <iostream>
 #include <vector>
 
+#include "lodepng.h"
 #include "material.h"
-#include "textureloader.h"
 #include "triangle.h"
 
 using std::vector;

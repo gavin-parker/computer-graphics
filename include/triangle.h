@@ -17,17 +17,15 @@ class Triangle;
 
 class Triangle {
 public:
-  const vec3 v0;
-  const vec3 e1;
-  const vec3 e2;
+  const vec3 v0, e1, e2;
+  const vec2 vt0, et1, et2;
   const vec3 normal;
-  const vec3 color;
+  const vec3 colour;
   const Material mat;
-  const mat3x2 colorMap;
-  Triangle(vec3 v0, vec3 v1, vec3 v2, vec3 color, Material &mat,
-           mat3x2 colorMap);
+  Triangle(vec3 v0, vec3 v1, vec3 v2, vec2 vt0, vec2 vt1, vec2 vt2, vec3 colour,
+           Material mat);
 
   bool calculateIntection(Ray &ray) const;
 
-  vec3 getColor(float u, float v) const;
+  vec3 getColour(vec2 uv) const;
 };
