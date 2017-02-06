@@ -6,7 +6,7 @@
 #include "lerp.h"
 #include "ray.h"
 
-using glm::ivec2;
+using glm::vec2;
 
 class Camera {
 private:
@@ -24,5 +24,5 @@ public:
 
   void calculateRay(Ray &ray, float x, float y);
 
-  void VertexShader(const vec3 &v, ivec2 &p);
+  vec2 VertexShader(vec3 v);
 };

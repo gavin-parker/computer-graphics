@@ -17,7 +17,6 @@ private:
   const shared_ptr<const vector<Triangle>> triangles;
   Camera camera;
 
-  void drawEdge(vec2 a, vec2 b, vec3 color);
   void computePolygonRows(const vector<ivec2> &vertexPixels,
                           vector<ivec2> &leftPixels,
                           vector<ivec2> &rightPixels);

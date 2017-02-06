@@ -2,7 +2,7 @@
 
 Rasteriser::Rasteriser(int width, int height, bool fullscreen)
     : SdlScreen(width, height, fullscreen), triangles(loadTestModel()),
-      camera(vec3(277.5f, 277.5f, -480.64), static_cast<float>(M_PI), 30.0f) {}
+      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f) {}
 
 void Rasteriser::update(float dt) { camera.update(dt); }
 
@@ -15,20 +15,14 @@ void Rasteriser::draw(int width, int height) {
     vertices[2] = triangle.v0 + triangle.e2;
     vector<ivec2> proj(3);
     for (size_t i = 0; i < 3; i++) {
-      camera.VertexShader(vertices[i], proj[i]);
+      vec2 camSpace = camera.VertexShader(vertices[i]);
+      proj[i] = ivec2(static_cast<int>(width * (1 - camSpace.x) / 2.0),
+                      static_cast<int>(height * (1 - camSpace.y) / 2.0));
     }
     vector<ivec2> leftPixels;
     vector<ivec2> rightPixels;
     computePolygonRows(proj, leftPixels, rightPixels);
     drawPolygonRows(leftPixels, rightPixels, triangle.colour);
-  }
-}
-
-void Rasteriser::drawEdge(vec2 a, vec2 b, vec3 color) {
-  float step = 1 / glm::distance(a, b);
-  for (float t = 0; t < 1; t += step) {
-    vec2 pixel = lerp(a, b, t);
-    drawPixel(pixel.x, pixel.y, color);
   }
 }
 
@@ -57,13 +51,13 @@ void Rasteriser::computePolygonRows(const vector<ivec2> &vertexPixels,
     rightPixels.push_back(ivec2(-numeric_limits<int>::max(), min + i));
   }
   for (int i = 0; i < 3; i++) {
-    float step =
-        1 / glm::length(vec2(vertexPixels[i] - vertexPixels[(i + 1) % 3]));
-    for (float t = 0; t < 1; t += step) {
+    /*float step =
+        1 / glm::length(vec2(vertexPixels[i] - vertexPixels[(i + 1) % 3]));*/
+    for (int y = min; y <= max; ++y) {
+      float t = deLerp(min, max, y);
       ivec2 pixel = lerp(vertexPixels[i], vertexPixels[(i + 1) % 3], t);
-      int y = pixel.y - min;
-      leftPixels[y].x = std::min(leftPixels[y].x, pixel.x);
-      rightPixels[y].x = std::max(rightPixels[y].x, pixel.x);
+      leftPixels[y - min].x = std::min(leftPixels[y - min].x, pixel.x);
+      rightPixels[y - min].x = std::max(rightPixels[y - min].x, pixel.x);
     }
   }
 }
