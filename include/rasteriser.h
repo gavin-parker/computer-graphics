@@ -17,6 +17,9 @@ private:
   vector<Triangle> triangles;
   Camera camera;
 
+  void drawPolygonEdges(const vector<vec3> &vertices);
+  void drawEdge(vec2 a, vec2 b, vec3 color);
+
 protected:
   void update(float dt) override;
   void draw(int width, int height) override;
