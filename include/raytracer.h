@@ -9,7 +9,6 @@
 #include <omp.h>
 
 using std::numeric_limits;
-using std::vector;
 
 class RayTracer : public SdlScreen {
 private:

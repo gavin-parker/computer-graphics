@@ -1,16 +1,13 @@
 #include "rasteriser.h"
 
 Rasteriser::Rasteriser(int width, int height, bool fullscreen)
-    : SdlScreen(width, height, fullscreen),
-      camera(vec3(277.5f, 277.5f, -480.64), static_cast<float>(M_PI), 30.0f) {
-  triangles = loadTestModel();
-}
+    : SdlScreen(width, height, fullscreen), triangles(loadTestModel()),
+      camera(vec3(277.5f, 277.5f, -480.64), static_cast<float>(M_PI), 30.0f) {}
 
 void Rasteriser::update(float dt) { camera.update(dt); }
 
 void Rasteriser::draw(int width, int height) {
-
-  for (Triangle triangle : triangles) {
+  for (const Triangle &triangle : *triangles) {
 
     vector<vec3> vertices(3);
     vertices[0] = triangle.v0;
@@ -23,7 +20,7 @@ void Rasteriser::draw(int width, int height) {
     vector<ivec2> leftPixels;
     vector<ivec2> rightPixels;
     computePolygonRows(proj, leftPixels, rightPixels);
-    drawPolygonRows(leftPixels, rightPixels, triangle.color);
+    drawPolygonRows(leftPixels, rightPixels, triangle.colour);
   }
 }
 

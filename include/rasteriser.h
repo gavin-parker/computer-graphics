@@ -7,16 +7,14 @@
 #include "testmodel.h"
 #include <limits>
 #include <omp.h>
-#include <vector>
 
 using std::numeric_limits;
-using std::vector;
 using std::max;
 using glm::ivec2;
 
 class Rasteriser : public SdlScreen {
 private:
-  vector<Triangle> triangles;
+  const shared_ptr<const vector<Triangle>> triangles;
   Camera camera;
 
   void drawEdge(vec2 a, vec2 b, vec3 color);

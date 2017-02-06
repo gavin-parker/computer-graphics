@@ -1,8 +1,8 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-	"editor.insertSpaces": true,
-	"editor.formatOnType": true,
-	"editor.formatOnPaste": true,
+    "editor.insertSpaces": true,
+    "editor.formatOnType": true,
+    "editor.formatOnPaste": true,
     "files.associations": {
         "iostream": "cpp",
         "omp.h": "cpp",
@@ -10,7 +10,7 @@
         "limits": "cpp",
         "algorithm": "cpp",
         "xutility": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
         "utility": "cpp",
         "*inl*inl*inl*inl*inl*inl*inl*inl*inl*inl*inl*inlinitializer_list": "cpp",
         "*h*inl*harray": "cpp",
@@ -33,17 +33,17 @@
         "cstdio": "cpp",
         "ctime": "cpp"
     },
-	"files.exclude": {
-		"**/.git": true,
-		"**/.svn": true,
-		"**/.hg": true,
-		"**/.DS_Store": true,
-		"bin": true,
-		"build": true,
-		"dependencies": true
-	},
-	"files.insertFinalNewline": true,
-	"files.trimTrailingWhitespace": true,
-	"C_Cpp.clang_format_formatOnSave": true,
-	"C_Cpp.clang_format_fallbackStyle": "LLVM"
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "bin": true,
+        "build": true,
+        "dependencies": true
+    },
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "C_Cpp.clang_format_formatOnSave": true,
+    "C_Cpp.clang_format_fallbackStyle": "LLVM"
 }
