@@ -1,17 +1,18 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
-using glm::vec2;
-using glm::ivec2;
+#include "pixel.h"
 
 // Linearly interpolate between a and b
-inline float lerp(float a, float b, float t) { return a + (b - a) * t; }
+inline float lerpF(float a, float b, float t) { return a + (b - a) * t; }
 
-inline float deLerp(float a, float b, float t) { return (t - a) / (b - a); }
+inline float deLerpF(float a, float b, float t) { return (t - a) / (b - a); }
 
-inline vec2 lerp(vec2 a, vec2 b, float t) { return a + (b - a) * t; }
+inline int lerpI(int a, int b, float t) {
+  return static_cast<int>(
+      lerpF(static_cast<float>(a), static_cast<float>(b), t));
+}
 
-inline ivec2 lerp(ivec2 a, ivec2 b, float t) {
-  return ivec2(lerp(a.x, b.x, t), lerp(a.y, b.y, t));
+inline Pixel lerpP(Pixel a, Pixel b, float t) {
+  return Pixel(lerpI(a.x, b.x, t), lerpI(a.y, b.y, t),
+               lerpF(a.depth, b.depth, t));
 }

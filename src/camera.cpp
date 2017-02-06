@@ -26,13 +26,14 @@ void Camera::update(float dt) {
 void Camera::calculateRay(Ray &ray, float x, float y) {
   ray.position = position;
 
-  vec3 cameraSpaceDirection = vec3(lerp(viewOffset, -viewOffset, x),
-                                   lerp(viewOffset, -viewOffset, y), 1.0f);
+  vec3 cameraSpaceDirection = vec3(lerpF(viewOffset, -viewOffset, x),
+                                   lerpF(viewOffset, -viewOffset, y), 1.0f);
 
   ray.direction = rotation * cameraSpaceDirection;
 }
 
-vec2 Camera::VertexShader(vec3 v) {
+vec3 Camera::VertexShader(vec3 v) {
   vec3 newPos = (v - position) * rotation;
-  return vec2((newPos.x / newPos.z), (newPos.y / newPos.z));
+
+  return vec3((newPos.x / newPos.z), (newPos.y / newPos.z), newPos.z);
 }

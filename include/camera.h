@@ -1,11 +1,13 @@
 #pragma once
 
 #include <SDL.h>
+#include <glm/glm.hpp>
 #include <iostream>
 
 #include "lerp.h"
 #include "ray.h"
 
+using glm::vec3;
 using glm::vec2;
 
 class Camera {
@@ -24,5 +26,5 @@ public:
 
   void calculateRay(Ray &ray, float x, float y);
 
-  vec2 VertexShader(vec3 v);
+  vec3 VertexShader(vec3 v);
 };
