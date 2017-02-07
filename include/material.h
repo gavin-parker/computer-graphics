@@ -15,9 +15,11 @@ class Material {
 private:
   vector<unsigned char> texture;
   unsigned width, height;
-  int specularity;
 
 public:
+  int specular_falloff;
+  float specularity = 0.5f;
+  float diffuse = 0.5f;
   Material();
 
   bool loadPNG(string filename);

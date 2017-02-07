@@ -31,7 +31,8 @@ void RayTracer::draw(int width, int height) {
           vec3 l = glm::normalize(lightRay.direction);
           shared_ptr<const Material> mat = cameraRay.collision->mat;
           vec3 spec = mat->phong(v, l, n);
-          lightColour = light.directLight(cameraRay) * 0.5f + spec * 0.2f;
+          lightColour = light.directLight(cameraRay) * mat->diffuse +
+                        spec * mat->specularity;
         }
 
         vec3 rayColour =
