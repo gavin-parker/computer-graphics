@@ -23,10 +23,15 @@ void RayTracer::draw(int width, int height) {
         light.calculateRay(lightRay, cameraRay.collisionLocation);
         ClosestIntersection(lightRay);
 
-        vec3 lightColour = ambientLight;
-
+        vec3 lightColour(0, 0, 0);
         if (lightRay.collision == cameraRay.collision) {
-          lightColour += light.directLight(cameraRay);
+
+          vec3 n = cameraRay.collision->normal;
+          vec3 v = glm::normalize(cameraRay.direction);
+          vec3 l = glm::normalize(lightRay.direction);
+          shared_ptr<const Material> mat = cameraRay.collision->mat;
+          vec3 spec = mat->phong(v, l, n);
+          lightColour = light.directLight(cameraRay) * 0.5f + spec * 0.2f;
         }
 
         vec3 rayColour =

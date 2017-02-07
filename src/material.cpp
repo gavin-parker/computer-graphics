@@ -33,3 +33,9 @@ vec3 Material::getColour(vec2 uv) const {
   float b = static_cast<float>(texture[index + 2]) / 255.0f;
   return vec3(r, g, b);
 }
+
+vec3 Material::phong(vec3 v, vec3 l, vec3 n) const {
+
+  vec3 r = 2.f * (n * l) * n - l;
+  return (v * r);
+}

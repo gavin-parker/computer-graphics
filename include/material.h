@@ -4,7 +4,6 @@
 #include <iostream>
 
 #include "lodepng.h"
-
 using glm::vec2;
 using glm::vec3;
 using std::cout;
@@ -16,6 +15,7 @@ class Material {
 private:
   vector<unsigned char> texture;
   unsigned width, height;
+  int specularity;
 
 public:
   Material();
@@ -23,4 +23,6 @@ public:
   bool loadPNG(string filename);
 
   vec3 getColour(vec2 uv) const;
+
+  vec3 phong(vec3 v, vec3 l, vec3 n) const;
 };

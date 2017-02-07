@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
 
       return EXIT_SUCCESS;
     } else if (mode == "ray") {
-      RayTracer screen(200, 200, false);
+      RayTracer screen(500, 500, false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "rast") {
