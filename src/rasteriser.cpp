@@ -43,6 +43,7 @@ void Rasteriser::draw(int width, int height) {
 void Rasteriser::drawPolygonRows(int width, int height,
                                  vector<Pixel> &leftPixels,
                                  vector<Pixel> &rightPixels) {
+#pragma omp parallel for
   for (size_t y = 0; y < leftPixels.size(); y++) {
     for (int x = leftPixels[y].x; x <= rightPixels[y].x; x++) {
       float pixelDepth = lerpF(leftPixels[y].depth, rightPixels[y].depth,
@@ -57,8 +58,10 @@ void Rasteriser::drawPolygonRows(int width, int height,
           vec3 adjust(pixelDepth, pixelDepth, pixelDepth);
           // leftPixels[y].v.position *= adjust;
           // rightPixels[y].v.position *= adjust;
-          Vertex pixelVert = lerpV(leftPixels[y].v ,  rightPixels[y].v, deLerpF(leftPixels[y].x, rightPixels[y].x, x));
-          //pixelVert.position /= adjust;
+          Vertex pixelVert =
+              lerpV(leftPixels[y].v, rightPixels[y].v,
+                    deLerpF(leftPixels[y].x, rightPixels[y].x, x));
+          // pixelVert.position /= adjust;
           vec3 color = light.vertexLight(pixelVert);
           drawPixel(x, leftPixels[y].y, color);
         }
