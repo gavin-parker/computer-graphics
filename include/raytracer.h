@@ -21,7 +21,7 @@ private:
   PointLight light;
 
   vec3 globalIllumination(Ray ray, int bounces);
-  int sampleCount = 100;
+  int sampleCount = 3;
 
 protected:
   void update(float dt) override;
