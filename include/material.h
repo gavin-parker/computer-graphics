@@ -30,5 +30,5 @@ public:
 
   vec3 getColour(vec2 uv) const;
 
-  vec3 phong(vec3 view, vec3 l, vec3 n) const;
+  vec3 phong(vec3 view, vec3 light, vec3 normal) const;
 };

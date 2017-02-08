@@ -34,11 +34,9 @@ vec3 Material::getColour(vec2 uv) const {
   return vec3(r, g, b);
 }
 
-vec3 Material::phong(vec3 view, vec3 l, vec3 n) const {
-  vec3 r = l - 2.f * (n * l) * n;
-  // cout << "\n r:" << r.x << " g: " << r.y << " b: " << r.z;
-  vec3 spec = glm::pow(
-      (view * r), vec3(specular_falloff, specular_falloff, specular_falloff));
+vec3 Material::phong(vec3 view, vec3 light, vec3 normal) const {
+  vec3 r = light - 2.f * (normal * light) * normal;
+  vec3 spec = glm::pow((view * r), vec3(specular_falloff));
   float power = glm::length(spec);
   return vec3(power, power, power);
 }
