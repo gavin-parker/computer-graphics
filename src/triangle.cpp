@@ -38,3 +38,5 @@ vec3 Triangle::getColour(vec2 uv) const {
   return vec3(matColour.r * colour.r, matColour.g * colour.g,
               matColour.b * colour.b);
 }
+
+vec3 Triangle::getPixelColour(vec2 uv) const { return mat->getColour(uv); }

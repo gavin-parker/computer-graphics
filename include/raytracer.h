@@ -17,7 +17,7 @@ private:
 
   Camera camera;
 
-  const vec3 ambientLight = vec3(0.15f, 0.15f, 0.15f);
+  const vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
   PointLight light;
 
 protected:

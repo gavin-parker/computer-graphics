@@ -4,10 +4,12 @@ const shared_ptr<const vector<Triangle>> loadTestModel() {
   shared_ptr<vector<Triangle>> triangles(new vector<Triangle>());
 
   // Material tiles, doggo;
-  shared_ptr<Material> doggo(new Material());
+  shared_ptr<Material> doggo(new Material(2, 0.04f, 0.2f));
+  shared_ptr<Material> marble(new Material(10, 0.4f, 0.7f));
 
   // tiles.loadPNG("tiles.png");
   doggo->loadPNG("texture.png");
+  marble->loadPNG("marble.png");
 
   // Defines colors:
   vec3 red(0.75f, 0.15f, 0.15f);
@@ -44,24 +46,24 @@ const shared_ptr<const vector<Triangle>> loadTestModel() {
   // UV ordering = corner, width, height
 
   // Floor:
-  triangles->push_back(Triangle(C, B, A, tl, br, bl, green, doggo));
-  triangles->push_back(Triangle(C, D, B, tl, tr, br, green, doggo));
+  triangles->push_back(Triangle(C, B, A, tl, br, bl, green, marble));
+  triangles->push_back(Triangle(C, D, B, tl, tr, br, green, marble));
 
   // Left wall
-  triangles->push_back(Triangle(A, E, C, bl, tl, br, purple, doggo));
-  triangles->push_back(Triangle(C, E, G, br, tl, tr, purple, doggo));
+  triangles->push_back(Triangle(A, E, C, bl, tl, br, purple, marble));
+  triangles->push_back(Triangle(C, E, G, br, tl, tr, purple, marble));
 
   // Right wall
-  triangles->push_back(Triangle(F, B, D, tr, br, bl, yellow, doggo));
-  triangles->push_back(Triangle(H, F, D, tl, tr, bl, yellow, doggo));
+  triangles->push_back(Triangle(F, B, D, tr, br, bl, yellow, marble));
+  triangles->push_back(Triangle(H, F, D, tl, tr, bl, yellow, marble));
 
   // Ceiling
-  triangles->push_back(Triangle(E, F, G, tl, tr, bl, cyan, doggo));
-  triangles->push_back(Triangle(F, H, G, tr, br, bl, cyan, doggo));
+  triangles->push_back(Triangle(E, F, G, tl, tr, bl, cyan, marble));
+  triangles->push_back(Triangle(F, H, G, tr, br, bl, cyan, marble));
 
   // Back wall
-  triangles->push_back(Triangle(G, D, C, tl, br, bl, white, doggo));
-  triangles->push_back(Triangle(G, H, D, tl, tr, br, white, doggo));
+  triangles->push_back(Triangle(G, D, C, tl, br, bl, white, marble));
+  triangles->push_back(Triangle(G, H, D, tl, tr, br, white, marble));
 
   // ---------------------------------------------------------------------------
   // Short block
@@ -77,24 +79,24 @@ const shared_ptr<const vector<Triangle>> loadTestModel() {
   H = vec3(82, 165, 225);
 
   // FRONT
-  triangles->push_back(Triangle(E, B, A, tl, br, bl, red, doggo));
-  triangles->push_back(Triangle(E, F, B, tl, tr, br, red, doggo));
+  triangles->push_back(Triangle(E, B, A, tl, br, bl, red, marble));
+  triangles->push_back(Triangle(E, F, B, tl, tr, br, red, marble));
 
   // RIGHT
-  triangles->push_back(Triangle(F, D, B, tl, br, bl, red, doggo));
-  triangles->push_back(Triangle(F, H, D, tl, tr, br, red, doggo));
+  triangles->push_back(Triangle(F, D, B, tl, br, bl, red, marble));
+  triangles->push_back(Triangle(F, H, D, tl, tr, br, red, marble));
 
   // BACK
-  triangles->push_back(Triangle(H, C, D, tl, br, bl, red, doggo));
-  triangles->push_back(Triangle(H, G, C, tl, tr, br, red, doggo));
+  triangles->push_back(Triangle(H, C, D, tl, br, bl, red, marble));
+  triangles->push_back(Triangle(H, G, C, tl, tr, br, red, marble));
 
   // LEFT
-  triangles->push_back(Triangle(G, E, C, tl, tr, bl, red, doggo));
-  triangles->push_back(Triangle(E, A, C, tr, br, bl, red, doggo));
+  triangles->push_back(Triangle(G, E, C, tl, tr, bl, red, marble));
+  triangles->push_back(Triangle(E, A, C, tr, br, bl, red, marble));
 
   // TOP
-  triangles->push_back(Triangle(G, F, E, tl, br, bl, red, doggo));
-  triangles->push_back(Triangle(G, H, F, tl, tr, br, red, doggo));
+  triangles->push_back(Triangle(G, F, E, tl, br, bl, red, marble));
+  triangles->push_back(Triangle(G, H, F, tl, tr, br, red, marble));
 
   // ---------------------------------------------------------------------------
   // Tall block

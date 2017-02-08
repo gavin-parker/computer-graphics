@@ -27,7 +27,7 @@ void RayTracer::draw(int width, int height) {
         shared_ptr<const Material> mat = cameraRay.collision->mat;
         if (lightRay.collision == cameraRay.collision) {
 
-          vec3 n = cameraRay.collision->normal;
+          vec3 n = glm::normalize(lightRay.collision->normal);
           vec3 v = glm::normalize(cameraRay.direction);
           vec3 l = glm::normalize(lightRay.direction);
           vec3 spec = mat->phong(v, l, n);
@@ -37,11 +37,11 @@ void RayTracer::draw(int width, int height) {
           lightColour = ambientLight * mat->diffuse;
         }
 
-        vec3 rayColour =
-            cameraRay.collision->getColour(cameraRay.collisionUVLocation);
-        drawPixel(x, y, vec3(std::min(rayColour.r * lightColour.r, 1.0f),
-                             std::min(rayColour.g * lightColour.g, 1.0f),
-                             std::min(rayColour.b * lightColour.b, 1.0f)));
+        vec3 surfaceColour =
+            cameraRay.collision->getPixelColour(cameraRay.collisionUVLocation);
+        drawPixel(x, y, vec3(std::min(surfaceColour.r * lightColour.r, 1.0f),
+                             std::min(surfaceColour.g * lightColour.g, 1.0f),
+                             std::min(surfaceColour.b * lightColour.b, 1.0f)));
       }
     }
   }
