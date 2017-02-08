@@ -60,3 +60,23 @@ bool RayTracer::ClosestIntersection(Ray &ray) {
 
   return anyIntersection;
 }
+
+vec3 RayTracer::globalIllumination(const Ray ray, int bounces) {
+  // find diffuse light at this position
+  if (bounces > 0) {
+    float diffuse = ray.collision->mat->diffuse;
+    vec3 lightHere = ray.collision->getPixelColour(ray.collisionUVLocation);
+    Ray directLightRay;
+    light.calculateRay(directLightRay, ray.collisionLocation);
+    ClosestIntersection(directLightRay);
+    if (directLightRay.collision == ray.collision) {
+      lightHere *= light.directLight(ray) * diffuse;
+    }
+    // generate random direction
+    // float rand = drand48() * M_PI;
+
+    return lightHere;
+    // return this + new collision point
+  }
+  return vec3(0, 0, 0);
+}

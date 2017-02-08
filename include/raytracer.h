@@ -20,6 +20,8 @@ private:
   const vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
   PointLight light;
 
+  vec3 globalIllumination(Ray ray, int bounces);
+
 protected:
   void update(float dt) override;
   void draw(int width, int height) override;

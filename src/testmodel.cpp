@@ -5,7 +5,7 @@ const shared_ptr<const vector<Triangle>> loadTestModel() {
 
   // Material tiles, doggo;
   shared_ptr<Material> doggo(new Material(2, 0.04f, 0.2f));
-  shared_ptr<Material> marble(new Material(10, 0.4f, 0.7f));
+  shared_ptr<Material> marble(new Material(50, 0.8f, 0.7f));
 
   // tiles.loadPNG("tiles.png");
   doggo->loadPNG("texture.png");
