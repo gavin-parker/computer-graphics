@@ -17,7 +17,7 @@ private:
   unsigned width, height;
 
 public:
-  int specular_falloff;
+  int specular_falloff = 100;
   float specularity = 0.5f;
   float diffuse = 0.5f;
   Material();
