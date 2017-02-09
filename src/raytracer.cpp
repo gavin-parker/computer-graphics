@@ -1,52 +1,61 @@
 #include "raytracer.h"
 
-RayTracer::RayTracer(int width, int height, bool fullscreen)
-    : SdlScreen(width, height, fullscreen), triangles(loadTestModel()),
-      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f),
-      light(vec3(400.0f, 100.0f, 100.0f), vec3(1.0, 1.0f, 1.0f), 500000.0f) {}
+RayTracer::RayTracer(int width, int height, shared_ptr<LightingEngine> lighting,
+                     shared_ptr<PointLight> light,
+                     const shared_ptr<const vector<Triangle>> triangles,
+                     bool fullscreen)
+    : SdlScreen(width, height, fullscreen), triangles(triangles),
+      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(light),
+      lighting(lighting) {}
 
 void RayTracer::update(float dt) {
-  light.update(dt);
+  light->update(dt);
   camera.update(dt);
 }
 
 void RayTracer::draw(int width, int height) {
+  static int finished_rows = 0;
 #pragma omp parallel for
   for (int y = 0; y < height; ++y) {
     for (int x = 0; x < width; ++x) {
-      Ray cameraRay, lightRay;
+
+      Ray cameraRay;
 
       camera.calculateRay(cameraRay, static_cast<float>(x) / width,
                           static_cast<float>(y) / height);
 
       if (ClosestIntersection(cameraRay)) {
-        light.calculateRay(lightRay, cameraRay.collisionLocation);
-        ClosestIntersection(lightRay);
-
-        vec3 lightColour(0, 0, 0);
         shared_ptr<const Material> mat = cameraRay.collision->mat;
-        if (lightRay.collision == cameraRay.collision) {
 
-          vec3 n = lightRay.collision->normal;
-          vec3 v = glm::normalize(cameraRay.direction);
-          vec3 l = glm::normalize(lightRay.direction);
-          vec3 spec = mat->phong(v, l, n);
-
-          lightColour = light.directLight(cameraRay) * mat->diffuse +
-                        spec * mat->specularity;
-        } else {
-          lightColour = ambientLight * mat->diffuse;
+        Ray directLightRay;
+        light->calculateRay(directLightRay, cameraRay.collisionLocation);
+        vec3 spec(0, 0, 0);
+        if (ClosestIntersection(directLightRay)) {
+          // spec = mat->phong(cameraRay.direction, directLightRay.direction,
+          //                  cameraRay.collision->normal);
         }
 
-        vec3 surfaceColour =
-            cameraRay.collision->getPixelColour(cameraRay.collisionUVLocation);
+        vec3 lightColour = lighting->calculateLight(cameraRay) * mat->diffuse +
+                           spec * mat->specularity;
 
-        drawPixel(x, y, vec3(std::min(surfaceColour.r * lightColour.r, 1.0f),
-                             std::min(surfaceColour.g * lightColour.g, 1.0f),
-                             std::min(surfaceColour.b * lightColour.b, 1.0f)));
+        drawPixel(x, y, vec3(std::min(lightColour.r, 1.0f),
+                             std::min(lightColour.g, 1.0f),
+                             std::min(lightColour.b, 1.0f)));
+      }
+    }
+
+#pragma omp critical
+    {
+      finished_rows++;
+      int percent_done = ((static_cast<float>(finished_rows) / 500.f) * 100.f);
+      if (percent_done % 10 == 0 && omp_get_thread_num() == 0) {
+        cout << percent_done << "%";
       }
     }
   }
+
+  finished_rows = 0;
+  cout << "\n";
 }
 
 bool RayTracer::ClosestIntersection(Ray &ray) {
@@ -59,24 +68,4 @@ bool RayTracer::ClosestIntersection(Ray &ray) {
   }
 
   return anyIntersection;
-}
-
-vec3 RayTracer::globalIllumination(const Ray ray, int bounces) {
-  // find diffuse light at this position
-  if (bounces > 0) {
-    float diffuse = ray.collision->mat->diffuse;
-    vec3 lightHere = ray.collision->getPixelColour(ray.collisionUVLocation);
-    Ray directLightRay;
-    light.calculateRay(directLightRay, ray.collisionLocation);
-    ClosestIntersection(directLightRay);
-    if (directLightRay.collision == ray.collision) {
-      lightHere *= light.directLight(ray) * diffuse;
-    }
-    // generate random direction
-    // float rand = drand48() * M_PI;
-
-    return lightHere;
-    // return this + new collision point
-  }
-  return vec3(0, 0, 0);
 }
