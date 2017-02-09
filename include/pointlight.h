@@ -1,5 +1,6 @@
 #pragma once
-
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <SDL.h>
 #include <algorithm>
 #include <math.h>

@@ -1,4 +1,11 @@
 #include "lightingengine.h"
+#ifndef unix
+#define RAND float(rand()) / RAND_MAX
+#else
+#define RAND drand48()
+#endif
+
+
 class GlobalIllumination : public LightingEngine {
 private:
   // const shared_ptr<const vector<Triangle>> triangles;

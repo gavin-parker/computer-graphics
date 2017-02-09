@@ -29,12 +29,12 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
   for (int i = 0; i < sampleCount; i++) {
 
     // generate random direction
-    float theta = drand48() * M_PI;
+    float theta = RAND * M_PI;
     float cosTheta = cos(theta);
 
-    float dist = drand48();
+    float dist = RAND;
     vec3 direction = glm::normalize(
-        vec3(drand48() * 2.f - 1.f, drand48() * 2.f - 1.f, dist));
+        vec3(RAND * 2.f - 1.f, RAND * 2.f - 1.f, dist));
 
     if (bounces >= 1) {
       Ray bounce;

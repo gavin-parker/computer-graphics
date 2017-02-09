@@ -3,6 +3,11 @@
 #include "rasteriser.h"
 #include "raytracer.h"
 #include "starscreen.h"
+#ifndef unix
+extern "C" {
+	FILE __iob_func[3] = { stdin, stdout,*stderr }; 
+}
+#endif
 
 using std::string;
 
@@ -48,4 +53,5 @@ int main(int argc, char *argv[]) {
         //<< "\trast - rasterizer" << endl
         ;
   }
+  return EXIT_SUCCESS;
 }
