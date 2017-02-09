@@ -5,6 +5,7 @@
 
 #include "camera.h"
 #include "pointlight.h"
+#include "scene.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
 
@@ -15,9 +16,8 @@ public:
   virtual vec3 calculateLight(Ray ray) = 0;
 
   const shared_ptr<const vector<Triangle>> triangles;
-  shared_ptr<PointLight> light;
+  const shared_ptr<const PointLight> light;
 
-  LightingEngine(const shared_ptr<const vector<Triangle>> triangles,
-                 shared_ptr<PointLight> light)
-      : triangles(triangles), light(light){};
+  LightingEngine(Scene scene)
+      : triangles(scene.triangles), light(scene.light){};
 };

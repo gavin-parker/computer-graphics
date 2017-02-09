@@ -1,6 +1,7 @@
 #pragma once
 
 #include "camera.h"
+#include "lightingengine.h"
 #include "pointlight.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
@@ -17,7 +18,7 @@ private:
 
   const shared_ptr<const vector<Triangle>> triangles;
   Camera camera;
-  PointLight light;
+  shared_ptr<PointLight> light;
 
   void computePolygonRows(const vector<Pixel> &vertexPixels,
                           vector<Pixel> &leftPixels,
@@ -32,5 +33,5 @@ protected:
   void draw(int width, int height) override;
 
 public:
-  Rasteriser(int width, int height, bool fullscreen = false);
+  Rasteriser(int width, int height, Scene scene, bool fullscreen = false);
 };

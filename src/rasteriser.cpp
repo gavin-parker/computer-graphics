@@ -1,14 +1,13 @@
 #include "rasteriser.h"
 
-Rasteriser::Rasteriser(int width, int height, bool fullscreen)
+Rasteriser::Rasteriser(int width, int height, Scene scene, bool fullscreen)
     : SdlScreen(width, height, fullscreen), depthBuffer(width * height),
-      triangles(loadTestModel()),
-      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f),
-      light(vec3(400.0f, 200.0f, 100.0f), vec3(1.0, 1.0f, 1.0f), 500000.0f) {}
+      triangles(scene.triangles),
+      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene.light) {}
 
 void Rasteriser::update(float dt) {
   camera.update(dt);
-  light.update(dt);
+  light->update(dt);
 }
 
 void Rasteriser::draw(int width, int height) {
@@ -62,7 +61,7 @@ void Rasteriser::drawPolygonRows(int width, int height,
               lerpV(leftPixels[y].v, rightPixels[y].v,
                     deLerpF(leftPixels[y].x, rightPixels[y].x, x));
           // pixelVert.position /= adjust;
-          vec3 color = light.vertexLight(pixelVert);
+          vec3 color = light->vertexLight(pixelVert);
           drawPixel(x, leftPixels[y].y, color);
         }
       }

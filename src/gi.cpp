@@ -2,10 +2,7 @@
 
 // GlobalIllumination::GlobalIllumination(){};
 
-GlobalIllumination::GlobalIllumination(
-    const shared_ptr<const vector<Triangle>> triangles,
-    shared_ptr<PointLight> light)
-    : LightingEngine(triangles, light){};
+GlobalIllumination::GlobalIllumination(Scene scene) : LightingEngine(scene){};
 
 vec3 GlobalIllumination::trace(Ray ray, int bounces) {
   // find diffuse light at this position

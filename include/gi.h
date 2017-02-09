@@ -12,8 +12,8 @@ private:
 
 protected:
 public:
-  GlobalIllumination(const shared_ptr<const vector<Triangle>> triangles,
-                     shared_ptr<PointLight> light);
   GlobalIllumination();
+  GlobalIllumination(Scene scene);
+
   virtual vec3 calculateLight(Ray ray) override;
 };

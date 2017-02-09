@@ -8,8 +8,7 @@ private:
 
 protected:
 public:
-  StandardLighting(const shared_ptr<const vector<Triangle>> triangles,
-                   shared_ptr<PointLight> light);
+  StandardLighting(Scene scene);
   StandardLighting();
   virtual vec3 calculateLight(Ray ray) override;
 };

@@ -21,9 +21,9 @@ public:
 
   void update(float dt);
 
-  void calculateRay(Ray &ray, vec3 target);
+  void calculateRay(Ray &ray, vec3 target) const;
 
-  vec3 directLight(const Ray &ray);
+  vec3 directLight(const Ray &ray) const;
 
-  vec3 vertexLight(Vertex v);
+  vec3 vertexLight(Vertex v) const;
 };
