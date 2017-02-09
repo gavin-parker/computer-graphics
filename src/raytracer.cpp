@@ -26,13 +26,7 @@ void RayTracer::draw(int width, int height) {
       if (ClosestIntersection(cameraRay)) {
         shared_ptr<const Material> mat = cameraRay.collision->mat;
 
-        Ray directLightRay;
-        light->calculateRay(directLightRay, cameraRay.collisionLocation);
         vec3 spec(0, 0, 0);
-        if (ClosestIntersection(directLightRay)) {
-          // spec = mat->phong(cameraRay.direction, directLightRay.direction,
-          //                  cameraRay.collision->normal);
-        }
 
         vec3 lightColour = lighting->calculateLight(cameraRay) * mat->diffuse +
                            spec * mat->specularity;

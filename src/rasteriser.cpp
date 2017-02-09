@@ -43,7 +43,7 @@ void Rasteriser::drawPolygonRows(int width, int height,
                                  vector<Pixel> &leftPixels,
                                  vector<Pixel> &rightPixels) {
 #pragma omp parallel for
-  for (size_t y = 0; y < leftPixels.size(); y++) {
+  for (int y = 0; y < leftPixels.size(); y++) {
     for (int x = leftPixels[y].x; x <= rightPixels[y].x; x++) {
       float pixelDepth = lerpF(leftPixels[y].depth, rightPixels[y].depth,
                                deLerpF(leftPixels[y].x, rightPixels[y].x, x));
