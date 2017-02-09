@@ -10,11 +10,11 @@ StandardLighting::StandardLighting(
 vec3 StandardLighting::calculateLight(Ray ray) {
   Ray lightRay;
   light->calculateRay(lightRay, ray.collisionLocation);
-  ClosestIntersection(lightRay);
+  // ClosestIntersection(lightRay);
 
   vec3 lightColour(0, 0, 0);
   shared_ptr<const Material> mat = ray.collision->mat;
-  if (lightRay.collision == ray.collision) {
+  if (anyIntersection(lightRay, ray) && lightRay.collision == ray.collision) {
 
     vec3 n = lightRay.collision->normal;
     vec3 v = glm::normalize(ray.direction);
@@ -39,5 +39,20 @@ bool StandardLighting::ClosestIntersection(Ray &ray) {
     anyIntersection |= triangle.calculateIntection(ray);
   }
 
+  return anyIntersection;
+}
+
+// like closestIntersection, but backs out after a single intersection
+bool StandardLighting::anyIntersection(Ray &ray, Ray &surface) {
+  bool anyIntersection = false;
+  float lightDistance = ray.length;
+  ray.length = numeric_limits<float>::max();
+  for (const Triangle &triangle : *triangles) {
+    anyIntersection |= triangle.calculateIntection(ray);
+    if (anyIntersection && ray.collision != surface.collision &&
+        ray.length < lightDistance) {
+      return anyIntersection;
+    }
+  }
   return anyIntersection;
 }

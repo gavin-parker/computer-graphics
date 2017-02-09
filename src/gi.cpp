@@ -13,10 +13,10 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
   vec3 lightHere(0, 0, 0);
   Ray directLightRay;
   light->calculateRay(directLightRay, ray.collisionLocation);
-  if (!ClosestIntersection(directLightRay)) {
+
+  if (!anyIntersection(directLightRay, ray)) {
     return vec3(0, 0, 0);
-  }
-  if (directLightRay.collision == ray.collision) {
+  } else if (directLightRay.collision == ray.collision) {
     lightHere = light->directLight(ray);
   }
 
@@ -69,5 +69,20 @@ bool GlobalIllumination::ClosestIntersection(Ray &ray) {
     anyIntersection |= triangle.calculateIntection(ray);
   }
 
+  return anyIntersection;
+}
+
+// like closestIntersection, but backs out after a single intersection
+bool GlobalIllumination::anyIntersection(Ray &ray, Ray &surface) {
+  bool anyIntersection = false;
+  float lightDistance = ray.length;
+  ray.length = numeric_limits<float>::max();
+  for (const Triangle &triangle : *triangles) {
+    anyIntersection |= triangle.calculateIntection(ray);
+    if (anyIntersection && ray.collision != surface.collision &&
+        ray.length < lightDistance) {
+      return anyIntersection;
+    }
+  }
   return anyIntersection;
 }

@@ -7,6 +7,7 @@ private:
   vec3 trace(Ray ray, int bounces);
 
   bool ClosestIntersection(Ray &ray);
+  bool anyIntersection(Ray &ray, Ray &surface);
   int sampleCount = 5;
 
 protected:
