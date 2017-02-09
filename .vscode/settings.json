@@ -31,7 +31,13 @@
         "cwctype": "cpp",
         "*htypeinfo": "cpp",
         "cstdio": "cpp",
-        "ctime": "cpp"
+        "ctime": "cpp",
+        "memory": "cpp",
+        "*h*hpp*hpp*hpp*hpp*hpp*hpp*hpp*hpp*hpp*hpp*hpp*hpp*hppiosfwd": "cpp",
+        "iosfwd": "cpp",
+        "xlocale": "cpp",
+        "xstring": "cpp",
+        "ostream": "cpp"
     },
     "files.exclude": {
         "**/.git": true,
