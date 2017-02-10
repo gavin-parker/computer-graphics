@@ -7,7 +7,7 @@ Triangle::Triangle(vec3 v0, vec3 v1, vec3 v2, vec2 vt0, vec2 vt1, vec2 vt2,
       normal(glm::normalize(glm::cross(v2 - v0, v1 - v0))), colour(colour),
       mat(mat) {}
 
-bool Triangle::calculateIntection(Ray &ray) const {
+bool Triangle::calculateIntersection(Ray &ray) const {
   if (glm::dot(normal, ray.direction) < 0) {
 
     vec3 b = ray.position - v0;

@@ -33,7 +33,7 @@ bool StandardLighting::ClosestIntersection(Ray &ray) {
   bool anyIntersection = false;
 
   for (const Triangle &triangle : *triangles) {
-    anyIntersection |= triangle.calculateIntection(ray);
+    anyIntersection |= triangle.calculateIntersection(ray);
   }
 
   return anyIntersection;
@@ -45,7 +45,7 @@ bool StandardLighting::anyIntersection(Ray &ray, Ray &surface) {
   float lightDistance = ray.length;
   ray.length = numeric_limits<float>::max();
   for (const Triangle &triangle : *triangles) {
-    anyIntersection |= triangle.calculateIntection(ray);
+    anyIntersection |= triangle.calculateIntersection(ray);
     if (anyIntersection && ray.collision != surface.collision &&
         ray.length < lightDistance) {
       return anyIntersection;

@@ -6,7 +6,7 @@ RayTracer::RayTracer(int width, int height, shared_ptr<LightingEngine> lighting,
                      bool fullscreen)
     : SdlScreen(width, height, fullscreen), triangles(triangles),
       camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(light),
-      lighting(lighting) {}
+      lighting(lighting), boundingBox(new Cube(triangles)) {}
 
 void RayTracer::update(float dt) {
   light->update(dt);
@@ -57,8 +57,13 @@ bool RayTracer::ClosestIntersection(Ray &ray) {
 
   bool anyIntersection = false;
 
+  if (!boundingBox->calculateIntersection(ray)) {
+	  return false;
+  }
+
+
   for (const Triangle &triangle : *triangles) {
-    anyIntersection |= triangle.calculateIntection(ray);
+    anyIntersection |= triangle.calculateIntersection(ray);
   }
 
   return anyIntersection;

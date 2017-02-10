@@ -8,7 +8,7 @@
 #include "scene.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
-
+#include "cube.h"
 using std::numeric_limits;
 
 class LightingEngine {

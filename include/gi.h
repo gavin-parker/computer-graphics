@@ -8,16 +8,17 @@
 
 class GlobalIllumination : public LightingEngine {
 private:
-  // const shared_ptr<const vector<Triangle>> triangles;
-  // PointLight light;
+
 
   vec3 trace(Ray ray, int bounces);
 
   bool ClosestIntersection(Ray &ray);
   bool anyIntersection(Ray &ray, Ray &surface);
   int sampleCount = 10;
-  int total_bounces = 1;
-  vec3 environment = vec3(1, 1, 1)*0.5f;
+  int total_bounces = 2;
+  vec3 environment = vec3(1, 1, 1)*0.2f;
+  const shared_ptr<const Cube> boundingBox;
+
 protected:
 public:
   GlobalIllumination();

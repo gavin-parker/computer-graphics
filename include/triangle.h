@@ -23,7 +23,7 @@ public:
   Triangle(vec3 v0, vec3 v1, vec3 v2, vec2 vt0, vec2 vt1, vec2 vt2, vec3 colour,
            const shared_ptr<const Material> mat);
 
-  bool calculateIntection(Ray &ray) const;
+  bool calculateIntersection(Ray &ray) const;
 
   vec3 getColour(vec2 uv) const;
 

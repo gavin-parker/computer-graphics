@@ -6,7 +6,7 @@
 #include "camera.h"
 #include "gi.h"
 #include "standardlighting.h"
-
+#include "cube.h"
 #include "lightingengine.h"
 
 #include "pointlight.h"
@@ -18,12 +18,13 @@ class RayTracer : public SdlScreen {
 private:
   bool ClosestIntersection(Ray &ray);
   const shared_ptr<const vector<Triangle>> triangles;
-
   Camera camera;
 
   const vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
   shared_ptr<PointLight> light;
   shared_ptr<LightingEngine> lighting;
+  const shared_ptr<const Cube> boundingBox;
+
 
 protected:
   void update(float dt) override;

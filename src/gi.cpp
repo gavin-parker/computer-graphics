@@ -2,7 +2,7 @@
 
 // GlobalIllumination::GlobalIllumination(){};
 
-GlobalIllumination::GlobalIllumination(Scene scene, int sampleCount) : LightingEngine(scene), sampleCount(sampleCount){};
+GlobalIllumination::GlobalIllumination(Scene scene, int sampleCount) : LightingEngine(scene), sampleCount(sampleCount), boundingBox(new Cube(triangles)){};
 
 vec3 GlobalIllumination::trace(Ray ray, int bounces) {
   // find diffuse light at this position
@@ -76,9 +76,13 @@ bool GlobalIllumination::ClosestIntersection(Ray &ray) {
   ray.length = numeric_limits<float>::max();
 
   bool anyIntersection = false;
+  if (!boundingBox->calculateIntersection(ray)) {
+	  cout << "RAY OUT OF BOUNDS";
+	  return false;
+  }
 
   for (const Triangle &triangle : *triangles) {
-    anyIntersection |= triangle.calculateIntection(ray);
+    anyIntersection |= triangle.calculateIntersection(ray);
   }
 
   return anyIntersection;
@@ -90,7 +94,7 @@ bool GlobalIllumination::anyIntersection(Ray &ray, Ray &surface) {
   float lightDistance = ray.length;
   ray.length = numeric_limits<float>::max();
   for (const Triangle &triangle : *triangles) {
-    anyIntersection |= triangle.calculateIntection(ray);
+    anyIntersection |= triangle.calculateIntersection(ray);
     if (anyIntersection && ray.collision != surface.collision &&
         ray.length < lightDistance) {
       return anyIntersection;
