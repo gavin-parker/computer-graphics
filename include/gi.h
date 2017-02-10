@@ -15,7 +15,7 @@ private:
 
   bool ClosestIntersection(Ray &ray);
   bool anyIntersection(Ray &ray, Ray &surface);
-  int sampleCount = 5;
+  int sampleCount = 100;
 
 protected:
 public:

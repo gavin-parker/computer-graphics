@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
     // load in a scene
     const shared_ptr<const vector<Triangle>> triangles = loadTestModel();
     shared_ptr<PointLight> light(new PointLight(
-        vec3(400.0f, 200.0f, 100.0f), vec3(1.0, 1.0f, 1.0f), 1000000.0f));
+        vec3(300.0f, 400.0f, 100.0f), vec3(1.0, 1.0f, 1.0f), 1000000.0f));
     const Scene scene(light, triangles);
 
     if (mode == "stars") {
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
     } else if (mode == "gi") {
 
       shared_ptr<LightingEngine> engine(new GlobalIllumination(scene));
-      RayTracer screen(500, 500, engine, light, triangles, false);
+      RayTracer screen(250, 250, engine, light, triangles, false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else {

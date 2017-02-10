@@ -14,6 +14,8 @@ void RayTracer::update(float dt) {
 }
 
 void RayTracer::draw(int width, int height) {
+	static int rows_completed = 0;
+	static int counter_last = 0;
 #pragma omp parallel for
   for (int y = 0; y < height; ++y) {
     for (int x = 0; x < width; ++x) {
@@ -36,7 +38,18 @@ void RayTracer::draw(int width, int height) {
                              std::min(lightColour.b, 1.0f)));
       }
     }
+#pragma omp critical
+	{
+	rows_completed++;
+	int percent_done =  static_cast<float>(rows_completed) /static_cast<float>(height) * 100.f;
+	if (percent_done % 10 == 0 && percent_done > counter_last) {
+		cout << percent_done << "%\n";
+		counter_last = percent_done;
+	}
+	}
   }
+  rows_completed = 0;
+  counter_last = 0;
 }
 
 bool RayTracer::ClosestIntersection(Ray &ray) {

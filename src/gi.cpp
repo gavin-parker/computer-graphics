@@ -12,7 +12,7 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
   light->calculateRay(directLightRay, ray.collisionLocation);
 
   if (!anyIntersection(directLightRay, ray)) {
-    return vec3(0, 0, 0);
+    return vec3(0, 0, 0)*diffuse;
   } else if (directLightRay.collision == ray.collision) {
     lightHere = light->directLight(ray);
   }
@@ -21,20 +21,33 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
 
   // create orthogonal basis on plane
   vec3 normal = ray.collision->normal;
-  vec3 normalX = ray.collision->e1;
-  vec3 normalY = glm::cross(normal, normalX);
+  vec3 normalX;
+  vec3 normalY;
+
+  if (abs(normal.x) > abs(normal.y)) {
+	  normalX = vec3(normal.z, 0, -normal.x) / sqrtf(normal.x*normal.x + normal.z*normal.z);
+  }
+  else {
+	  normalX = vec3(0, -normal.z, normal.y) / sqrtf(normal.z*normal.z + normal.y*normal.y);
+  }
+  normalY = glm::cross(normalX, normal);
+
 
   mat3 basis(normalX, normalY, normal);
   int count = 0;
   for (int i = 0; i < sampleCount; i++) {
 
     // generate random direction
-    float theta = RAND * M_PI;
-    float cosTheta = cos(theta);
+	  float r1 = RAND;
+	  float r2 = RAND;
+	  float sinTheta = sqrtf(1 - r1*r1);
+	  float phi = 2 * M_PI * r2;
+	  float x = sinTheta * cosf(phi);
+	  float z = sinTheta * sinf(phi);
+	  vec3 sample(x, r1, z);
 
-    float dist = RAND;
     vec3 direction = glm::normalize(
-        vec3(RAND * 2.f - 1.f, RAND * 2.f - 1.f, dist));
+        vec3(basis * sample));
 
     if (bounces >= 1) {
       Ray bounce;
@@ -43,18 +56,18 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
       // return this + new collision point
       if (ClosestIntersection(bounce)) {
         count++;
-        indirectLight += cosTheta * trace(bounce, bounces - 1);
+        indirectLight += r1 * trace(bounce, bounces - 1);
       }
     } else {
-      return lightHere * diffuse;
+      return (lightHere / static_cast<float>(M_PI))*diffuse;
     }
   }
-  return (lightHere + (indirectLight / static_cast<float>(count))) * diffuse /
-         static_cast<float>(M_PI);
+  indirectLight /= static_cast<float>(sampleCount);
+  return (lightHere / static_cast<float>(M_PI) + 2.f * indirectLight)*diffuse;
 }
 
 vec3 GlobalIllumination::calculateLight(Ray ray) {
-  return ray.collision->getPixelColour(ray.collisionUVLocation) * trace(ray, 3);
+  return trace(ray, 3)* ray.collision->getPixelColour(ray.collisionUVLocation);
 }
 
 bool GlobalIllumination::ClosestIntersection(Ray &ray) {
