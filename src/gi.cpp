@@ -14,7 +14,7 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
   if (!anyIntersection(directLightRay, ray)) {
     lightHere = vec3(0, 0, 0);
   } else if (directLightRay.collision == ray.collision) {
-    lightHere = light->directLight(ray);
+    lightHere = light->directLight(ray)*ray.collision->getPixelColour(ray.collisionUVLocation);
   }
 
   vec3 indirectLight(0, 0, 0);
@@ -77,7 +77,6 @@ bool GlobalIllumination::ClosestIntersection(Ray &ray) {
 
   bool anyIntersection = false;
   if (!boundingBox->calculateIntersection(ray)) {
-	  cout << "RAY OUT OF BOUNDS";
 	  return false;
   }
 
