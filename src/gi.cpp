@@ -45,13 +45,14 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
 	  float z = sinTheta * sinf(phi);
 	  vec3 sample(x, r1, z);
 
-    vec3 direction = glm::normalize(
-        vec3(basis * sample));
+	  vec3 direction(sample.x * normalX.x + sample.y * normal.x + sample.z * normalY.x,
+		  sample.x * normalX.y + sample.y * normal.y + sample.z * normalY.y,
+		  sample.x * normalX.z + sample.y * normal.z + sample.z * normalY.z);
 
     if (bounces >= 1) {
       Ray bounce;
       bounce.position = ray.collisionLocation;
-      bounce.direction = direction * basis;
+      bounce.direction = glm::normalize(direction);
       // return this + new collision point
       if (ClosestIntersection(bounce)) {
         indirectLight += r1 * trace(bounce, bounces - 1);
