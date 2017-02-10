@@ -4,7 +4,9 @@
 #include <omp.h>
 
 #include "camera.h"
-#include "gi.h"
+
+#include "convergent_gi.h"
+
 #include "standardlighting.h"
 #include "cube.h"
 #include "lightingengine.h"

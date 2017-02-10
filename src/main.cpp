@@ -1,5 +1,5 @@
 #include <string>
-
+#pragma once
 #include "rasteriser.h"
 #include "raytracer.h"
 #include "starscreen.h"
@@ -48,7 +48,19 @@ int main(int argc, char *argv[]) {
       RayTracer screen(500, 500, engine, light, triangles, false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
-    } else {
+	}
+	else if (mode == "conv") {
+		int sampleCount = 10;
+		if (argc > 2) {
+			string samples(argv[2]);
+			sampleCount = atoi(samples.c_str());
+		}
+		shared_ptr<LightingEngine> engine(new ConvergentGlobalIllumination(scene, sampleCount, 1024, 1024));
+		RayTracer screen(1024, 1024, engine, light, triangles, false);
+		screen.run();
+		screen.saveBMP("screenshot.bmp");
+	}
+	else {
       cout << "Unknown mode \"" << mode << "\"" << endl;
     }
   } else {

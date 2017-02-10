@@ -68,7 +68,7 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
   return (lightHere / static_cast<float>(M_PI) + 2.f * indirectLight)*diffuse;
 }
 
-vec3 GlobalIllumination::calculateLight(Ray ray) {
+vec3 GlobalIllumination::calculateLight(Ray ray, ivec2 pixel) {
   return trace(ray, total_bounces)* ray.collision->getPixelColour(ray.collisionUVLocation);
 }
 

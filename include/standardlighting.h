@@ -10,5 +10,5 @@ protected:
 public:
   StandardLighting(Scene scene);
   StandardLighting();
-  virtual vec3 calculateLight(Ray ray) override;
+  virtual vec3 calculateLight(Ray ray, ivec2 pixel = ivec2(0, 0)) override;
 };

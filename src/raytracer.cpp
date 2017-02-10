@@ -30,7 +30,7 @@ void RayTracer::draw(int width, int height) {
 
         vec3 spec(0, 0, 0);
 
-		vec3 lightColour = lighting->calculateLight(cameraRay);
+		vec3 lightColour = lighting->calculateLight(cameraRay, glm::ivec2(x,y));
 
         drawPixel(x, y, vec3(std::min(lightColour.r, 1.0f),
                              std::min(lightColour.g, 1.0f),
@@ -47,6 +47,7 @@ void RayTracer::draw(int width, int height) {
 	}
 	}
   }
+  lighting->countedSamples++;
   rows_completed = 0;
   counter_last = 0;
 }

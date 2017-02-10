@@ -4,7 +4,7 @@
 
 StandardLighting::StandardLighting(Scene scene) : LightingEngine(scene){};
 
-vec3 StandardLighting::calculateLight(Ray ray) {
+vec3 StandardLighting::calculateLight(Ray ray, ivec2 pixel) {
   Ray lightRay;
   light->calculateRay(lightRay, ray.collisionLocation);
   // ClosestIntersection(lightRay);
