@@ -12,7 +12,7 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
   light->calculateRay(directLightRay, ray.collisionLocation);
 
   if (!anyIntersection(directLightRay, ray)) {
-    return vec3(0, 0, 0)*diffuse;
+    lightHere = vec3(0, 0, 0);
   } else if (directLightRay.collision == ray.collision) {
     lightHere = light->directLight(ray);
   }
@@ -56,7 +56,10 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
       // return this + new collision point
       if (ClosestIntersection(bounce)) {
         indirectLight += r1 * trace(bounce, bounces - 1);
-      }
+	  }
+	  else {
+		  indirectLight += r1 * vec3(1, 1, 1)*environment; // assume white environment sphere
+	  }
     } else {
       return (lightHere / static_cast<float>(M_PI))*diffuse;
     }

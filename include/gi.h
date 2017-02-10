@@ -17,6 +17,7 @@ private:
   bool anyIntersection(Ray &ray, Ray &surface);
   int sampleCount = 10;
   int total_bounces = 1;
+  vec3 environment = vec3(1, 1, 1)*0.5f;
 protected:
 public:
   GlobalIllumination();
