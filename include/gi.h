@@ -15,12 +15,12 @@ private:
 
   bool ClosestIntersection(Ray &ray);
   bool anyIntersection(Ray &ray, Ray &surface);
-  int sampleCount = 100;
-
+  int sampleCount = 10;
+  int total_bounces = 1;
 protected:
 public:
   GlobalIllumination();
-  GlobalIllumination(Scene scene);
+  GlobalIllumination(Scene scene, int sampleCount);
 
   virtual vec3 calculateLight(Ray ray) override;
 };

@@ -2,7 +2,7 @@
 
 // GlobalIllumination::GlobalIllumination(){};
 
-GlobalIllumination::GlobalIllumination(Scene scene) : LightingEngine(scene){};
+GlobalIllumination::GlobalIllumination(Scene scene, int sampleCount) : LightingEngine(scene), sampleCount(sampleCount){};
 
 vec3 GlobalIllumination::trace(Ray ray, int bounces) {
   // find diffuse light at this position
@@ -34,7 +34,6 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
 
 
   mat3 basis(normalX, normalY, normal);
-  int count = 0;
   for (int i = 0; i < sampleCount; i++) {
 
     // generate random direction
@@ -55,7 +54,6 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
       bounce.direction = direction * basis;
       // return this + new collision point
       if (ClosestIntersection(bounce)) {
-        count++;
         indirectLight += r1 * trace(bounce, bounces - 1);
       }
     } else {
@@ -67,7 +65,7 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
 }
 
 vec3 GlobalIllumination::calculateLight(Ray ray) {
-  return trace(ray, 3)* ray.collision->getPixelColour(ray.collisionUVLocation);
+  return trace(ray, total_bounces)* ray.collision->getPixelColour(ray.collisionUVLocation);
 }
 
 bool GlobalIllumination::ClosestIntersection(Ray &ray) {

@@ -12,7 +12,7 @@ extern "C" {
 using std::string;
 
 int main(int argc, char *argv[]) {
-  if (argc == 2) {
+  if (argc >= 2) {
     string mode(argv[1]);
 
     // load in a scene
@@ -38,9 +38,13 @@ int main(int argc, char *argv[]) {
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "gi") {
-
-      shared_ptr<LightingEngine> engine(new GlobalIllumination(scene));
-      RayTracer screen(250, 250, engine, light, triangles, false);
+		int sampleCount = 10;
+		if (argc > 2) {
+		string samples(argv[2]);
+		sampleCount = atoi(samples.c_str());
+		}
+      shared_ptr<LightingEngine> engine(new GlobalIllumination(scene, sampleCount));
+      RayTracer screen(500, 500, engine, light, triangles, false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else {
