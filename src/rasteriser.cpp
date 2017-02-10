@@ -1,9 +1,9 @@
 #include "rasteriser.h"
 
-Rasteriser::Rasteriser(int width, int height, Scene scene, bool fullscreen)
+Rasteriser::Rasteriser(int width, int height, shared_ptr<LightingEngine> lighting, Scene scene, bool fullscreen)
     : SdlScreen(width, height, fullscreen), depthBuffer(width * height),
       triangles(scene.triangles),
-      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene.light) {}
+      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene.light), lighting(lighting) {}
 
 void Rasteriser::update(float dt) {
   camera.update(dt);
@@ -34,14 +34,14 @@ void Rasteriser::draw(int width, int height) {
       vector<Pixel> leftPixels;
       vector<Pixel> rightPixels;
       computePolygonRows(proj, leftPixels, rightPixels);
-      drawPolygonRows(width, height, leftPixels, rightPixels);
+      drawPolygonRows(width, height, leftPixels, rightPixels, triangle);
     }
   }
 }
 
 void Rasteriser::drawPolygonRows(int width, int height,
                                  vector<Pixel> &leftPixels,
-                                 vector<Pixel> &rightPixels) {
+                                 vector<Pixel> &rightPixels, const Triangle &triangle) {
 #pragma omp parallel for
   for (int y = 0; y < static_cast<int>(leftPixels.size()); y++) {
     for (int x = leftPixels[y].x; x <= rightPixels[y].x; x++) {
@@ -61,8 +61,19 @@ void Rasteriser::drawPolygonRows(int width, int height,
               lerpV(leftPixels[y].v, rightPixels[y].v,
                     deLerpF(leftPixels[y].x, rightPixels[y].x, x));
           // pixelVert.position /= adjust;
-          vec3 color = light->vertexLight(pixelVert);
-          drawPixel(x, leftPixels[y].y, color);
+		  Ray ray;
+		  ray.collisionLocation = pixelVert.position;
+		  ray.collision = &triangle;
+		  ray.direction = camera.position - pixelVert.position;
+		  //ray.length = numeric_limits<float>::max();
+
+		  bool intersects = triangle.calculateIntersection(ray);
+
+		  //vec3 lightColour = lighting->calculateLight(ray);
+		  vec3 lightColour = triangle.colour;
+		  drawPixel(x, leftPixels[y].y, vec3(std::min(lightColour.r, 1.0f),
+			  std::min(lightColour.g, 1.0f),
+			  std::min(lightColour.b, 1.0f)));
         }
       }
     }

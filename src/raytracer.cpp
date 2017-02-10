@@ -30,8 +30,7 @@ void RayTracer::draw(int width, int height) {
 
         vec3 spec(0, 0, 0);
 
-        vec3 lightColour = lighting->calculateLight(cameraRay) * mat->diffuse +
-                           spec * mat->specularity;
+		vec3 lightColour = lighting->calculateLight(cameraRay);
 
         drawPixel(x, y, vec3(std::min(lightColour.r, 1.0f),
                              std::min(lightColour.g, 1.0f),

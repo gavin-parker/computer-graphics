@@ -24,5 +24,5 @@ public:
   GlobalIllumination();
   GlobalIllumination(Scene scene, int sampleCount);
 
-  virtual vec3 calculateLight(Ray ray) override;
+  vec3 calculateLight(Ray ray) final override;
 };

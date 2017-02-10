@@ -14,7 +14,6 @@ using glm::vec2;
 
 class Camera {
 private:
-  vec3 position;
   float yaw;
   mat3 rotation;
   const float viewOffset;
@@ -22,6 +21,8 @@ private:
   const float yawVeclocity = 2.0f;
 
 public:
+	vec3 position;
+
   Camera(vec3 position, float yaw, float viewAngle);
 
   void update(float dt);

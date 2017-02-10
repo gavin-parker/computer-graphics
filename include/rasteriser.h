@@ -11,6 +11,7 @@
 using std::numeric_limits;
 using std::max;
 using glm::ivec2;
+using glm::vec2;
 
 class Rasteriser : public SdlScreen {
 private:
@@ -19,19 +20,19 @@ private:
   const shared_ptr<const vector<Triangle>> triangles;
   Camera camera;
   shared_ptr<PointLight> light;
+  shared_ptr<LightingEngine> lighting;
 
   void computePolygonRows(const vector<Pixel> &vertexPixels,
                           vector<Pixel> &leftPixels,
                           vector<Pixel> &rightPixels);
   void drawPolygonRows(int width, int height, vector<Pixel> &leftPixels,
-                       vector<Pixel> &rightPixels);
+                       vector<Pixel> &rightPixels, const Triangle &triangle);
 
   Pixel VertexShader(Vertex v, int width, int height);
-
 protected:
   void update(float dt) override;
   void draw(int width, int height) override;
 
 public:
-  Rasteriser(int width, int height, Scene scene, bool fullscreen = false);
+  Rasteriser(int width, int height, shared_ptr<LightingEngine> lighting, Scene scene, bool fullscreen = false);
 };

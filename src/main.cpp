@@ -34,7 +34,8 @@ int main(int argc, char *argv[]) {
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "rast") {
-      Rasteriser screen(500, 500, scene, false);
+		shared_ptr<LightingEngine> engine(new StandardLighting(scene));
+      Rasteriser screen(500, 500, engine, scene, false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "gi") {
