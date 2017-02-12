@@ -24,10 +24,10 @@ unsigned normaliseCoordinate(float position, unsigned size) {
 }
 
 vec3 Material::getColour(vec2 uv) const {
-  unsigned x = uv.x * width;
-  unsigned y = uv.y * height;
+  unsigned x = std::floor(uv.x * width);
+  unsigned y = std::floor(uv.y * height);
 
-  size_t index = (width * y + x) * 4;
+  size_t index = min((width * y + x)*4, static_cast<unsigned>(texture.size()-4));
   float r = static_cast<float>(texture[index + 0]) / 255.0f;
   float g = static_cast<float>(texture[index + 1]) / 255.0f;
   float b = static_cast<float>(texture[index + 2]) / 255.0f;

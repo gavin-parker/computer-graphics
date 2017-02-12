@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <iostream>
-
+#include <algorithm>
 #include "lodepng.h"
 using glm::vec2;
 using glm::vec3;
@@ -10,6 +10,7 @@ using std::cout;
 using std::endl;
 using std::string;
 using std::vector;
+using std::min;
 
 class Material {
 private:
