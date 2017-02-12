@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
     } else if (mode == "ray") {
 
       shared_ptr<LightingEngine> engine(new StandardLighting(scene));
-      RayTracer screen(500, 500, engine, light, geometry, false);
+      RayTracer screen(500, 500, engine, light, geometry, shared_ptr<BoundingVolume>(new BoundingVolume(geometry)), false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "rast") {
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
 		sampleCount = atoi(samples.c_str());
 		}
       shared_ptr<LightingEngine> engine(new GlobalIllumination(scene, sampleCount));
-      RayTracer screen(500, 500, engine, light, geometry, false);
+      RayTracer screen(500, 500, engine, light, geometry, shared_ptr<BoundingVolume>(new BoundingVolume(geometry)), false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
 	}

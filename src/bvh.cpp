@@ -1,6 +1,6 @@
 #include "bvh.h"
 
-BoundingVolume::BoundingVolume(const shared_ptr<const vector<Triangle>> triangles) {
+BoundingVolume::BoundingVolume(const shared_ptr<const vector<Triangle>> triangles) : triangles(triangles) {
 	for (int i = 0; i < 7; i++) {
 		d[i][0] = numeric_limits<float>::max();
 		d[i][1] = -numeric_limits<float>::max();
@@ -15,7 +15,8 @@ BoundingVolume::BoundingVolume(const shared_ptr<const vector<Triangle>> triangle
 	}
 
 }
-bool BoundingVolume::calculateIntersection(const Ray &ray) const{
+//ray must have max length before initial call
+bool BoundingVolume::calculateIntersection(Ray &ray) {
 	float num[7];
 	float denom[7];
 	float tFar = numeric_limits<float>::max();
@@ -39,5 +40,25 @@ bool BoundingVolume::calculateIntersection(const Ray &ray) const{
 		}
 	}
 
-	return true;
+	//first check the geometry with this volume as direct parent
+	bool anyIntersection = ClosestIntersection(ray);
+
+	//then check sub volumes if there are any
+	for (BoundingVolume volume : subVolumes) {
+		anyIntersection |= volume.calculateIntersection(ray);
+	}
+
+
+	return anyIntersection;
+}
+
+bool BoundingVolume::ClosestIntersection(Ray &ray) {
+
+	bool anyIntersection = false;
+
+	for (const Triangle &triangle : *triangles) {
+		anyIntersection |= triangle.calculateIntersection(ray);
+	}
+
+	return anyIntersection;
 }
