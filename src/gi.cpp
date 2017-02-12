@@ -2,7 +2,7 @@
 
 // GlobalIllumination::GlobalIllumination(){};
 
-GlobalIllumination::GlobalIllumination(Scene scene, int sampleCount) : LightingEngine(scene), sampleCount(sampleCount), boundingBox(new Cube(triangles)){};
+GlobalIllumination::GlobalIllumination(shared_ptr<Scene> scene, int sampleCount) : LightingEngine(scene->triangles, scene->light), sampleCount(sampleCount), boundingBox(new Cube(triangles)){};
 
 vec3 GlobalIllumination::trace(Ray ray, int bounces) {
   // find diffuse light at this position

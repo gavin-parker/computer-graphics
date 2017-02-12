@@ -14,7 +14,7 @@ private:
 protected:
 public:
 	ConvergentGlobalIllumination();
-	ConvergentGlobalIllumination(Scene scene, int sampleCount, int width, int height);
+	ConvergentGlobalIllumination(shared_ptr<Scene> scene, int sampleCount, int width, int height);
 
 	vec3 calculateLight(Ray ray, ivec2 pixel = ivec2(0, 0)) override;
 };

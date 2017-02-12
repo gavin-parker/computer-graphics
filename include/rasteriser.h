@@ -34,5 +34,5 @@ protected:
   void draw(int width, int height) override;
 
 public:
-  Rasteriser(int width, int height, shared_ptr<LightingEngine> lighting, Scene scene, bool fullscreen = false);
+  Rasteriser(int width, int height, shared_ptr<LightingEngine> lighting, shared_ptr<Scene> scene, bool fullscreen = false);
 };

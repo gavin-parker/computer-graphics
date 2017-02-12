@@ -1,9 +1,9 @@
 #include "rasteriser.h"
 
-Rasteriser::Rasteriser(int width, int height, shared_ptr<LightingEngine> lighting, Scene scene, bool fullscreen)
+Rasteriser::Rasteriser(int width, int height, shared_ptr<LightingEngine> lighting, shared_ptr<Scene> scene, bool fullscreen)
     : SdlScreen(width, height, fullscreen), depthBuffer(width * height),
-      triangles(scene.triangles),
-      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene.light), lighting(lighting) {}
+      triangles(scene->triangles),
+      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene->light), lighting(lighting) {}
 
 void Rasteriser::update(float dt) {
   camera.update(dt);

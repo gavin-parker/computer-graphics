@@ -14,6 +14,7 @@
 #include "pointlight.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
+#include "bvh.h"
 using std::numeric_limits;
 
 class RayTracer : public SdlScreen {
@@ -23,7 +24,7 @@ private:
   Camera camera;
 
   const vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
-  shared_ptr<PointLight> light;
+  const shared_ptr<PointLight> light;
   shared_ptr<LightingEngine> lighting;
   const shared_ptr<const Cube> boundingBox;
 
@@ -34,7 +35,7 @@ protected:
 
 public:
   RayTracer(int width, int height, shared_ptr<LightingEngine> lighting,
-            shared_ptr<PointLight> light,
+	  const shared_ptr<PointLight> light,
             const shared_ptr<const vector<Triangle>> triangles,
             bool fullscreen = false);
 };

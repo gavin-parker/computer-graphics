@@ -2,7 +2,7 @@
 
 // GlobalIllumination::GlobalIllumination(){};
 
-StandardLighting::StandardLighting(Scene scene) : LightingEngine(scene){};
+StandardLighting::StandardLighting(const shared_ptr<Scene> scene) : LightingEngine(scene->triangles, scene->light){};
 
 vec3 StandardLighting::calculateLight(Ray ray, ivec2 pixel) {
   Ray lightRay;

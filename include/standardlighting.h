@@ -8,7 +8,7 @@ private:
 
 protected:
 public:
-  StandardLighting(Scene scene);
+  StandardLighting(const shared_ptr<Scene> scene);
   StandardLighting();
   virtual vec3 calculateLight(Ray ray, ivec2 pixel = ivec2(0, 0)) override;
 };

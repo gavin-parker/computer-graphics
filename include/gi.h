@@ -24,7 +24,7 @@ private:
 protected:
 public:
   GlobalIllumination();
-  GlobalIllumination(Scene scene, int sampleCount);
+  GlobalIllumination(const shared_ptr<Scene> scene, int sampleCount);
 
   vec3 calculateLight(Ray ray, ivec2 pixel = ivec2(0, 0)) override;
 };
