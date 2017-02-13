@@ -1,5 +1,4 @@
-#define M_PI 3.14159265359f
-#pragma OPENCL EXTENSION cl_intel_printf : enable
+//#define M_PI 3.14159265359f
 
 typedef struct TriangleStruct {
 	float3 v0;
@@ -52,7 +51,7 @@ inline float3 directLight(Ray ray, float3 lightPos, float3 normal){
 	float3 direction = norm(offset);
 	float radius = len(offset);
 	float3 color = {0.75f, 0.75f, 0.75f };
-	return (max(dot(direction, normal), 0.0f) * 500000.f / (4.0f * M_PI * radius * radius)) * color;
+	return (max(dot(direction, normal), 0.0f) * 500000.f / (4.0f * (float)M_PI * radius * radius)) * color;
 }
 
 
@@ -161,10 +160,10 @@ kernel void getPixel(global const TriangleStruct* triangles,float3 lightLoc, glo
 				lightColour = directLight(lightRay, lightLoc, n)*diffuse + spec * specularity;
 				lightColour *= triangles[lightRay.collision].color;
 			 }else{
-				float3 ambient = {0.3f, 0.3f, 0.3f };
-				lightColour = triangles[cameraRay.collision].color*ambient;
+				float3 ambient = {0.1f, 0.1f, 0.1f };
+				lightColour = dot(ambient,triangles[cameraRay.collision].color)*0.75f;
 			  }
-			image[(y*width + x)] = lightColour;
+			image[(y*width + x)] = (float3){min(lightColour.x, 1.0f),min(lightColour.y, 1.0f),min(lightColour.z, 1.0f) };
 		}else{
 			image[(y*width + x)] = (float3){0.f, 0.f, 0.f };
 		}
