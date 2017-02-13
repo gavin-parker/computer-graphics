@@ -15,16 +15,24 @@ BoundingVolume::BoundingVolume(const shared_ptr<const vector<Triangle>> triangle
 	}
 
 }
-//ray must have max length before initial call
+
+
 bool BoundingVolume::calculateIntersection(Ray &ray) {
 	float num[7];
 	float denom[7];
+	for (int i = 0; i < 7; i++) {
+		num[i] = glm::dot(normals[i], ray.position);
+		denom[i] = glm::dot(normals[i], ray.direction);
+	}
+	return calculateIntersectionSub(ray, num, denom);
+}
+
+//ray must have max length before initial call
+bool BoundingVolume::calculateIntersectionSub(Ray &ray, float num[7], float denom[7]) {
 	float tFar = numeric_limits<float>::max();
 	float tNear = -numeric_limits<float>::max();
 	int planeIndex = 0;
 	for (int i = 0; i < 7; i++) {
-		num[i] = glm::dot(normals[i], ray.position);
-		denom[i] = glm::dot(normals[i], ray.direction);
 		float tn = (d[i][0] - num[i]) / denom[i];
 		float tf = (d[i][1] - num[i]) / denom[i];
 		if (denom[i] < 0) std::swap(tn, tf);
@@ -44,8 +52,8 @@ bool BoundingVolume::calculateIntersection(Ray &ray) {
 	bool anyIntersection = ClosestIntersection(ray);
 
 	//then check sub volumes if there are any
-	for (BoundingVolume volume : subVolumes) {
-		anyIntersection |= volume.calculateIntersection(ray);
+	for (int i = 0; i < subVolumes.size(); i++) {
+		anyIntersection |= subVolumes[i].calculateIntersectionSub(ray, num, denom);
 	}
 
 
