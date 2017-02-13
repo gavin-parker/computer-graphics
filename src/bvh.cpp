@@ -31,14 +31,12 @@ bool BoundingVolume::calculateIntersection(Ray &ray) {
 bool BoundingVolume::calculateIntersectionSub(Ray &ray, float num[7], float denom[7]) {
 	float tFar = numeric_limits<float>::max();
 	float tNear = -numeric_limits<float>::max();
-	int planeIndex = 0;
 	for (int i = 0; i < 7; i++) {
 		float tn = (d[i][0] - num[i]) / denom[i];
 		float tf = (d[i][1] - num[i]) / denom[i];
 		if (denom[i] < 0) std::swap(tn, tf);
 		if (tn > tNear) {
 			tNear = tn;
-			planeIndex = i;
 		}
 		if (tf < tFar) {
 			tFar = tf;
@@ -83,7 +81,6 @@ bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface) {
 	float denom[7];
 	float tFar = numeric_limits<float>::max();
 	float tNear = -numeric_limits<float>::max();
-	int planeIndex = 0;
 	for (int i = 0; i < 7; i++) {
 		num[i] = glm::dot(normals[i], ray.position);
 		denom[i] = glm::dot(normals[i], ray.direction);
@@ -92,7 +89,6 @@ bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface) {
 		if (denom[i] < 0) std::swap(tn, tf);
 		if (tn > tNear) {
 			tNear = tn;
-			planeIndex = i;
 		}
 		if (tf < tFar) {
 			tFar = tf;
