@@ -3,6 +3,7 @@
 #include "rasteriser.h"
 #include "raytracer.h"
 #include "starscreen.h"
+#include "raytracer_cl.h"
 #ifndef unix
 extern "C" {
 	FILE __iob_func[3] = { stdin, stdout,*stderr }; 
@@ -57,6 +58,12 @@ int main(int argc, char *argv[]) {
 		}
 		shared_ptr<LightingEngine> engine(new ConvergentGlobalIllumination(scene, sampleCount, 1024, 1024));
 		RayTracer screen(1024, 1024, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH),false);
+		screen.run();
+		screen.saveBMP("screenshot.bmp");
+	}
+	else if (mode == "cl") {
+		shared_ptr<LightingEngine> engine(new StandardLighting(scene));
+		RayTracerCL screen(500, 500, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), false);
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
 	}
