@@ -19,14 +19,14 @@ using std::numeric_limits;
 
 class RayTracer : public SdlScreen {
 private:
-  bool ClosestIntersection(Ray &ray);
+  //bool ClosestIntersection(Ray &ray);
   const shared_ptr<const vector<Triangle>> triangles;
   Camera camera;
 
   const vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
   const shared_ptr<PointLight> light;
   shared_ptr<LightingEngine> lighting;
-  const shared_ptr<const Cube> boundingBox;
+  const shared_ptr<BoundingVolume> boundingVolume;
 
 
 protected:
@@ -36,6 +36,6 @@ protected:
 public:
   RayTracer(int width, int height, shared_ptr<LightingEngine> lighting,
 	  const shared_ptr<PointLight> light,
-            const shared_ptr<const vector<Triangle>> triangles,
+            const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume,
             bool fullscreen = false);
 };

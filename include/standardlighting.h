@@ -5,6 +5,7 @@ private:
   bool anyIntersection(Ray &ray, Ray &surface);
   int sampleCount = 5;
   vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
+  const shared_ptr<BoundingVolume> boundingVolume;
 
 protected:
 public:

@@ -18,7 +18,8 @@ int main(int argc, char *argv[]) {
 	shared_ptr<PointLight> light(new PointLight(vec3(300.0f, 400.0f, 100.0f), vec3(1.0, 1.0f, 1.0f), 1000000.0f));
 
 	const shared_ptr<const vector<Triangle>> geometry = loadTestModel();
-    shared_ptr<Scene> scene(new Scene(light, geometry, shared_ptr<BoundingVolume>(new BoundingVolume(geometry))));
+	const shared_ptr<BoundingVolume> cornelBVH = loadTestModelBVH();
+    shared_ptr<Scene> scene(new Scene(light, geometry, cornelBVH));
 
     if (mode == "stars") {
       StarScreen screen(500, 500, 1000, 0.5, false);
@@ -29,7 +30,7 @@ int main(int argc, char *argv[]) {
     } else if (mode == "ray") {
 
       shared_ptr<LightingEngine> engine(new StandardLighting(scene));
-      RayTracer screen(500, 500, engine, light, geometry, false);
+      RayTracer screen(500, 500, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "rast") {
@@ -44,7 +45,7 @@ int main(int argc, char *argv[]) {
 		sampleCount = atoi(samples.c_str());
 		}
       shared_ptr<LightingEngine> engine(new GlobalIllumination(scene, sampleCount));
-      RayTracer screen(500, 500, engine, light, geometry, false);
+      RayTracer screen(500, 500, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
 	}
@@ -55,7 +56,7 @@ int main(int argc, char *argv[]) {
 			sampleCount = atoi(samples.c_str());
 		}
 		shared_ptr<LightingEngine> engine(new ConvergentGlobalIllumination(scene, sampleCount, 1024, 1024));
-		RayTracer screen(1024, 1024, engine, light, geometry, false);
+		RayTracer screen(1024, 1024, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH),false);
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
 	}
