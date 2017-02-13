@@ -11,13 +11,14 @@
 
 class PointLight {
 private:
-  vec3 position;
   vec3 color;
   float power;
 
   const float velocity = 200.0f;
 
 public:
+	vec3 position;
+
   PointLight(vec3 position, vec3 color, float power);
 
   void update(float dt);

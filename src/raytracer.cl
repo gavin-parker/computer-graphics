@@ -35,33 +35,32 @@ inline float dot_product(float3 a, float3 b){
  }
 
 
-kernel void getPixel(global const TriangleStruct* triangles, global const float3* lightLoc, global float3* image, int triangleCount, int width, int height){
+kernel void getPixel(global const TriangleStruct* triangles,float3 lightLoc, global float3* image, global Camera* camera, int triangleCount, int width, int height){
 	int x = get_global_id(0);
 	int y = get_global_id(1);
-	Camera camera;
-	camera.position = (float3){ 277.5f, 277.5f, -480.64};
-	camera.viewOffset = (float)(tanpi(30.f / 180.f));
 	Ray cameraRay;
-	cameraRay.origin = camera.position;
-	float3 cameraSpaceDirection = (float3){lerpF(camera.viewOffset, -camera.viewOffset, (float)x/(float)width), lerpF(camera.viewOffset, -camera.viewOffset, (float)y/(float)height), 1.0f};
+	cameraRay.origin = camera->position;	
+
+	float3 cameraSpaceDirection = (float3){lerpF(camera->viewOffset, -camera->viewOffset, (float)x/(float)width), lerpF(camera->viewOffset, -camera->viewOffset, (float)y/(float)height), 1.0f};
+
+	camera->rotation[0] = (float3){1.f, 0.f, 0.f };
+	camera->rotation[1] = (float3){0.f, 1.f, 0.f };
+	camera->rotation[2] = (float3){0.f, 0.f, 1.f };
+
 
 	//dot product for camera ray
-	cameraRay.direction.x = dot(camera.rotation[0], cameraSpaceDirection);
-	cameraRay.direction.y = dot(camera.rotation[1], cameraSpaceDirection);
-	cameraRay.direction.z = dot(camera.rotation[2], cameraSpaceDirection);
-
-
-
+	cameraRay.direction.x = dot(camera->rotation[0], cameraSpaceDirection);
+	cameraRay.direction.y = dot(camera->rotation[1], cameraSpaceDirection);
+	cameraRay.direction.z = dot(camera->rotation[2], cameraSpaceDirection);
 
 
 	cameraRay.length = FLT_MAX;
-
 
 	//calculate intersections
 	bool anyIntersection = false;
 	for(int i=0; i < triangleCount; i++){
 		if(dot(cameraRay.direction, triangles[i].normal) < 0){
-			 //vec3 b = ray.position - v0;
+
 			float3 b = cameraRay.origin - triangles[i].v0;
 			float3 e1 = triangles[i].v1 - triangles[i].v0;
 			float3 e2 = triangles[i].v2 - triangles[i].v0;
@@ -75,12 +74,14 @@ kernel void getPixel(global const TriangleStruct* triangles, global const float3
 				float3 V[3] = { -cameraRay.direction, e1, b};
 				float u = det(U) / det_A;
 				float v = det(V) / det_A;
+
 				if (u >= 0 && v >= 0 && (u + v) < 1) {
-						cameraRay.length = t;
-						cameraRay.collision = i;
-						cameraRay.collisionLocation = triangles[i].v0 + u * e1 + v * e2;
-						//cameraRay.collisionUVLocation = vt0 + u * et1 + v * et2;
-						anyIntersection = true;
+					cameraRay.length = t;
+					cameraRay.collision = i;
+					cameraRay.collisionLocation = triangles[i].v0 + u * e1 + v * e2;
+					//cameraRay.collisionUVLocation = vt0 + u * et1 + v * et2;
+					anyIntersection = true;
+
 				}
 			}
 		}

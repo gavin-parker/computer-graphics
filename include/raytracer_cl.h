@@ -18,6 +18,22 @@ struct TriangleStruct {
 	cl_float3 normal;
 };
 
+typedef struct CameraStruct {
+	cl_float3 position;
+	cl_float viewOffset;
+	cl_float3 rotation[3];
+
+} CameraStruct;
+
+inline cl_float3 vecToFloat(vec3 vec) {
+	cl_float3 f;
+	f.x = vec.x;
+	f.y = vec.y;
+	f.z = vec.z;
+	return f;
+}
+
+
 class RayTracerCL : public SdlScreen {
 private:
 	//bool ClosestIntersection(Ray &ray);
@@ -35,6 +51,7 @@ private:
 	cl::Buffer triangleBuffer;
 	cl::Buffer lightBuffer;
 	cl::Buffer imageBuffer;
+	cl::Buffer cameraBuffer;
 	cl::CommandQueue queue;
 	cl::Kernel kernel_draw;
 	cl::Program program;
@@ -44,6 +61,8 @@ private:
 	std::vector<cl::Platform> all_platforms;
 	std::string sourceCode;
 	cl_float3* image;
+	CameraStruct* cameraStruct;
+
 
 protected:
 	void update(float dt) override;
