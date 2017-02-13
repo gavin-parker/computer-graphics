@@ -6,7 +6,7 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 	bool fullscreen)
 	: SdlScreen(width, height, fullscreen), triangles(triangles),
 	camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(light),
-	lighting(lighting), boundingVolume(boundingVolume) {
+	lighting(lighting), boundingVolume(boundingVolume), cameraStruct(new CameraStruct()) {
 
 	int err;
 	//ANNOYING OPENCL BOILERPLATE
@@ -40,7 +40,8 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 	if (err != 0) {
 		cout << "error creating program: " << err << "\n";
 	}
-	if (program.build({ default_device }) != CL_SUCCESS) {
+	char* options = "-Werror";
+	if (program.build({ default_device }, options) != CL_SUCCESS) {
 		std::cout << " Error building: " << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device) << "\n";
 		exit(1);
 	}
@@ -48,13 +49,17 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 	queue = cl::CommandQueue(context, default_device, 0Ui64, &err);
 	if (err != 0) {
 		cout << "error creating queue: " << err << "\n";
+		exit(1);
+
 	}
 	queue.enqueueWriteBuffer(triangleBuffer, CL_TRUE, 0, sizeof(TriangleStruct) * triangles->size(), cl_triangles);
+
 	cl_float3 lightLoc = { 300.0f, 400.0f, 100.0f };
 	queue.enqueueWriteBuffer(lightBuffer, CL_TRUE, 0, sizeof(cl_float3), &lightLoc);
 	kernel_draw = cl::Kernel(program, "getPixel", &err);
 	if (err != 0) {
 		cout << "error creating kernel: " << err << "\n";
+		exit(1);
 	}
 
 }
@@ -73,8 +78,8 @@ void RayTracerCL::create_global_memory(int width, int height) {
 	}
 	image = (cl_float3*)malloc(width*height * sizeof(cl_float3));
 	triangleBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(TriangleStruct) * triangles->size());
-	lightBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(cl_float3));
 	imageBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(cl_float3)* width*height);
+	cameraBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(CameraStruct));
 }
 
 
@@ -85,12 +90,24 @@ void RayTracerCL::update(float dt) {
 }
 
 void RayTracerCL::draw(int width, int height) {
+	cameraStruct->position = { camera.position.x, camera.position.y, camera.position.z };
+	cameraStruct->viewOffset = camera.viewOffset;
+	cameraStruct->rotation[0] = vecToFloat(camera.rotation[0]);
+	cameraStruct->rotation[1] = vecToFloat(camera.rotation[1]);
+	cameraStruct->rotation[2] = vecToFloat(camera.rotation[2]);
+
+
+	queue.enqueueWriteBuffer(cameraBuffer, CL_TRUE, 0, sizeof(CameraStruct), cameraStruct);
+	cl_float3 lightLoc = vecToFloat(light->position);
+
+
 	kernel_draw.setArg(0, triangleBuffer);
-	kernel_draw.setArg(1, lightBuffer);
+	kernel_draw.setArg(1, lightLoc);
 	kernel_draw.setArg(2, imageBuffer);
-	kernel_draw.setArg(3, static_cast<int>(triangles->size()));
-	kernel_draw.setArg(4, width);
-	kernel_draw.setArg(5, height);
+	kernel_draw.setArg(3, cameraBuffer);
+	kernel_draw.setArg(4, static_cast<int>(triangles->size()));
+	kernel_draw.setArg(5, width);
+	kernel_draw.setArg(6, height);
 
 	int err = queue.enqueueNDRangeKernel(kernel_draw, cl::NullRange, cl::NDRange(width, height), cl::NullRange);
 
@@ -109,5 +126,4 @@ void RayTracerCL::draw(int width, int height) {
 					std::min(lightColour.b, 1.0f)));
 			}
 		}
-	//queue.finish();
 }
