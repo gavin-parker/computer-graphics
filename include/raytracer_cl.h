@@ -11,12 +11,12 @@
 #include "testmodel.h"
 #include "bvh.h"
 struct TriangleStruct {
-	float* v0[3];
-	float* v1[3];
-	float* v2[3];
-	float* color[3];
+	cl_float3 v0;
+	cl_float3 v1;
+	cl_float3 v2;
+	cl_float3 color;
+	cl_float3 normal;
 };
-
 
 class RayTracerCL : public SdlScreen {
 private:
@@ -43,7 +43,7 @@ private:
 	cl::Platform default_platform;
 	std::vector<cl::Platform> all_platforms;
 	std::string sourceCode;
-	float* image;
+	cl_float3* image;
 
 protected:
 	void update(float dt) override;
