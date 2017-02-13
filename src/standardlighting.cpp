@@ -2,7 +2,7 @@
 
 // GlobalIllumination::GlobalIllumination(){};
 
-StandardLighting::StandardLighting(const shared_ptr<Scene> scene) : LightingEngine(scene->triangles, scene->light){};
+StandardLighting::StandardLighting(const shared_ptr<Scene> scene) : LightingEngine(scene->triangles, scene->light), boundingVolume(scene->volume){};
 
 vec3 StandardLighting::calculateLight(Ray ray, ivec2 pixel) {
   Ray lightRay;
@@ -11,7 +11,7 @@ vec3 StandardLighting::calculateLight(Ray ray, ivec2 pixel) {
 
   vec3 lightColour(0, 0, 0);
   shared_ptr<const Material> mat = ray.collision->mat;
-  if (anyIntersection(lightRay, ray) && lightRay.collision == ray.collision) {
+  if (boundingVolume->calculateAnyIntersection(lightRay, ray) && lightRay.collision == ray.collision) {
 
     vec3 n = lightRay.collision->normal;
     vec3 v = glm::normalize(ray.direction);

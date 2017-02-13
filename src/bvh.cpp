@@ -62,3 +62,64 @@ bool BoundingVolume::ClosestIntersection(Ray &ray) {
 
 	return anyIntersection;
 }
+
+void BoundingVolume::setSubVolume(BoundingVolume volume) {
+	subVolumes.push_back(volume);
+}
+
+
+// recursively checks for ANY intersection, backs out early
+bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface) {
+	float lightDistance = ray.length;
+	float num[7];
+	float denom[7];
+	float tFar = numeric_limits<float>::max();
+	float tNear = -numeric_limits<float>::max();
+	int planeIndex = 0;
+	for (int i = 0; i < 7; i++) {
+		num[i] = glm::dot(normals[i], ray.position);
+		denom[i] = glm::dot(normals[i], ray.direction);
+		float tn = (d[i][0] - num[i]) / denom[i];
+		float tf = (d[i][1] - num[i]) / denom[i];
+		if (denom[i] < 0) std::swap(tn, tf);
+		if (tn > tNear) {
+			tNear = tn;
+			planeIndex = i;
+		}
+		if (tf < tFar) {
+			tFar = tf;
+		}
+		if (tNear > tFar) {
+			return false;
+		}
+	}
+
+	//first check the geometry with this volume as direct parent
+	bool anyIntersection = this->anyIntersection(ray, surface);
+
+	//then check sub volumes if there are any
+	for (BoundingVolume volume : subVolumes) {
+		anyIntersection |= volume.calculateIntersection(ray);
+		if (anyIntersection && ray.collision != surface.collision &&
+			ray.length < lightDistance) {
+			return anyIntersection;
+		}
+	}
+
+
+	return anyIntersection;
+}
+
+bool BoundingVolume::anyIntersection(Ray &ray, Ray &surface) {
+	bool anyIntersection = false;
+	float lightDistance = ray.length;
+	ray.length = numeric_limits<float>::max();
+	for (const Triangle &triangle : *triangles) {
+		anyIntersection |= triangle.calculateIntersection(ray);
+		if (anyIntersection && ray.collision != surface.collision &&
+			ray.length < lightDistance) {
+			return anyIntersection;
+		}
+	}
+	return anyIntersection;
+}

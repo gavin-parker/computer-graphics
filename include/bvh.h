@@ -11,11 +11,14 @@ class BoundingVolume {
 private:
 	const vec3 normals [7] = { vec3(1,0,0), vec3(0,1,0), vec3(0,0,1), vec3(1,1,1)*R3, vec3(-1,1,1)*R3, vec3(-1,-1,1)*R3, vec3(1,-1,1)*R3 };
 	float d[7][2];
-	const vector<BoundingVolume> subVolumes;
+	vector<BoundingVolume> subVolumes;
 	const shared_ptr<const vector<Triangle>> triangles;
 	bool ClosestIntersection(Ray &ray);
+	bool anyIntersection(Ray &ray, Ray &surface);
 
 public:
 	BoundingVolume(const shared_ptr<const vector<Triangle>> triangles);
 	bool calculateIntersection(Ray &ray);
+	void setSubVolume(BoundingVolume volume);
+	bool calculateAnyIntersection(Ray &ray, Ray &surface);
 };
