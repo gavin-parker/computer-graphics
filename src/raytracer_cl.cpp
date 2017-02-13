@@ -56,7 +56,7 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 	if (err != 0) {
 		cout << "error creating program: " << err << "\n";
 	}
-	char* options = "-Werror";
+	char* options = "-Werror -cl-fast-relaxed-math";
 	if (program.build({ default_device }, options) != CL_SUCCESS) {
 		std::cout << " Error building: " << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device) << "\n";
 		exit(1);

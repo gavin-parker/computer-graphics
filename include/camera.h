@@ -22,7 +22,7 @@ public:
 	vec3 position;
 	mat3 rotation;
 	const float viewOffset;
-
+	bool moved = false;
   Camera(vec3 position, float yaw, float viewAngle);
 
   void update(float dt);
