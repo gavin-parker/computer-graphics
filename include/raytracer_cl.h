@@ -28,12 +28,13 @@ private:
 	const shared_ptr<PointLight> light;
 	shared_ptr<LightingEngine> lighting;
 	const shared_ptr<BoundingVolume> boundingVolume;
-	void create_global_memory();
+	void create_global_memory(int width, int height);
 	cl::Context context;
 	cl::Device default_device;
 	TriangleStruct* cl_triangles;
 	cl::Buffer triangleBuffer;
 	cl::Buffer lightBuffer;
+	cl::Buffer imageBuffer;
 	cl::CommandQueue queue;
 	cl::Kernel kernel_draw;
 	cl::Program program;
@@ -42,6 +43,8 @@ private:
 	cl::Platform default_platform;
 	std::vector<cl::Platform> all_platforms;
 	std::string sourceCode;
+	float* image;
+
 protected:
 	void update(float dt) override;
 	void draw(int width, int height) override;

@@ -33,28 +33,34 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 		std::istreambuf_iterator<char>(sourceFile),
 		(std::istreambuf_iterator<char>()));
 
-	sources.push_back({ sourceCode.c_str(), sourceCode.size() });
+	sources.push_back(std::make_pair(sourceCode.c_str(), sourceCode.size() ));
 	cout << "loaded kernel length:" << sourceCode.size();
 	program = cl::Program(context, sources, &err);
+
 	if (err != 0) {
-		cout << "error: " << err << "\n";
+		cout << "error creating program: " << err << "\n";
 	}
-	create_global_memory();
+	if (program.build({ default_device }) != CL_SUCCESS) {
+		std::cout << " Error building: " << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device) << "\n";
+		exit(1);
+	}
+	create_global_memory(width, height);
 	queue = cl::CommandQueue(context, default_device, 0Ui64, &err);
 	if (err != 0) {
-		cout << "error: " << err << "\n";
+		cout << "error creating queue: " << err << "\n";
 	}
 	queue.enqueueWriteBuffer(triangleBuffer, CL_TRUE, 0, sizeof(TriangleStruct) * triangles->size(), cl_triangles);
 	float cameraLoc[3] = { 300.0f, 400.0f, 100.0f };
 	queue.enqueueWriteBuffer(lightBuffer, CL_TRUE, 0, sizeof(float) * 3, cameraLoc);
 	kernel_draw = cl::Kernel(program, "getPixel", &err);
 	if (err != 0) {
-		cout << "error: " << err << "\n";
+		cout << "error creating kernel: " << err << "\n";
 	}
+
 }
 
 
-void RayTracerCL::create_global_memory() {
+void RayTracerCL::create_global_memory(int width, int height) {
 	cl_triangles = (TriangleStruct*)malloc(triangles->size() * sizeof(TriangleStruct));
 	vector<Triangle> tris = *triangles;
 	for (int i = 0; i < triangles->size(); i++) {
@@ -64,8 +70,10 @@ void RayTracerCL::create_global_memory() {
 		float c[3] = { tris[i].colour.x, tris[i].colour.y, tris[i].colour.z };
 		cl_triangles[i] = { v0, v1, v2, c };
 	}
+	image = (float*)malloc(width*height * 3 * sizeof(float));
 	triangleBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(TriangleStruct) * triangles->size());
 	lightBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(float) * 3);
+	imageBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(float) * 3 * width*height);
 }
 
 
@@ -78,8 +86,22 @@ void RayTracerCL::update(float dt) {
 void RayTracerCL::draw(int width, int height) {
 	kernel_draw.setArg(0, triangleBuffer);
 	kernel_draw.setArg(1, lightBuffer);
+	kernel_draw.setArg(2, imageBuffer);
+	kernel_draw.setArg(3, width);
+	kernel_draw.setArg(4, height);
+
 	printf("enqueuing buffer");
 	queue.enqueueNDRangeKernel(kernel_draw, cl::NullRange, cl::NDRange(width, height), cl::NullRange);
-	queue.finish();
-	getchar();
+	queue.enqueueReadBuffer(imageBuffer, CL_TRUE, 0, sizeof(float) * 3 * width*height, image );
+
+#pragma omp parallel for
+	for (int y = 0; y < height; ++y) {
+		for (int x = 0; x < width; ++x) {
+			vec3 lightColour(image[3 * (x*height + y)], image[3 * (x*height + y) + 1], image[3 * (x*height + y) + 2]);
+				drawPixel(x, y, vec3(std::min(lightColour.r, 1.0f),
+					std::min(lightColour.g, 1.0f),
+					std::min(lightColour.b, 1.0f)));
+			}
+		}
+	//queue.finish();
 }
