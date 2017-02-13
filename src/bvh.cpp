@@ -9,7 +9,7 @@ BoundingVolume::BoundingVolume(const shared_ptr<const vector<Triangle>> triangle
 			for (int j = 0; j < 3; j++) {
 				float D = normals[i].x*points[j].x + normals[i].y*points[j].y + normals[i].z*points[j].z;
 				d[i][0] = std::min(d[i][0], D);
-				d[i][1] = std::min(d[1][0], D);
+				d[i][1] = std::max(d[i][1], D);
 			}
 		}
 	}

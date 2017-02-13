@@ -2,7 +2,7 @@
 #include <limits>
 #include <glm/glm.hpp>
 #include "ray.h"
-#define R3 static_cast<float>(0.57735026919)
+#define R3 static_cast<float>(sqrt(3) / 3.f)
 using glm::vec3;
 using std::numeric_limits;
 
