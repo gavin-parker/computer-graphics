@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 		sampleCount = atoi(samples.c_str());
 		}
       shared_ptr<LightingEngine> engine(new GlobalIllumination(scene, sampleCount));
-      RayTracer screen(500, 500, engine, light, geometry, shared_ptr<BoundingVolume>(new BoundingVolume(geometry)), false);
+      RayTracer screen(500, 500, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
 	}
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 			sampleCount = atoi(samples.c_str());
 		}
 		shared_ptr<LightingEngine> engine(new ConvergentGlobalIllumination(scene, sampleCount, 1024, 1024));
-		RayTracer screen(1024, 1024, engine, light, geometry, false);
+		RayTracer screen(1024, 1024, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH),false);
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
 	}
