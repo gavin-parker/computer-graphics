@@ -77,7 +77,11 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 		cout << "error creating kernel: " << err << "\n";
 		exit(1);
 	}
-
+	kernel_draw.setArg(0, triangleBuffer);
+	kernel_draw.setArg(2, imageBuffer);
+	kernel_draw.setArg(4, static_cast<int>(triangles->size()));
+	kernel_draw.setArg(5, width);
+	kernel_draw.setArg(6, height);
 }
 
 
@@ -93,9 +97,9 @@ void RayTracerCL::create_global_memory(int width, int height) {
 		cl_triangles[i] = { v0, v1, v2, c, normal };
 	}
 	image = (cl_float3*)malloc(width*height * sizeof(cl_float3));
-	triangleBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(TriangleStruct) * triangles->size());
+	triangleBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, sizeof(TriangleStruct) * triangles->size());
 	imageBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(cl_float3)* width*height);
-	cameraBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(CameraStruct));
+	cameraBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, sizeof(CameraStruct));
 }
 
 
@@ -115,15 +119,10 @@ void RayTracerCL::draw(int width, int height) {
 
 	queue.enqueueWriteBuffer(cameraBuffer, CL_TRUE, 0, sizeof(CameraStruct), cameraStruct);
 	cl_float3 lightLoc = vecToFloat(light->position);
-
-
-	kernel_draw.setArg(0, triangleBuffer);
+	
 	kernel_draw.setArg(1, lightLoc);
-	kernel_draw.setArg(2, imageBuffer);
 	kernel_draw.setArg(3, cameraBuffer);
-	kernel_draw.setArg(4, static_cast<int>(triangles->size()));
-	kernel_draw.setArg(5, width);
-	kernel_draw.setArg(6, height);
+
 
 	int err = queue.enqueueNDRangeKernel(kernel_draw, cl::NullRange, cl::NDRange(width, height), cl::NullRange);
 

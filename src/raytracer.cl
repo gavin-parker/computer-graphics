@@ -33,11 +33,11 @@ inline float det(float3 mat[3]){
 	return mat[0].x*(mat[1].y*mat[2].z - mat[1].z*mat[2].y) - mat[0].y*(mat[1].x*mat[2].z - mat[1].z*mat[2].x) + mat[0].z*(mat[1].x*mat[2].y - mat[1].y*mat[2].x);
 }
 inline float3 norm(float3 vec){
-	float len = sqrt(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
-	return (float3){vec.x/len, vec.y/len, vec.z/len };
+	float len = native_rsqrt(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
+	return (float3){vec.x*len, vec.y*len, vec.z*len };
 }
 inline float len(float3 vec){ 
-	return sqrt(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
+	return native_sqrt(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
 }
 inline float3 phong(float3 v, float3 l, float3 n){
 	float3 r = l - 2.f* dot((dot(n,l)),n);
@@ -56,7 +56,8 @@ inline float3 directLight(Ray ray, float3 lightPos, float3 normal){
 
 
 
-kernel void getPixel(global const TriangleStruct* triangles,float3 lightLoc, global float3* image, global Camera* camera, int triangleCount, int width, int height){
+kernel void getPixel(global const TriangleStruct* triangles, float3 lightLoc, global float3* image, global Camera* camera, int triangleCount, int width, int height){
+
 	int x = get_global_id(0);
 	int y = get_global_id(1);
 	Ray cameraRay;
@@ -79,6 +80,7 @@ kernel void getPixel(global const TriangleStruct* triangles,float3 lightLoc, glo
 
 	//calculate intersections for camera ray
 	bool anyIntersection = false;
+	#pragma unroll
 	for(int i=0; i < triangleCount; i++){
 		if(dot(cameraRay.direction, triangles[i].normal) < 0){
 
@@ -87,14 +89,14 @@ kernel void getPixel(global const TriangleStruct* triangles,float3 lightLoc, glo
 			float3 e2 = triangles[i].v2 - triangles[i].v0;
 
 			float3 A[3] = {-cameraRay.direction, e1, e2 };
-			float det_A = det(A);
+			float det_A = native_recip(det(A));
 			float3 B[3] = {b, e1, e2 };
-			float t = det(B) / det_A;
+			float t = det(B) * det_A;
 			if (t >= 0 && t < cameraRay.length) {
 				float3 U[3] = {-cameraRay.direction, b, e2};
 				float3 V[3] = { -cameraRay.direction, e1, b};
-				float u = det(U) / det_A;
-				float v = det(V) / det_A;
+				float u = det(U) * det_A;
+				float v = det(V) * det_A;
 
 				if (u >= 0 && v >= 0 && (u + v) < 1) {
 					cameraRay.length = t;
@@ -108,19 +110,14 @@ kernel void getPixel(global const TriangleStruct* triangles,float3 lightLoc, glo
 		}
 	}
 
-
-
-
-
       if (anyIntersection) {
 	  	float3 lightColour = {0.f,0.f,0.f };
 			Ray lightRay;
 			lightRay.origin = lightLoc;
 			lightRay.direction = cameraRay.collisionLocation - lightLoc;
-
-
 				//calculate intersections for light ray
 			bool lightIntersection = false;
+			#pragma unroll
 			for(int i=0; i < triangleCount; i++){
 				if(dot(lightRay.direction, triangles[i].normal) < 0){
 
@@ -129,14 +126,14 @@ kernel void getPixel(global const TriangleStruct* triangles,float3 lightLoc, glo
 					float3 e2 = triangles[i].v2 - triangles[i].v0;
 
 					float3 A[3] = {-lightRay.direction, e1, e2 };
-					float det_A = det(A);
+					float det_A = native_recip(det(A));
 					float3 B[3] = {b, e1, e2 };
-					float t = det(B) / det_A;
+					float t = det(B) * det_A;
 					if (t >= 0 && t < lightRay.length) {
 						float3 U[3] = {-lightRay.direction, b, e2};
 						float3 V[3] = { -lightRay.direction, e1, b};
-						float u = det(U) / det_A;
-						float v = det(V) / det_A;
+						float u = det(U) * det_A;
+						float v = det(V) * det_A;
 
 						if (u >= 0 && v >= 0 && (u + v) < 1) {
 							lightRay.length = t;
