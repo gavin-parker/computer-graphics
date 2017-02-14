@@ -3,7 +3,9 @@
 #include "rasteriser.h"
 #include "raytracer.h"
 #include "starscreen.h"
+#ifdef useCL
 #include "raytracer_cl.h"
+#endif
 #ifndef unix
 extern "C" {
 	FILE __iob_func[3] = { stdin, stdout,*stderr }; 
@@ -61,12 +63,14 @@ int main(int argc, char *argv[]) {
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
 	}
+#ifdef useCL
 	else if (mode == "cl") {
 		shared_ptr<LightingEngine> engine(new StandardLighting(scene));
 		RayTracerCL screen(1024, 1024, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), false);
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
 	}
+#endif
 	else {
       cout << "Unknown mode \"" << mode << "\"" << endl;
     }
