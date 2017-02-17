@@ -1,4 +1,3 @@
-
 :- module(obj, [
               obj_file/2,
               obj//1
@@ -6,6 +5,9 @@
 
 :- use_module(library(dcg/basics)).
 :- use_module(library(pio)).
+
+:- use_module(diff_list).
+:- use_module(util).
 
 
 obj_file(Object, File) :-
@@ -190,53 +192,6 @@ white_vertex_texture_normal(V/VT/VN) -->
     white_vertex_texture(V/VT),
     "/",
     integer(VN).
-
-
-white_integer(N) -->
-    white,
-    whites,
-    integer(N).
-
-
-white_number(N) -->
-    white,
-    whites,
-    number(N).
-
-
-white_maybe_number(N, _Default) -->
-    white,
-    whites,
-    number(N).
-
-white_maybe_number(Default, Default) -->
-    "".
-
-comment -->
-    "#",
-    string_without("\r\n", _Line),
-    eol.
-
-white_eol -->
-    whites,
-    eol.
-
-
-eol -->
-    "\r\n".
-
-eol -->
-    "\r".
-
-eol -->
-    "\n".
-
-diff_list_init(X-X).
-
-diff_list_append(A-[E|AE], E, A-AE).
-
-diff_list_close(X-[], X).
-
 
 
 
