@@ -17,11 +17,25 @@ obj(Object, Codes, End) :-
     final_state(Final_State, Object).
 
 
-initial_state(o(V-V, T-T, N-N, F-F)).
+initial_state(o(V, T, N, [''], groups{})) :-
+    diff_list_init(V),
+    diff_list_init(T),
+    diff_list_init(N).
 
 
-final_state(o(V-[], T-[], N-[], F-[]), o(V, T, N, F)).
+final_state(o(VsL, TsL, NsL, _, Gs), o(Vs, Ts, Ns, GPs)) :-
+    diff_list_close(VsL, Vs),
+    diff_list_close(TsL, Ts),
+    diff_list_close(NsL, Ns),
+    dict_pairs(Gs, _, GLPs),
+    close_dict_pairs(GLPs, GPs).
 
+
+close_dict_pairs([Name-Diff_List|Diff_Pairs], [Name-List|Pairs]) :-
+    diff_list_close(Diff_List, List),
+    close_dict_pairs(Diff_Pairs, Pairs).
+
+close_dict_pairs([], []).
 
 read_lines(State, State) -->
     eos,
@@ -33,29 +47,36 @@ read_lines(Initial_State, Final_State) -->
     read_lines(Intermediate_State, Final_State).
 
 
-read_line(o(Vs0, Ts, Ns, Fs), o(Vs1, Ts, Ns, Fs)) -->
+read_line(o(Vs0, Ts, Ns, G_Current, G_All), o(Vs1, Ts, Ns, G_Current, G_All)) -->
     vertex(V),
     {
+        format("vertex: ~w\n", V),
         diff_list_append(Vs0, V, Vs1)
     }.
 
-read_line(o(Vs, Ts0, Ns, Fs), o(Vs, Ts1, Ns, Fs)) -->
+read_line(o(Vs, Ts0, Ns, G_Current, G_All), o(Vs, Ts1, Ns, G_Current, G_All)) -->
     texture_coordinate(T),
     {
+        format("texture coord: ~w\n", T),
         diff_list_append(Ts0, T, Ts1)
     }.
 
-read_line(o(Vs, Ts, Ns0, Fs), o(Vs, Ts, Ns1, Fs)) -->
+read_line(o(Vs, Ts, Ns0, G_Current, G_All), o(Vs, Ts, Ns1, G_Current, G_All)) -->
     vertex_normal(N),
     {
+        format("normal: ~w\n", N),
         diff_list_append(Ns0, N, Ns1)
     }.
 
-read_line(o(Vs, Ts, Ns, Fs0), o(Vs, Ts, Ns, Fs1)) -->
+read_line(o(Vs, Ts, Ns, G_Current, G_All0), o(Vs, Ts, Ns, G_Current, G_All1)) -->
     face(F),
     {
-        diff_list_append(Fs0, F, Fs1)
+        format("face: ~w\n", F),
+        add_face(F, G_Current, G_All0, G_All1)
     }.
+
+read_line(o(Vs, Ts, Ns, _, G_All), o(Vs, Ts, Ns, G_Current, G_All)) -->
+    group(G_Current).
 
 read_line(State, State) -->
     comment.
@@ -117,6 +138,33 @@ face(f(V1, V2, V3)) -->
     white_vertex_texture_normal(V3),
     white_eol.
 
+
+add_face(Face, [Group|Groups], G_All0, G_All2) :-
+    (   get_dict(Group, G_All0, Current_Faces)
+    ->  true
+    ;   diff_list_init(Current_Faces)),
+    diff_list_append(Current_Faces, Face, New_Faces),
+    put_dict(Group, G_All0, New_Faces, G_All1),
+    add_face(Face, Groups, G_All1, G_All2).
+
+add_face(_, [], G_All, G_All).
+
+
+group(Groups) -->
+    "g",
+    group_tail(Groups).
+
+group_tail([Group|Groups]) -->
+    white,
+    whites,
+    nonblanks(Group_Codes),
+    {
+        atom_codes(Group, Group_Codes)
+    },
+    group_tail(Groups).
+
+group_tail([]) -->
+    white_eol.
 
 white_vertex(V) -->
     white_integer(V).
