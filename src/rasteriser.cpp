@@ -21,8 +21,16 @@ void Rasteriser::draw(int width, int height) {
         Vertex(triangle.v1, triangle.normal, vec2(1, 1), triangle.colour),
         Vertex(triangle.v2, triangle.normal, vec2(1, 1), triangle.colour)};
     vector<Pixel> proj(vertices.size());
+
+	//here is where we should calculate light for each vertex
     for (size_t i = 0; i < vertices.size(); i++) {
-      proj[i] = VertexShader(vertices[i], width, height);
+		Ray ray;
+		ray.collisionLocation = vertices[i].position;
+		ray.collision = &triangle;
+		ray.direction = camera.position - vertices[i].position;
+		vec3 illumination = lighting->calculateLight(ray);
+		vertices[i].illumination = illumination;
+		proj[i] = VertexShader(vertices[i], width, height);
     }
 
     int projE1X = proj[1].x - proj[0].x;
@@ -61,16 +69,9 @@ void Rasteriser::drawPolygonRows(int width, int height,
               lerpV(leftPixels[y].v, rightPixels[y].v,
                     deLerpF(leftPixels[y].x, rightPixels[y].x, x));
           // pixelVert.position /= adjust;
-		  Ray ray;
-		  ray.collisionLocation = pixelVert.position;
-		  ray.collision = &triangle;
-		  ray.direction = camera.position - pixelVert.position;
-		  //ray.length = numeric_limits<float>::max();
 
-		  bool intersects = triangle.calculateIntersection(ray);
 
-		  //vec3 lightColour = lighting->calculateLight(ray);
-		  vec3 lightColour = triangle.colour;
+		  vec3 lightColour = pixelVert.illumination;
 		  drawPixel(x, leftPixels[y].y, vec3(std::min(lightColour.r, 1.0f),
 			  std::min(lightColour.g, 1.0f),
 			  std::min(lightColour.b, 1.0f)));

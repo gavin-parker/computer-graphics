@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "rast") {
-		shared_ptr<LightingEngine> engine(new StandardLighting(scene));
+		shared_ptr<LightingEngine> engine(new RastLighting(scene));
       Rasteriser screen(500, 500, engine, scene, false);
       screen.run();
       screen.saveBMP("screenshot.bmp");

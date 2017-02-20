@@ -21,7 +21,7 @@ inline int lerpI(int a, int b, float t) {
 
 inline Vertex lerpV(Vertex a, Vertex b, float t) {
   return Vertex(lerp(a.position, b.position, t), a.normal, a.reflectance,
-                a.illumination);
+                lerp(a.illumination, b.illumination, t));
 }
 
 inline Pixel lerpP(Pixel a, Pixel b, float t) {

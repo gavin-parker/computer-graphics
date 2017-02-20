@@ -2,6 +2,7 @@
 
 #include "camera.h"
 #include "lightingengine.h"
+#include "rastlighting.h"
 #include "pointlight.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
