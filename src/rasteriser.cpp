@@ -66,7 +66,7 @@ void Rasteriser::drawPolygonRows(int width, int height,
           // leftPixels[y].v.position *= adjust;
           // rightPixels[y].v.position *= adjust;
           Vertex pixelVert =
-              lerpV(leftPixels[y].v, rightPixels[y].v,
+              lerpV(leftPixels[y].v, rightPixels[y].v, 1/pixelDepth,
                     deLerpF(leftPixels[y].x, rightPixels[y].x, x));
           // pixelVert.position /= adjust;
 
