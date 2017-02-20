@@ -7,6 +7,8 @@
 	      eol//0
 	  ]).
 
+:- use_module(library(dcg/basics)).
+
 white_integer(N) -->
     white,
     whites,
