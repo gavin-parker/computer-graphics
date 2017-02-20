@@ -1,6 +1,9 @@
 :- module(mtl, [
 	      mtl_file/2,
-	      mtl//1
+	      mtl_file/3,
+	      mtl//1,
+	      mtl//2,
+	      initial_materials/1
 	  ]).
 
 :- use_module(library(dcg/basics)).
@@ -10,13 +13,23 @@
 mtl_file(Materials, File) :-
 	phrase_from_file(mtl(Materials), File).
 
+mtl_file(Current_Materials, New_Materials, File) :-
+	phrase_from_file(mtl(Current_Materials, New_Materials), File).
+
 
 mtl(Materials, Codes, End) :-
-	initial_state(Initial_Materials, Initial_Material),
-	read_lines(Initial_Materials, Materials, Initial_Material, _, Codes, End).
+	initial_materials(Initial_Materials),
+	mtl(Initial_Materials, Materials, Codes, End).
+
+mtl(Current_Materials, New_Materials, Codes, End) :-
+	initial_material(Initial_Material),
+	read_lines(Current_Materials, New_Materials, Initial_Material, _, Codes, End).
 
 
-initial_state(mtl{}, null).
+initial_materials(materials{}).
+
+
+initial_material(null).
 
 
 read_lines(Final_Materials, Final_Materials, Final_Material, Final_Material) -->
@@ -64,6 +77,14 @@ read_line(Materials, Materials, Material, Material) -->
 
 read_line(Materials, Materials, Material, Material) -->
 	white_eol.
+
+read_line(Materials, Materials, Material, Material) -->
+	string_without("\r\n", Line_Codes),
+	{
+	    string_codes(Line, Line_Codes),
+	    format("Unknown line ~w", [Line]),
+	    fail
+	}.
 
 
 new_material(Name) -->
