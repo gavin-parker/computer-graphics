@@ -21,14 +21,14 @@ obj(Object, Codes, End) :-
     final_state(Final_State, Object).
 
 
-initial_state(o(V, T, N, [''], groups{}, Materials)) :-
+initial_state(o(V, T, N, [''], groups{}, '', Materials)) :-
     diff_list_init(V),
     diff_list_init(T),
     diff_list_init(N),
     initial_materials(Materials).
 
 
-final_state(o(VsL, TsL, NsL, _, Gs, Materials), o(Vs, Ts, Ns, GPs, Materials)) :-
+final_state(o(VsL, TsL, NsL, _Current_Group, Gs, _Current_Material, Materials), o(Vs, Ts, Ns, GPs, Materials)) :-
     diff_list_close(VsL, Vs),
     diff_list_close(TsL, Ts),
     diff_list_close(NsL, Ns),
@@ -53,42 +53,45 @@ read_lines(Initial_State, Final_State) -->
     read_lines(Intermediate_State, Final_State).
 
 
-read_line(o(Vs0, Ts, Ns, G_Current, G_All, Ms), o(Vs1, Ts, Ns, G_Current, G_All, Ms)) -->
+read_line(o(Vs0, Ts, Ns, G_Current, G_All, M_Current, M_All), o(Vs1, Ts, Ns, G_Current, G_All, M_Current, M_All)) -->
     vertex(V),
     {
         format("vertex: ~w\n", V),
         diff_list_append(Vs0, V, Vs1)
     }.
 
-read_line(o(Vs, Ts0, Ns, G_Current, G_All, Ms), o(Vs, Ts1, Ns, G_Current, G_All, Ms)) -->
+read_line(o(Vs, Ts0, Ns, G_Current, G_All, M_Current, M_All), o(Vs, Ts1, Ns, G_Current, G_All, M_Current, M_All)) -->
     texture_coordinate(T),
     {
         format("texture coord: ~w\n", T),
         diff_list_append(Ts0, T, Ts1)
     }.
 
-read_line(o(Vs, Ts, Ns0, G_Current, G_All, Ms), o(Vs, Ts, Ns1, G_Current, G_All, Ms)) -->
+read_line(o(Vs, Ts, Ns0, G_Current, G_All, M_Current, M_All), o(Vs, Ts, Ns1, G_Current, G_All, M_Current, M_All)) -->
     vertex_normal(N),
     {
         format("normal: ~w\n", N),
         diff_list_append(Ns0, N, Ns1)
     }.
 
-read_line(o(Vs, Ts, Ns, G_Current, G_All0, Ms), o(Vs, Ts, Ns, G_Current, G_All1, Ms)) -->
-    face(F),
+read_line(o(Vs, Ts, Ns, G_Current, G_All0, M_Current, M_All), o(Vs, Ts, Ns, G_Current, G_All1, M_Current, M_All)) -->
+    face(F, M_Current),
     {
         format("face: ~w\n", F),
         add_face(F, G_Current, G_All0, G_All1)
     }.
 
-read_line(o(Vs, Ts, Ns, _, G_All, Ms), o(Vs, Ts, Ns, G_Current, G_All, Ms)) -->
+read_line(o(Vs, Ts, Ns, _, G_All, M_Current, M_All), o(Vs, Ts, Ns, G_Current, G_All, M_Current, M_All)) -->
     group(G_Current).
 
-read_line(o(Vs, Ts, Ns, G_Current, G_All, Ms0), o(Vs, Ts, Ns, G_Current, G_All, Ms1)) -->
+read_line(o(Vs, Ts, Ns, G_Current, G_All, M_Current, M_All0), o(Vs, Ts, Ns, G_Current, G_All, M_Current, M_All1)) -->
 	material_library(File),
 	{
-	    mtl_file(Ms0, Ms1, File)
+	    mtl_file(M_All0, M_All1, File)
 	}.
+
+read_line(o(Vs, Ts, Ns, G_Current, G_All, _M_Current, M_All), o(Vs, Ts, Ns, G_Current, G_All, M_Current, M_All)) -->
+	use_material(M_Current).
 
 read_line(State, State) -->
     comment.
@@ -131,28 +134,28 @@ vertex_normal(vn(X, Y, Z)) -->
     white_eol.
 
 
-face(f(V1, V2, V3)) -->
+face(f(V1, V2, V3, M_Current), M_Current) -->
     "f",
     white_vertex(V1),
     white_vertex(V2),
     white_vertex(V3),
     white_eol.
 
-face(f(V1, V2, V3)) -->
+face(f(V1, V2, V3, M_Current), M_Current) -->
     "f",
     white_vertex_texture(V1),
     white_vertex_texture(V2),
     white_vertex_texture(V3),
     white_eol.
 
-face(f(V1, V2, V3)) -->
+face(f(V1, V2, V3, M_Current), M_Current) -->
     "f",
     white_vertex_normal(V1),
     white_vertex_normal(V2),
     white_vertex_normal(V3),
     white_eol.
 
-face(f(V1, V2, V3)) -->
+face(f(V1, V2, V3, M_Current), M_Current) -->
     "f",
     white_vertex_texture_normal(V1),
     white_vertex_texture_normal(V2),
@@ -197,6 +200,19 @@ material_library(File) -->
 	string_without("]", File_Codes),
 	{
 	    atom_codes(File, File_Codes)
+	},
+	"]",
+	white_eol.
+
+
+use_material(Material) -->
+	whites,
+	"usemtl",
+	whites,
+	"[",
+	string_without("]", Material_Codes),
+	{
+	    atom_codes(Material, Material_Codes)
 	},
 	"]",
 	white_eol.
