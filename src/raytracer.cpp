@@ -24,6 +24,7 @@ void RayTracer::draw(int width, int height) {
 
       camera.calculateRay(cameraRay, static_cast<float>(x) / width,
                           static_cast<float>(y) / height);
+
 	  cameraRay.length = numeric_limits<float>::max();
       if (boundingVolume->calculateIntersection(cameraRay)) {
         shared_ptr<const Material> mat = cameraRay.collision->mat;

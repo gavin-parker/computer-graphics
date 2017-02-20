@@ -21,6 +21,8 @@ void Camera::update(float dt) {
       (static_cast<float>(keystate[SDLK_a] - keystate[SDLK_d]) * right +
        static_cast<float>(keystate[SDLK_e] - keystate[SDLK_q]) * upwards +
        static_cast<float>(keystate[SDLK_w] - keystate[SDLK_s]) * forwards);
+
+
 }
 
 void Camera::calculateRay(Ray &ray, float x, float y) {
@@ -28,6 +30,7 @@ void Camera::calculateRay(Ray &ray, float x, float y) {
 
   vec3 cameraSpaceDirection = vec3(lerpF(viewOffset, -viewOffset, x),
                                    lerpF(viewOffset, -viewOffset, y), 1.0f);
+
 
   ray.direction = rotation * cameraSpaceDirection;
 }

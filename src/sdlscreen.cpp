@@ -70,8 +70,8 @@ void SdlScreen::run() {
 
     draw(surface->w, surface->h);
 
-    cout << setfill('0') << setw(5) << (SDL_GetTicks() - drawTime) << "ms"
-         << endl;
+	cout << setfill('0') << setw(5) << (SDL_GetTicks() - drawTime) << "ms ";
+	cout << (1000.f / (SDL_GetTicks() - drawTime)) << "fps\n";
 
     if (SDL_MUSTLOCK(surface))
       SDL_UnlockSurface(surface);
