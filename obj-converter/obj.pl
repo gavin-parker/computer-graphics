@@ -86,6 +86,7 @@ read_line(State, State) -->
 read_line(State, State) -->
     white_eol.
 
+
 vertex(v(X, Y, Z, W)) -->
     "v",
     white_number(X),
@@ -141,6 +142,8 @@ face(f(V1, V2, V3)) -->
     white_eol.
 
 
+add_face(_, [], G_All, G_All).
+
 add_face(Face, [Group|Groups], G_All0, G_All2) :-
     (   get_dict(Group, G_All0, Current_Faces)
     ->  true
@@ -149,12 +152,14 @@ add_face(Face, [Group|Groups], G_All0, G_All2) :-
     put_dict(Group, G_All0, New_Faces, G_All1),
     add_face(Face, Groups, G_All1, G_All2).
 
-add_face(_, [], G_All, G_All).
-
 
 group(Groups) -->
     "g",
     group_tail(Groups).
+
+
+group_tail([]) -->
+    white_eol.
 
 group_tail([Group|Groups]) -->
     white,
@@ -165,8 +170,6 @@ group_tail([Group|Groups]) -->
     },
     group_tail(Groups).
 
-group_tail([]) -->
-    white_eol.
 
 white_vertex(V) -->
     white_integer(V).
