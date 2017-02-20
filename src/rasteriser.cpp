@@ -22,7 +22,7 @@ void Rasteriser::draw(int width, int height) {
         Vertex(triangle.v2, triangle.normal, vec2(1, 1), triangle.colour)};
     vector<Pixel> proj(vertices.size());
 
-	//here is where we should calculate light for each vertex
+	//here is where we do our vertex shading
     for (size_t i = 0; i < vertices.size(); i++) {
 		Ray ray;
 		ray.collisionLocation = vertices[i].position;
@@ -70,8 +70,16 @@ void Rasteriser::drawPolygonRows(int width, int height,
                     deLerpF(leftPixels[y].x, rightPixels[y].x, x));
           // pixelVert.position /= adjust;
 
+		  vec3 f1 = triangle.v0 - pixelVert.position;
+		  vec3 f2 = triangle.v1 - pixelVert.position;
+		  vec3 f3 = triangle.v2 - pixelVert.position;
+		  float a = glm::length(glm::cross(triangle.e1, triangle.e2));
+		  float a1 = glm::length(glm::cross(f2, f3)) / a;
+		  float a2 = glm::length(glm::cross(f3, f1)) / a;
+		  float a3 = glm::length(glm::cross(f1, f2)) / a;
+		  vec2 uv(a2, a3);
 
-		  vec3 lightColour = pixelVert.illumination;
+		  vec3 lightColour = triangle.getPixelColour(uv) *pixelVert.illumination;
 		  drawPixel(x, leftPixels[y].y, vec3(std::min(lightColour.r, 1.0f),
 			  std::min(lightColour.g, 1.0f),
 			  std::min(lightColour.b, 1.0f)));

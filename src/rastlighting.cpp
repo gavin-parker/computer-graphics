@@ -19,15 +19,15 @@ vec3 RastLighting::calculateLight(Ray ray, ivec2 pixel) {
 		vec3 l = glm::normalize(lightRay.direction);
 		vec3 spec = mat->phong(v, l, n);
 
+
 		lightColour =
 			light->directLight(ray) * mat->diffuse + spec * mat->specularity;
 	//}
 	//else {
 	//	lightColour =
 	//		light->directLight(ray) * mat->diffuse + spec * mat->specularity;
-	//}
-
-	return ray.collision->colour * lightColour;
+	//}		
+	return lightColour;
 }
 
 bool RastLighting::ClosestIntersection(Ray &ray) {
