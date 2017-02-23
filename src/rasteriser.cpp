@@ -14,7 +14,6 @@ void Rasteriser::draw(int width, int height) {
   for (size_t i = 0; i < depthBuffer.size(); ++i) {
     depthBuffer[i] = numeric_limits<float>::max();
   }
-
   for (const Triangle &triangle : *triangles) {
     vector<Vertex> vertices = {
         Vertex(triangle.v0, triangle.normal, vec2(1, 1), triangle.colour),
@@ -29,8 +28,9 @@ void Rasteriser::draw(int width, int height) {
 		ray.collision = &triangle;
 		ray.direction = camera.position - vertices[i].position;
 		vec3 illumination = lighting->calculateLight(ray);
-		vertices[i].illumination = illumination;
 		proj[i] = VertexShader(vertices[i], width, height);
+		proj[i].v.illumination = illumination;
+
     }
 
     int projE1X = proj[1].x - proj[0].x;
@@ -41,7 +41,7 @@ void Rasteriser::draw(int width, int height) {
     if (projE1X * projE2Y > projE2X * projE1Y) {
       vector<Pixel> leftPixels;
       vector<Pixel> rightPixels;
-      computePolygonRows(proj, leftPixels, rightPixels);
+      computePolygonRows(proj, leftPixels, rightPixels, triangle);
       drawPolygonRows(width, height, leftPixels, rightPixels, triangle);
     }
   }
@@ -52,6 +52,13 @@ void Rasteriser::drawPolygonRows(int width, int height,
                                  vector<Pixel> &rightPixels, const Triangle &triangle) {
 #pragma omp parallel for
   for (int y = 0; y < static_cast<int>(leftPixels.size()); y++) {
+
+	  //
+	  //ray.direction = camera.position - rightPixels[y].v.position;
+	  //ray.collisionLocation = rightPixels[y].v.position;
+	  //rightPixels[y].v.illumination = lighting->calculateLight(ray);
+
+
     for (int x = leftPixels[y].x; x <= rightPixels[y].x; x++) {
       float pixelDepth = lerpF(leftPixels[y].depth, rightPixels[y].depth,
                                deLerpF(leftPixels[y].x, rightPixels[y].x, x));
@@ -63,8 +70,6 @@ void Rasteriser::drawPolygonRows(int width, int height,
         if (pixelDepth < bufferDepth) {
           bufferDepth = pixelDepth;
           vec3 adjust(pixelDepth, pixelDepth, pixelDepth);
-          // leftPixels[y].v.position *= adjust;
-          // rightPixels[y].v.position *= adjust;
           Vertex pixelVert =
               lerpV(leftPixels[y].v, rightPixels[y].v, 1/pixelDepth,
                     deLerpF(leftPixels[y].x, rightPixels[y].x, x));
@@ -78,7 +83,13 @@ void Rasteriser::drawPolygonRows(int width, int height,
 		  float a2 = glm::length(glm::cross(f3, f1)) / a;
 		  float a3 = glm::length(glm::cross(f1, f2)) / a;
 		  vec2 uv(a2, a3);
-
+		  //if calculating per pixel...
+		  Ray ray;
+		  vec3 realPos = pixelVert.position;
+		  ray.direction = camera.position - pixelVert.position;
+		  ray.collisionLocation = pixelVert.position;
+		  ray.collision = &triangle;
+		  pixelVert.illumination = lighting->calculateLight(ray);
 		  vec3 lightColour = triangle.getPixelColour(uv) *pixelVert.illumination;
 		  drawPixel(x, leftPixels[y].y, vec3(std::min(lightColour.r, 1.0f),
 			  std::min(lightColour.g, 1.0f),
@@ -91,7 +102,7 @@ void Rasteriser::drawPolygonRows(int width, int height,
 
 void Rasteriser::computePolygonRows(const vector<Pixel> &vertexPixels,
                                     vector<Pixel> &leftPixels,
-                                    vector<Pixel> &rightPixels) {
+                                    vector<Pixel> &rightPixels, const Triangle &triangle) {
   int max = -numeric_limits<int>::max();
   int min = numeric_limits<int>::max();
 
@@ -111,6 +122,7 @@ void Rasteriser::computePolygonRows(const vector<Pixel> &vertexPixels,
         1.f / (glm::length(vec2(start.x - end.x, start.y - end.y)) + 1);
     for (float t = 0; t < 1; t += step) {
       Pixel pixel = lerpP(vertexPixels[i], vertexPixels[(i + 1) % 3], t);
+
       int y = pixel.y - min;
       if (pixel.x < leftPixels[y].x) {
         leftPixels[y] = pixel;

@@ -7,26 +7,15 @@ RastLighting::RastLighting(const shared_ptr<Scene> scene) : LightingEngine(scene
 vec3 RastLighting::calculateLight(Ray ray, ivec2 pixel) {
 	Ray lightRay;
 	light->calculateRay(lightRay, ray.collisionLocation);
-	// ClosestIntersection(lightRay);
 
 	vec3 lightColour(0, 0, 0);
 	shared_ptr<const Material> mat = ray.collision->mat;
-	//boundingVolume->calculateAnyIntersection(lightRay, ray);
-	//if (boundingVolume->calculateAnyIntersection(lightRay, ray) && lightRay.collisionLocation == ray.collisionLocation) {
-
-		vec3 n = ray.collision->normal;
-		vec3 v = glm::normalize(ray.direction);
-		vec3 l = glm::normalize(lightRay.direction);
-		vec3 spec = mat->phong(v, l, n);
-
-
-		lightColour =
-			light->directLight(ray) * mat->diffuse + spec * mat->specularity;
-	//}
-	//else {
-	//	lightColour =
-	//		light->directLight(ray) * mat->diffuse + spec * mat->specularity;
-	//}		
+	vec3 n = ray.collision->normal;
+	vec3 v = glm::normalize(ray.direction);
+	vec3 l = glm::normalize(lightRay.direction);
+	vec3 spec = mat->phong(v, l, n);
+	lightColour =
+			light->directLight(ray) * mat->diffuse + spec * mat->specularity;	
 	return lightColour;
 }
 

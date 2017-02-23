@@ -3,6 +3,7 @@
 #include "camera.h"
 #include "lightingengine.h"
 #include "rastlighting.h"
+#include "baked_gi.h"
 #include "pointlight.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
@@ -25,7 +26,7 @@ private:
 
   void computePolygonRows(const vector<Pixel> &vertexPixels,
                           vector<Pixel> &leftPixels,
-                          vector<Pixel> &rightPixels);
+                          vector<Pixel> &rightPixels, const Triangle &triangle);
   void drawPolygonRows(int width, int height, vector<Pixel> &leftPixels,
                        vector<Pixel> &rightPixels, const Triangle &triangle);
 
