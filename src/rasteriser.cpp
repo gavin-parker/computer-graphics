@@ -71,7 +71,7 @@ void Rasteriser::drawPolygonRows(int width, int height,
           bufferDepth = pixelDepth;
           vec3 adjust(pixelDepth, pixelDepth, pixelDepth);
           Vertex pixelVert =
-              lerpV(leftPixels[y].v, rightPixels[y].v, 1/pixelDepth,
+              lerpV(leftPixels[y].v, rightPixels[y].v, pixelDepth,
                     deLerpF(leftPixels[y].x, rightPixels[y].x, x));
           // pixelVert.position /= adjust;
 
@@ -86,8 +86,9 @@ void Rasteriser::drawPolygonRows(int width, int height,
 		  //if calculating per pixel...
 		  Ray ray;
 		  vec3 realPos = pixelVert.position;
-		  ray.direction = camera.position - pixelVert.position;
-		  ray.collisionLocation = pixelVert.position;
+		  //realPos.z = pixelDepth;
+		  ray.direction = camera.position - realPos;
+		  ray.collisionLocation = realPos;
 		  ray.collision = &triangle;
 		  pixelVert.illumination = lighting->calculateLight(ray);
 		  vec3 lightColour = triangle.getPixelColour(uv) *pixelVert.illumination;
