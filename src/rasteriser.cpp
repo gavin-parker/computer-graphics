@@ -23,13 +23,13 @@ void Rasteriser::draw(int width, int height) {
 
 	//here is where we do our vertex shading
     for (size_t i = 0; i < vertices.size(); i++) {
-		Ray ray;
-		ray.collisionLocation = vertices[i].position;
-		ray.collision = &triangle;
-		ray.direction = camera.position - vertices[i].position;
-		vec3 illumination = lighting->calculateLight(ray);
+		//Ray ray;
+		//ray.collisionLocation = vertices[i].position;
+		//ray.collision = &triangle;
+		//ray.direction = camera.position - vertices[i].position;
+		//vec3 illumination = lighting->calculateLight(ray);
 		proj[i] = VertexShader(vertices[i], width, height);
-		proj[i].v.illumination = illumination;
+		//proj[i].v.illumination = illumination;
 
     }
 
@@ -69,11 +69,9 @@ void Rasteriser::drawPolygonRows(int width, int height,
 
         if (pixelDepth < bufferDepth) {
           bufferDepth = pixelDepth;
-          vec3 adjust(pixelDepth, pixelDepth, pixelDepth);
           Vertex pixelVert =
-              lerpV(leftPixels[y].v, rightPixels[y].v, pixelDepth,
+              lerpV(leftPixels[y].v, rightPixels[y].v,leftPixels[y].depth, rightPixels[y].depth, pixelDepth,
                     deLerpF(leftPixels[y].x, rightPixels[y].x, x));
-          // pixelVert.position /= adjust;
 
 		  vec3 f1 = triangle.v0 - pixelVert.position;
 		  vec3 f2 = triangle.v1 - pixelVert.position;
@@ -86,12 +84,11 @@ void Rasteriser::drawPolygonRows(int width, int height,
 		  //if calculating per pixel...
 		  Ray ray;
 		  vec3 realPos = pixelVert.position;
-		  //realPos.z = pixelDepth;
 		  ray.direction = camera.position - realPos;
 		  ray.collisionLocation = realPos;
 		  ray.collision = &triangle;
 		  pixelVert.illumination = lighting->calculateLight(ray);
-		  vec3 lightColour = triangle.getPixelColour(uv) *pixelVert.illumination;
+		  vec3 lightColour = triangle.colour*pixelVert.illumination;
 		  drawPixel(x, leftPixels[y].y, vec3(std::min(lightColour.r, 1.0f),
 			  std::min(lightColour.g, 1.0f),
 			  std::min(lightColour.b, 1.0f)));

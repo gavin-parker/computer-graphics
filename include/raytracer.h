@@ -27,7 +27,7 @@ private:
   const shared_ptr<PointLight> light;
   shared_ptr<LightingEngine> lighting;
   const shared_ptr<BoundingVolume> boundingVolume;
-
+  bool antialias;
 
 protected:
   void update(float dt) override;
@@ -37,5 +37,5 @@ public:
   RayTracer(int width, int height, shared_ptr<LightingEngine> lighting,
 	  const shared_ptr<PointLight> light,
             const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume,
-            bool fullscreen = false);
+            bool fullscreen = false, bool antialias = true);
 };
