@@ -102,11 +102,11 @@ default_material(mtl(Ka, Kd, Ks, Ns, Map_Ka, Map_Kd, Map_Ks, Map_Ns)) :-
 	white(Ka),
 	white(Kd),
 	black(Ks),
-	Ns = 0,
-	Map_Ka = "",
-	Map_Kd = "",
-	Map_Ks = "",
-	Map_Ns = "".
+	Ns = number(0),
+	Map_Ka = file(""),
+	Map_Kd = file(""),
+	Map_Ks = file(""),
+	Map_Ns = file("").
 
 
 black(rgb(0.0, 0.0, 0.0)).
@@ -127,7 +127,7 @@ specular_colour(Colour) -->
 	k_constant("s", Colour).
 
 
-specular_exponent(Exponent) -->
+specular_exponent(number(Exponent)) -->
 	whites,
 	"Ns",
 	white_number(Exponent),
