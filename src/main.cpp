@@ -8,7 +8,7 @@
 #endif
 #ifndef unix
 extern "C" {
-	FILE __iob_func[3] = { stdin, stdout,*stderr }; 
+	FILE __iob_func[3] = { stdin, stdout,*stderr };
 }
 #endif
 
@@ -25,6 +25,14 @@ int main(int argc, char *argv[]) {
 	const shared_ptr<BoundingVolume> cornelBVH = loadTestModelBVH();
     shared_ptr<Scene> scene(new Scene(softLight, geometry, cornelBVH));
 	shared_ptr<Scene> scene_low_quality(new Scene(light, geometry, cornelBVH));
+	#pragma omp parallel
+	{
+		#pragma omp master
+		{
+			int threads = omp_get_num_threads();
+			cout << "running on " << threads << " threads";
+		}
+	}
 
     if (mode == "stars") {
       StarScreen screen(500, 500, 1000, 0.5, false);
