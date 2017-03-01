@@ -1,7 +1,7 @@
 #include "pointlight.h"
 
 PointLight::PointLight(vec3 position, vec3 color, float power)
-    : position(position), color(color), power(power) {}
+    : Light(position, color, power) {}
 
 void PointLight::update(float dt) {
   Uint8 *keystate = SDL_GetKeyState(0);
@@ -12,9 +12,12 @@ void PointLight::update(float dt) {
                    static_cast<float>(keystate[SDLK_i] - keystate[SDLK_k]));
 }
 
-void PointLight::calculateRay(Ray &ray, glm::vec3 target) const {
+void PointLight::calculateRays(vector<Ray> &rays, glm::vec3 target) const {
+	Ray ray;
   ray.position = position;
   ray.direction = target - position;
+  rays.push_back(ray);
+
 }
 
 // Uses equation 27 on

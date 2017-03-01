@@ -8,15 +8,21 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
   // find diffuse light at this position
   float diffuse = ray.collision->mat->diffuse;
   vec3 lightHere(0, 0, 0);
-  Ray directLightRay;
-  light->calculateRay(directLightRay, ray.collisionLocation);
 
-  if (!boundingVolume->calculateAnyIntersection(directLightRay, ray)) {
-    lightHere = vec3(0, 0, 0);
-  } else if (directLightRay.collision == ray.collision) {
-    lightHere = light->directLight(ray)*ray.collision->getPixelColour(ray.collisionUVLocation);
+  vector<Ray> rays;
+  light->calculateRays(rays, ray.collisionLocation);
+
+  for (int i = 0; i < rays.size(); i++) {
+	  Ray directLightRay = rays[i];
+
+	  if (!boundingVolume->calculateAnyIntersection(directLightRay, ray)) {
+		  lightHere += vec3(0, 0, 0);
+	  }
+	  else if (directLightRay.collision == ray.collision) {
+		  lightHere += light->directLight(ray)*ray.collision->getPixelColour(ray.collisionUVLocation);
+	  }
   }
-
+  lightHere /= rays.size();
   vec3 indirectLight(0, 0, 0);
 
   // create orthogonal basis on plane

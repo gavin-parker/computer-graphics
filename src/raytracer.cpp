@@ -1,7 +1,7 @@
 #include "raytracer.h"
 
 RayTracer::RayTracer(int width, int height, shared_ptr<LightingEngine> lighting,
-                     shared_ptr<PointLight> light,
+                     shared_ptr<Light> light,
                      const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume,
                      bool fullscreen, bool antialias)
     : SdlScreen(width, height, fullscreen), triangles(triangles),

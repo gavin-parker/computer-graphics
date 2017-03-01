@@ -6,24 +6,33 @@ StandardLighting::StandardLighting(const shared_ptr<Scene> scene) : LightingEngi
 
 vec3 StandardLighting::calculateLight(Ray ray, ivec2 pixel) {
   Ray lightRay;
-  light->calculateRay(lightRay, ray.collisionLocation);
+  vector<Ray> rays;
+  light->calculateRays(rays, ray.collisionLocation);
   // ClosestIntersection(lightRay);
 
-  vec3 lightColour(0, 0, 0);
   shared_ptr<const Material> mat = ray.collision->mat;
-  if (boundingVolume->calculateAnyIntersection(lightRay, ray) && lightRay.collision == ray.collision) {
 
-    vec3 n = lightRay.collision->normal;
-    vec3 v = glm::normalize(ray.direction);
-    vec3 l = glm::normalize(lightRay.direction);
-    vec3 spec = mat->phong(v, l, n);
+  vec3 lightColour(0, 0, 0);
 
-    lightColour =
-        light->directLight(ray) * mat->diffuse + spec * mat->specularity;
-  } else {
-    lightColour = ambientLight * mat->diffuse;
+  //calculate average light at a point -- works with multiple light rays
+  for (int i = 0; i < rays.size(); i++) {
+	  lightRay = rays[i];
+
+	  if (boundingVolume->calculateAnyIntersection(lightRay, ray) && lightRay.collision == ray.collision) {
+
+		  vec3 n = lightRay.collision->normal;
+		  vec3 v = glm::normalize(ray.direction);
+		  vec3 l = glm::normalize(lightRay.direction);
+		  vec3 spec = mat->phong(v, l, n);
+
+		  lightColour +=
+			  light->directLight(ray) * mat->diffuse + spec * mat->specularity;
+	  }
+	  else {
+		  lightColour += ambientLight * mat->diffuse;
+	  }
   }
-
+  lightColour /= rays.size();
   return ray.collision->getPixelColour(ray.collisionUVLocation) * lightColour;
 }
 
