@@ -10,8 +10,7 @@
 #include "standardlighting.h"
 #include "cube.h"
 #include "lightingengine.h"
-
-#include "pointlight.h"
+#include "light.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
 #include "bvh.h"

@@ -5,6 +5,7 @@
 
 #include "camera.h"
 #include "pointlight.h"
+#include "light.h"
 #include "scene.h"
 #include "sdlscreen.h"
 #include "testmodel.h"

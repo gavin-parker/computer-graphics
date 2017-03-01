@@ -7,6 +7,7 @@
 #include "convergent_gi.h"
 #include "cube.h"
 #include "pointlight.h"
+#include "light.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
 #include "bvh.h"

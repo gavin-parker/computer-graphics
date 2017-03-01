@@ -6,7 +6,9 @@ StandardLighting::StandardLighting(const shared_ptr<Scene> scene) : LightingEngi
 
 vec3 StandardLighting::calculateLight(Ray ray, ivec2 pixel) {
   Ray lightRay;
-  light->calculateRay(lightRay, ray.collisionLocation);
+  vector<Ray> rays;
+  light->calculateRays(rays, ray.collisionLocation);
+  lightRay = rays[0];
   // ClosestIntersection(lightRay);
 
   vec3 lightColour(0, 0, 0);

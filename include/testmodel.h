@@ -4,6 +4,7 @@
 #include "lodepng.h"
 #include "triangle.h"
 #include "scene.h"
+
 const shared_ptr<const vector<Triangle>> loadTestModel();
 
 const shared_ptr<BoundingVolume> loadTestModelBVH();
