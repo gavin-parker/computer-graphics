@@ -1,3 +1,4 @@
+#ifdef useCL
 #include "raytracer_cl.h"
 
 RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> lighting,
@@ -142,3 +143,4 @@ void RayTracerCL::draw(int width, int height) {
 			}
 		}
 }
+#endif

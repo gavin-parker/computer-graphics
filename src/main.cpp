@@ -63,6 +63,12 @@ int main(int argc, char *argv[]) {
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
 	}
+	else if (mode == "baked") {
+		shared_ptr<LightingEngine> engine(new BakedGI(scene, 5, 100));
+		Rasteriser screen(500, 500, engine, scene, false);
+		screen.run();
+		screen.saveBMP("screenshot.bmp");
+	}
 #ifdef useCL
 	else if (mode == "cl") {
 		shared_ptr<LightingEngine> engine(new StandardLighting(scene));
