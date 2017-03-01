@@ -102,7 +102,7 @@ bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface) {
 	bool anyIntersection = this->anyIntersection(ray, surface);
 
 	//then check sub volumes if there are any
-	for (BoundingVolume volume : subVolumes) {
+	for (BoundingVolume& volume : subVolumes) {
 		anyIntersection |= volume.calculateIntersection(ray);
 		if (anyIntersection && ray.collision != surface.collision &&
 			ray.length < lightDistance) {

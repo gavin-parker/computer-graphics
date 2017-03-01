@@ -1,7 +1,7 @@
 #include "pointlight.h"
 
 PointLight::PointLight(vec3 position, vec3 color, float power)
-    : Light(position, color, power) {}
+    : Light(position, color, power, 1) {}
 
 void PointLight::update(float dt) {
   Uint8 *keystate = SDL_GetKeyState(0);

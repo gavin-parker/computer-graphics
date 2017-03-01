@@ -9,7 +9,7 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
   float diffuse = ray.collision->mat->diffuse;
   vec3 lightHere(0, 0, 0);
 
-  vector<Ray> rays;
+  vector<Ray> rays(light->rayCount);
   light->calculateRays(rays, ray.collisionLocation);
 
   for (int i = 0; i < rays.size(); i++) {

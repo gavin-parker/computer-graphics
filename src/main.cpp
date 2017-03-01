@@ -79,6 +79,7 @@ int main(int argc, char *argv[]) {
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
 	}
+
 #ifdef useCL
 	else if (mode == "cl") {
 		shared_ptr<LightingEngine> engine(new StandardLighting(scene));

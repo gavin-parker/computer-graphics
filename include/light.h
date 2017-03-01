@@ -23,6 +23,8 @@ public:
 
 	const float velocity = 200.0f;
 
+	int rayCount = 1;
+
 	vec3 position;
 
 	virtual void update(float dt) = 0;
@@ -33,6 +35,6 @@ public:
 
 	virtual vec3 vertexLight(Vertex v) const = 0;
 
-	Light(vec3 position, vec3 color, float power) : position(position), color(color), power(power) {};
+	Light(vec3 position, vec3 color, float power, int rayCount) : position(position), color(color), power(power), rayCount(rayCount) {};
 
 };

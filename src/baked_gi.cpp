@@ -36,7 +36,8 @@ vec3 BakedGI::trace(Ray ray, int bounces) {
 	float diffuse = ray.collision->mat->diffuse;
 	vec3 lightHere(0, 0, 0);
 
-	vector<Ray> rays;
+	vector<Ray> rays(light->rayCount);
+
 	light->calculateRays(rays, ray.collisionLocation);
 	Ray directLightRay = rays[0];
 	if (!boundingVolume->calculateAnyIntersection(directLightRay, ray)) {

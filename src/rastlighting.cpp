@@ -5,7 +5,7 @@
 RastLighting::RastLighting(const shared_ptr<Scene> scene) : LightingEngine(scene->triangles, scene->light), boundingVolume(scene->volume) {};
 
 vec3 RastLighting::calculateLight(Ray ray, ivec2 pixel) {
-	vector<Ray> rays;
+	vector<Ray> rays(light->rayCount);
 	vec3 lightColour(0, 0, 0);
 	light->calculateRays(rays, ray.collisionLocation);
 	for (int i = 0; i < rays.size(); i++) {

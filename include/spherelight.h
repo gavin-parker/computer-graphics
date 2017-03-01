@@ -9,7 +9,6 @@
 class SphereLight : public Light {
 private:
 
-	int lightRes = 4;
 	float radius = 1.0f;
 public:
 
