@@ -1,7 +1,7 @@
 #include "spherelight.h"
 
-SphereLight::SphereLight(vec3 position, vec3 color, float power)
-	: Light(position, color, power) {}
+SphereLight::SphereLight(vec3 position, vec3 color, float power, float radius, int res)
+	: Light(position, color, power), radius(radius), lightRes(res) {}
 
 void SphereLight::update(float dt) {
 	Uint8 *keystate = SDL_GetKeyState(0);
@@ -17,10 +17,11 @@ void SphereLight::calculateRays(vector<Ray> &rays, glm::vec3 target) const {
 		//pick a random point on the sphere maybe?
 		float theta = RAND * 2 * M_PI;
 		float phi = acos(2 * RAND - 1);
-		vec3 pos(radius*cos(theta)*sin(phi), radius*sin(theta)*sin(phi), radius*cos(phi));
+		vec3 point(radius*cos(theta)*sin(phi), radius*sin(theta)*sin(phi), radius*cos(phi));
+		point += position;
 		Ray ray;
-		ray.position = pos;
-		ray.direction = target - pos;
+		ray.position = point;
+		ray.direction = target - point;
 		rays.push_back(ray);
 	}
 }

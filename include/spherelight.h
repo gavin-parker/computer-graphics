@@ -9,11 +9,11 @@
 class SphereLight : public Light {
 private:
 
-	const int lightRes = 4;
-	const float radius = 1.0f;
+	int lightRes = 4;
+	float radius = 1.0f;
 public:
 
-	SphereLight(vec3 position, vec3 color, float power);
+	SphereLight(vec3 position, vec3 color, float power, float radius, int res);
 
 	void update(float dt) override;
 

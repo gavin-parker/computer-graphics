@@ -21,7 +21,7 @@ private:
 
   const shared_ptr<const vector<Triangle>> triangles;
   Camera camera;
-  shared_ptr<PointLight> light;
+  shared_ptr<Light> light;
   shared_ptr<LightingEngine> lighting;
 
   void computePolygonRows(const vector<Pixel> &vertexPixels,

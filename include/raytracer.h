@@ -23,7 +23,7 @@ private:
   Camera camera;
 
   const vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
-  const shared_ptr<PointLight> light;
+  const shared_ptr<Light> light;
   shared_ptr<LightingEngine> lighting;
   const shared_ptr<BoundingVolume> boundingVolume;
   bool antialias;
@@ -34,7 +34,7 @@ protected:
 
 public:
   RayTracer(int width, int height, shared_ptr<LightingEngine> lighting,
-	  const shared_ptr<PointLight> light,
+	  const shared_ptr<Light> light,
             const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume,
             bool fullscreen = false, bool antialias = true);
 };
