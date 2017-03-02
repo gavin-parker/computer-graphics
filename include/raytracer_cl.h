@@ -5,9 +5,6 @@
 #include <CL/cl.hpp>
 #include "camera.h"
 #include "convergent_gi.h"
-#include "cube.h"
-#include "pointlight.h"
-#include "light.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
 #include "bvh.h"
@@ -18,13 +15,20 @@ struct TriangleStruct {
 	cl_float3 color;
 	cl_float3 normal;
 };
-
+#pragma pack(1)
 typedef struct CameraStruct {
-	cl_float3 position;
 	cl_float viewOffset;
-	cl_float3 rotation[3];
-
+	cl_float3 position;
+	//cl_float3 rotation[3];
 } CameraStruct;
+#pragma pack()
+typedef struct RayStruct {
+	cl_float3 origin;
+	cl_float3 direction;
+	int collision;
+	float length;
+	cl_float3 collisionLocation;
+} RayStruct;
 
 inline cl_float3 vecToFloat(vec3 vec) {
 	cl_float3 f;
@@ -53,8 +57,10 @@ private:
 	cl::Buffer lightBuffer;
 	cl::Buffer imageBuffer;
 	cl::Buffer cameraBuffer;
+	cl::Buffer pointBuffer;
 	cl::CommandQueue queue;
-	cl::Kernel kernel_draw;
+	cl::Kernel castRays;
+	cl::Kernel flatShade;
 	cl::Program program;
 	cl::Program::Sources sources;
 	std::vector<cl::Device> all_devices;
@@ -62,13 +68,13 @@ private:
 	std::vector<cl::Platform> all_platforms;
 	std::string sourceCode;
 	cl_float3* image;
-	CameraStruct* cameraStruct;
-
+	CameraStruct cameraStruct;
+	cl_float cameraArray[4] = { 0,0,0,0 };
 
 protected:
 	void update(float dt) override;
 	void draw(int width, int height) override;
-
+	void boilerPlate(int width, int height);
 public:
 	RayTracerCL(int width, int height, shared_ptr<LightingEngine> lighting,
 		const shared_ptr<PointLight> light,

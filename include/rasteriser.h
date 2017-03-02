@@ -4,7 +4,6 @@
 #include "lightingengine.h"
 #include "rastlighting.h"
 #include "baked_gi.h"
-#include "light.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
 #include <limits>
