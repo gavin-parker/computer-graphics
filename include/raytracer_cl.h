@@ -58,6 +58,7 @@ private:
 	cl::Buffer imageBuffer;
 	cl::Buffer cameraBuffer;
 	cl::Buffer pointBuffer;
+	cl::Buffer randBuffer;
 	cl::CommandQueue queue;
 	cl::Kernel castRays;
 	cl::Kernel shader;
@@ -68,6 +69,7 @@ private:
 	std::vector<cl::Platform> all_platforms;
 	std::string sourceCode;
 	cl_float3* image;
+	cl_float* rands;
 	CameraStruct cameraStruct;
 	cl_float cameraArray[4] = { 0,0,0,0 };
 
