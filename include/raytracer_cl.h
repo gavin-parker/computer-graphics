@@ -25,9 +25,9 @@ typedef struct CameraStruct {
 typedef struct RayStruct {
 	cl_float3 origin;
 	cl_float3 direction;
-	int collision;
-	float length;
 	cl_float3 collisionLocation;
+	cl_float length;
+	cl_int collision;
 } RayStruct;
 
 inline cl_float3 vecToFloat(vec3 vec) {
@@ -60,7 +60,7 @@ private:
 	cl::Buffer pointBuffer;
 	cl::CommandQueue queue;
 	cl::Kernel castRays;
-	cl::Kernel flatShade;
+	cl::Kernel shader;
 	cl::Program program;
 	cl::Program::Sources sources;
 	std::vector<cl::Device> all_devices;

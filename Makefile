@@ -19,7 +19,7 @@ BINARYNAME = computer_graphics
 BINARY = $(BINDIR)/$(BINARYNAME)
 
 # Compilation options
-CXXFLAGS = -std=c++11 -Wall -Ofast -fopenmp -ggdb -g3 -D unix $(addprefix -I, $(HDIR)) $(shell sdl-config --cflags) $(DEPFLAGS)
+CXXFLAGS = -std=c++11 -Wall -Ofast -march=native -fopenmp -ggdb -g3 -D unix -D GLM_FORCE_SSE2 -D GLM_FORCE_ALIGNED $(addprefix -I, $(HDIR)) $(shell sdl-config --cflags) $(DEPFLAGS)
 COMPILE = $(CXX) -o $@ -c $< $(CXXFLAGS)
 
 # Link Options

@@ -11,8 +11,10 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
 
   vector<Ray> rays(light->rayCount);
   light->calculateRays(rays, ray.collisionLocation);
-
-  for (int i = 0; i < rays.size(); i++) {
+#ifdef unix
+#pragma omp simd
+#endif
+  for (int i = 0; i < light->rayCount; i++) {
 	  Ray directLightRay = rays[i];
 
 	  if (!boundingVolume->calculateAnyIntersection(directLightRay, ray)) {
@@ -40,6 +42,10 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
 
 
   mat3 basis(normalX, normalY, normal);
+  if (bounces >= 1) {
+#ifdef unix
+#pragma omp simd
+#endif
   for (int i = 0; i < sampleCount; i++) {
 
     // generate random direction
@@ -55,7 +61,6 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
 		  sample.x * normalX.y + sample.y * normal.y + sample.z * normalY.y,
 		  sample.x * normalX.z + sample.y * normal.z + sample.z * normalY.z);
 
-    if (bounces >= 1) {
       Ray bounce;
       bounce.position = ray.collisionLocation;
       bounce.direction = glm::normalize(direction);
@@ -66,9 +71,10 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
 	  else {
 		  indirectLight += r1 * vec3(1, 1, 1)*environment; // assume white environment sphere
 	  }
-    } else {
-      return (lightHere / static_cast<float>(M_PI))*diffuse;
     }
+  }
+  else {
+	  return (lightHere / static_cast<float>(M_PI))*diffuse;
   }
   indirectLight /= static_cast<float>(sampleCount);
   return (lightHere / static_cast<float>(M_PI) + 2.f * indirectLight)*diffuse;

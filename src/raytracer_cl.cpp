@@ -25,17 +25,17 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 	castRays.setArg(4, static_cast<int>(triangles->size()));
 	castRays.setArg(5, (cl_int)width);
 	castRays.setArg(6, (cl_int)height);
-	flatShade = cl::Kernel(program, "flatShade", &err);
+	shader = cl::Kernel(program, "standardShade", &err);
 	if (err != 0) {
 		cout << "error creating kernel: " << err << "\n";
 		exit(1);
 	}
-	flatShade.setArg(0, triangleBuffer);
-	flatShade.setArg(2, pointBuffer);
-	flatShade.setArg(3, imageBuffer);
-	flatShade.setArg(4, static_cast<int>(triangles->size()));
-	flatShade.setArg(5, (cl_int)width);
-	flatShade.setArg(6, (cl_int)height);
+	shader.setArg(0, triangleBuffer);
+	shader.setArg(2, pointBuffer);
+	shader.setArg(3, imageBuffer);
+	shader.setArg(4, static_cast<int>(triangles->size()));
+	shader.setArg(5, (cl_int)width);
+	shader.setArg(6, (cl_int)height);
 }
 
 void RayTracerCL::create_global_memory(int width, int height) {
@@ -92,7 +92,7 @@ void RayTracerCL::draw(int width, int height) {
 	
 	castRays.setArg(1, lightLoc);
 	castRays.setArg(3, cameraBuffer);
-	flatShade.setArg(1, lightLoc);
+	shader.setArg(1, lightLoc);
 
 
 
@@ -102,7 +102,7 @@ void RayTracerCL::draw(int width, int height) {
 		cout << "err: " << err << "\n";
 		exit(1);
 	}
-	err = queue.enqueueNDRangeKernel(flatShade, cl::NullRange, cl::NDRange((size_t)width, (size_t)height), cl::NullRange);
+	err = queue.enqueueNDRangeKernel(shader, cl::NullRange, cl::NDRange((size_t)width, (size_t)height), cl::NullRange);
 
 	if (err != 0) {
 		cout << "err: " << err << "\n";
@@ -125,7 +125,7 @@ void RayTracerCL::draw(int width, int height) {
 }
 void RayTracerCL::boilerPlate(int width, int height) {
 
-
+	std::string macros = "";
 	int err;
 	//ANNOYING OPENCL BOILERPLATE
 	cl::Platform::get(&all_platforms);
@@ -145,6 +145,9 @@ void RayTracerCL::boilerPlate(int width, int height) {
 	default_platform = all_platforms[c];
 	std::cout << "Using platform: " << default_platform.getInfo<CL_PLATFORM_NAME>() << "\n";
 
+	if (c == 0) {
+		macros = "#define M_PI 3.14159265359f  ";
+	}
 
 	default_platform.getDevices(CL_DEVICE_TYPE_ALL, &all_devices);
 	c = 0;
@@ -163,7 +166,7 @@ void RayTracerCL::boilerPlate(int width, int height) {
 	context = cl::Context({ default_device });
 
 	std::ifstream sourceFile("raytracer.cl");
-	sourceCode = std::string(
+	sourceCode = macros + std::string(
 		std::istreambuf_iterator<char>(sourceFile),
 		(std::istreambuf_iterator<char>()));
 

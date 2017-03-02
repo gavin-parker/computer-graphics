@@ -10,13 +10,12 @@ typedef struct TriangleStruct {
 typedef struct Ray {
 	float3 origin;
 	float3 direction;
-	int collision;
-	float length;
 	float3 collisionLocation;
+	float length;
+	int collision;
 } Ray;
 
 inline float lerpF(float a, float b, float t) { return a + (b - a) * t; }
-
 
 inline float dot_product(float3 a, float3 b) {
 	return a.x*b.x + a.y*b.y + a.y*b.y;
@@ -58,7 +57,7 @@ kernel void flatShade(global const TriangleStruct* triangles, float3 lightLoc, g
 	int y = get_global_id(1);
 	Ray ray = points[(y*width + x)];
 	float3 color = (float3) { 0, 0, 0 };
-	if (ray.collision > -1) {
+	if (ray.collision > -1 && ray.collision < triangleCount) {
 		color = triangles[ray.collision].color;
 	}
 	image[(y*width + x)] = color;
@@ -69,13 +68,14 @@ kernel void standardShade(global const TriangleStruct* triangles, float3 lightLo
 	int y = get_global_id(1);
 
 	Ray cameraRay = points[(y*width + x)];
-	float3 color = (float3) { 0, 0, 0 };
+	float3 color = (float3) ( 0, 0, 0 );
 	if (cameraRay.collision > -1) {
 		Ray lightRay;
 		lightRay.origin = lightLoc;
 		lightRay.direction = cameraRay.collisionLocation - lightLoc;
+		lightRay.collision = -1;
 		bool lightIntersection = false;
-#pragma unroll
+		//NOT FINDING ANY INTERESECTIONS :(
 		for (int i = 0; i < triangleCount; i++) {
 			if (dot(lightRay.direction, triangles[i].normal) < 0) {
 
@@ -104,25 +104,24 @@ kernel void standardShade(global const TriangleStruct* triangles, float3 lightLo
 				}
 			}
 		}
-		float3 lightColour = (float3) { 0, 0, 0 };
-		if (lightIntersection && lightRay.collision == cameraRay.collision) {
+		if (lightRay.collision == cameraRay.collision) {
 			float3 n = triangles[lightRay.collision].normal;
 			float3 v = norm(cameraRay.direction);
 			float3 l = norm(lightRay.direction);
 			float3 spec = phong(v, l, n);
 			float diffuse = 0.75f;
 			float specularity = 0.4f;
-
-			lightColour = directLight(lightRay, lightLoc, n)*diffuse + spec * specularity;
-			lightColour *= triangles[lightRay.collision].color;
+			printf("direct light\n");
+			//lightColour = directLight(lightRay, lightLoc, n)*diffuse + spec * specularity;
+			color = triangles[lightRay.collision].color* diffuse;
+		}else {
+			printf("ambient light\n");
+			float3 ambient = 0.1f;
+			color = ambient*triangles[cameraRay.collision].color*0.75f;
 		}
-		else {
-			float3 ambient = { 0.1f, 0.1f, 0.1f };
-			lightColour = dot(ambient, triangles[cameraRay.collision].color)*0.75f;
-		}
-		color = (float3) { min(lightColour.x, 1.0f), min(lightColour.y, 1.0f), min(lightColour.z, 1.0f) };
+		//color = (float3) { min(lightColour.x, 1.0f), min(lightColour.y, 1.0f), min(lightColour.z, 1.0f) };
 	}
-
+	image[(y*width + x)] = color;
 }
 
 kernel void castRays(global const TriangleStruct* triangles, float3 lightLoc, global Ray* points, global float* camera, int triangleCount, int width, int height) {
@@ -185,7 +184,7 @@ kernel void castRays(global const TriangleStruct* triangles, float3 lightLoc, gl
 		}
 	}
 	points[(y*width + x)] = cameraRay;
-
+	points[(y*width + x)].collisionLocation = cameraRay.collisionLocation;
 	return;
 
 }
