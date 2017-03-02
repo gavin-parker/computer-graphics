@@ -68,17 +68,18 @@ kernel void standardShade(global const TriangleStruct* triangles, float3 lightLo
 	int y = get_global_id(1);
 
 	Ray cameraRay = points[(y*width + x)];
+	TriangleStruct triangle = triangles[cameraRay.collision];
 	float3 color = (float3) ( 0, 0, 0 );
 	if (cameraRay.collision > -1) {
 		Ray lightRay;
 		lightRay.origin = lightLoc;
 		lightRay.direction = cameraRay.collisionLocation - lightLoc;
 		lightRay.collision = -1;
+		lightRay.length = FLT_MAX;
 		bool lightIntersection = false;
 		//NOT FINDING ANY INTERESECTIONS :(
 		for (int i = 0; i < triangleCount; i++) {
 			if (dot(lightRay.direction, triangles[i].normal) < 0) {
-
 				float3 b = lightRay.origin - triangles[i].v0;
 				float3 e1 = triangles[i].v1 - triangles[i].v0;
 				float3 e2 = triangles[i].v2 - triangles[i].v0;
@@ -104,24 +105,25 @@ kernel void standardShade(global const TriangleStruct* triangles, float3 lightLo
 				}
 			}
 		}
-		if (lightRay.collision == cameraRay.collision) {
-			float3 n = triangles[lightRay.collision].normal;
+		if (cameraRay.collision == lightRay.collision) {
+			float3 n = triangle.normal;
 			float3 v = norm(cameraRay.direction);
 			float3 l = norm(lightRay.direction);
 			float3 spec = phong(v, l, n);
 			float diffuse = 0.75f;
-			float specularity = 0.4f;
+			float specularity = 0.1f;
 			printf("direct light\n");
 			//lightColour = directLight(lightRay, lightLoc, n)*diffuse + spec * specularity;
-			color = triangles[lightRay.collision].color* diffuse;
+			color = directLight(lightRay, lightLoc, n)*diffuse + spec * specularity;
+			color *= triangle.color;
 		}else {
 			printf("ambient light\n");
 			float3 ambient = 0.1f;
-			color = ambient*triangles[cameraRay.collision].color*0.75f;
+			color = ambient*triangle.color;
 		}
 		//color = (float3) { min(lightColour.x, 1.0f), min(lightColour.y, 1.0f), min(lightColour.z, 1.0f) };
 	}
-	image[(y*width + x)] = color;
+	image[(y*width + x)] = (float3) { min(color.x, 1.0f), min(color.y, 1.0f), min(color.z, 1.0f) };
 }
 
 kernel void castRays(global const TriangleStruct* triangles, float3 lightLoc, global Ray* points, global float* camera, int triangleCount, int width, int height) {
