@@ -51,6 +51,10 @@ inline float3 directLight(Ray ray, float3 lightPos, float3 normal) {
 	float3 color = { 0.75f, 0.75f, 0.75f };
 	return (max(dot(direction, normal), 0.0f) * 500000.f / (4.0f * (float)M_PI * radius * radius)) * color;
 }
+inline float randomNumberGenerator(float seed){
+	return fmod(seed*10,1);
+}
+
 
 inline Ray castRay(float3 origin, float3 direction, global const TriangleStruct* triangles, int triangleCount){
 	Ray ray;
@@ -114,7 +118,6 @@ kernel void pathTrace(global const TriangleStruct* triangles, float3 lightLoc, g
 	int x = get_global_id(0);
 	int y = get_global_id(1);
 
-	float r1 = rands[(y*width+x)];
 	Ray cameraRay = points[(y*width + x)];
 	TriangleStruct triangle = triangles[cameraRay.collision];
 	float3 color = (float3) ( 0, 0, 0 );
@@ -137,24 +140,34 @@ kernel void pathTrace(global const TriangleStruct* triangles, float3 lightLoc, g
 
 	//generates and calculates all the ray intersections needed
 	Ray layer1[5];
+	float r1 = rands[(y*width + x)];
 	for(int i=0; i < 5; i++){
-		float3 direction = norm(randomDirection(rands[(y*width + x)], rands[(y*width + x)], triangle.normal));
+		float r2 = randomNumberGenerator(r1);
+		float3 direction = norm(randomDirection(r1, r2, triangle.normal));
 		layer1[i] = castRay(cameraRay.collisionLocation, direction, triangles, triangleCount);
+		r1 = randomNumberGenerator(r2);
 	}
+	r1 = rands[((height-y)*width + x)];
 	Ray layer2[25];
 	for(int i=0; i < 5; i++){
 		triangle = triangles[layer1[i].collision];
 		for(int j=0; j < 5; j++){
-			float3 direction = norm(randomDirection(rands[(y*width + x)], rands[(y*width + x)], triangle.normal));
+			float r2 = randomNumberGenerator(r1);
+			float3 direction = norm(randomDirection(r1, r2, triangle.normal));
 			layer1[i*5+j] = castRay(layer1[i].collisionLocation, direction, triangles, triangleCount);
+			r1 = randomNumberGenerator(r2);
 		}
 	}
+	r1 = rands[y*width + (width-x)];
+
 	Ray layer3[125];
 	for(int i=0; i < 25; i++){
 		triangle = triangles[layer2[i].collision];
 		for(int j=0; j < 5; j++){
-			float3 direction = norm(randomDirection(rands[(y*width + x)], rands[(y*width + x)], triangle.normal));
+			float r2 = randomNumberGenerator(r1);
+			float3 direction = norm(randomDirection(r1, r2, triangle.normal));
 			layer1[i*5+j] = castRay(layer2[i].collisionLocation, direction, triangles, triangleCount);
+			r1 = randomNumberGenerator(r2);
 		}
 	}
 
