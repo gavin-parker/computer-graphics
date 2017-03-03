@@ -63,7 +63,7 @@ inline Ray castRayLocal(float3 origin, float3 direction, local TriangleStruct* t
 	ray.collision = -1;
 	#pragma unroll
 	for (int i = 0; i < triangleCount; i++) {
-		if (dot(ray.direction, triangles[i].normal) < 0) {
+		int index = (dot(ray.direction, triangles[i].normal) < 0) ? 1 : -1;
 			float3 b = origin - triangles[i].v0;
 			float3 e1 = triangles[i].v1 - triangles[i].v0;
 			float3 e2 = triangles[i].v2 - triangles[i].v0;
@@ -80,10 +80,9 @@ inline Ray castRayLocal(float3 origin, float3 direction, local TriangleStruct* t
 
 				if (u >= 0 && v >= 0 && (u + v) < 1) {
 					ray.length = t;
-					ray.collision = i;
+					ray.collision = i*index;
 					ray.collisionLocation = triangles[i].v0 + u * e1 + v * e2;
 				}
-			}
 		}
 	}
 		return ray;
@@ -150,6 +149,7 @@ kernel void pathTrace(global const TriangleStruct* triangles_global,local Triang
 	int x = get_global_id(0);
 	int y = get_global_id(1);
 
+	#pragma unroll
 	for(int i=0; i < triangleCount; i++){
 		triangles[i] = triangles_global[i];
 	}
@@ -159,20 +159,23 @@ kernel void pathTrace(global const TriangleStruct* triangles_global,local Triang
 	float3 color = (float3) ( 0, 0, 0 );
 
 	//DIRECT LIGHT
-	if (cameraRay.collision > -1) {
-		Ray lightRay = castRayLocal(lightLoc, cameraRay.collisionLocation - lightLoc, triangles, triangleCount);
-		if (cameraRay.collision == lightRay.collision) {
-			float3 n = triangle.normal;
-			float3 v = norm(cameraRay.direction);
-			float3 l = norm(lightRay.direction);
-			float3 spec = phong(v, l, n);
-			float diffuse = 0.75f;
-			float specularity = 0.1f;
-			//lightColour = directLight(lightRay, lightLoc, n)*diffuse + spec * specularity;
-			color = directLight(lightRay, lightLoc, n)*diffuse + spec * specularity;
-			color *= triangle.color;
-		}
-	}
+	float maskA = (-1 < cameraRay.collision) ? 1.f : 0.f;
+
+	Ray lightRay = castRayLocal(lightLoc, cameraRay.collisionLocation - lightLoc, triangles, triangleCount);
+	
+	int diff = cameraRay.collision - lightRay.collision;
+	float maskB = (diff == 0) ? 	1.f : 0.f;
+
+	float3 n = triangle.normal;
+	float3 v = norm(cameraRay.direction);
+	float3 l = norm(lightRay.direction);
+	float3 spec = phong(v, l, n);
+	float diffuse = 0.75f;
+	float specularity = 0.1f;
+	//lightColour = directLight(lightRay, lightLoc, n)*diffuse + spec * specularity;
+	color = directLight(lightRay, lightLoc, n)*diffuse + spec * specularity*maskA*maskB;
+	color *= triangle.color;
+	
 
 	//generates and calculates all the ray intersections needed
 	Ray layer1[sampleCount];
@@ -198,32 +201,6 @@ kernel void pathTrace(global const TriangleStruct* triangles_global,local Triang
 	}
 	r1 = rands[y*width + (width-x)];
 
-	//Ray layer3[125];
-	//for(int i=0; i < 25; i++){
-	//	triangle = triangles[layer2[i].collision];
-	//	for(int j=0; j < 5; j++){
-	//		float r2 = randomNumberGenerator(r1);
-	//		float3 direction = norm(randomDirection(r1, r2, triangle.normal));
-	//		layer1[i*5+j] = castRay(layer2[i].collisionLocation, direction, triangles, triangleCount);
-	//		r1 = randomNumberGenerator(r2);
-	//	}
-	//}
-
-	//calculate light for each point
-	//furthest layer is only direct light
-	//for(int i=0; i < 125; i++){
-	//	Ray lightRay = castRay(lightLoc, layer3[i].collisionLocation - lightLoc, triangles, triangleCount);
-	//	float3 colorHere = (float3){0.2,0.2,0.2};
-	//	if(lightRay.collision == layer3[i].collision && lightRay.collision > -1){
-	//		triangle = triangles[layer3[i].collision];
-	//		float3 n = triangle.normal;
-	//		colorHere = directLight(lightRay, lightLoc, n);
-	//		colorHere *= triangle.color;
-//
-	//	}
-	//	layer3[i].origin = (colorHere/(float)M_PI)*0.75f;
-	//}
-	//other layers are direct + indirect
 	#pragma unroll
 	for(int i=0; i < (sampleCount*sampleCount); i++){
 		Ray lightRay = castRayLocal(lightLoc, layer2[i].collisionLocation - lightLoc, triangles, triangleCount);
@@ -234,13 +211,8 @@ kernel void pathTrace(global const TriangleStruct* triangles_global,local Triang
 			directLightHere = directLight(lightRay, lightLoc, n)*0.75f;
 			directLightHere *= triangle.color;
 		}
-		//float3 indirectLight = (float3){0,0,0};
-		//for(int j=0; j < 5; j++){
-		//	indirectLight += r1*layer3[i*5+j].origin;
-		//}
-		//indirectLight /= 5;
+
 		layer2[i].origin = (directLightHere/(float)M_PI)*0.75f;
-		//layer2[i].origin = (directLightHere / (float)M_PI + 2.f * indirectLight)*0.75f;
 	}
 	#pragma unroll
 	for(int i=0; i < sampleCount; i++){
