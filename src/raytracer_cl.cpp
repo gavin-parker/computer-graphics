@@ -31,12 +31,13 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 		exit(1);
 	}
 	shader.setArg(0, triangleBuffer);
-	shader.setArg(2, pointBuffer);
-	shader.setArg(3, imageBuffer);
-	shader.setArg(4, static_cast<int>(triangles->size()));
-	shader.setArg(5, (cl_int)width);
-	shader.setArg(6, (cl_int)height);
-	shader.setArg(7, randBuffer);
+	shader.setArg(1, cl::Local(sizeof(TriangleStruct)*static_cast<int>(triangles->size())));
+	shader.setArg(3, pointBuffer);
+	shader.setArg(4, imageBuffer);
+	shader.setArg(5, static_cast<int>(triangles->size()));
+	shader.setArg(6, (cl_int)width);
+	shader.setArg(7, (cl_int)height);
+	shader.setArg(8, randBuffer);
 
 }
 
@@ -69,6 +70,9 @@ void RayTracerCL::update(float dt) {
 void RayTracerCL::draw(int width, int height) {
 #pragma omp parallel for
 	for (int y = 0; y < height; ++y) {
+#ifdef unix
+#pragma omp simd
+#endif
 		for (int x = 0; x < width; ++x) {
 			rands[(y*height + x)] = RAND;
 		}
@@ -103,12 +107,9 @@ void RayTracerCL::draw(int width, int height) {
 	
 	castRays.setArg(1, lightLoc);
 	castRays.setArg(3, cameraBuffer);
-	shader.setArg(1, lightLoc);
-
-
-
+	shader.setArg(2, lightLoc);
 	queue.enqueueNDRangeKernel(castRays, cl::NullRange, cl::NDRange((size_t)width, (size_t)height), cl::NullRange);
-	err = queue.enqueueNDRangeKernel(shader, cl::NullRange, cl::NDRange((size_t)width, (size_t)height), cl::NullRange);
+	queue.enqueueNDRangeKernel(shader, cl::NullRange, cl::NDRange((size_t)width, (size_t)height), cl::NullRange);
 
 	if (err != 0) {
 		cout << "err: " << err << "\n";
@@ -120,6 +121,9 @@ void RayTracerCL::draw(int width, int height) {
 	queue.enqueueReadBuffer(imageBuffer, CL_TRUE, 0, sizeof(cl_float3) * width*height, image );
 #pragma omp parallel for
 	for (int y = 0; y < height; ++y) {
+#ifdef unix
+#pragma omp simd
+#endif
 		for (int x = 0; x < width; ++x) {
 			cl_float3 pixel = image[(y*height + x)];
 			vec3 lightColour(pixel.x, pixel.y, pixel.z);
@@ -177,19 +181,19 @@ void RayTracerCL::boilerPlate(int width, int height) {
 		(std::istreambuf_iterator<char>()));
 
 	sources.push_back(std::make_pair(sourceCode.c_str(), sourceCode.size()));
-	cout << "loaded kernel length:" << sourceCode.size();
+	cout << "loaded kernel length:" << sourceCode.size(); 
 	program = cl::Program(context, sources, &err);
 
 	if (err != 0) {
 		cout << "error creating program: " << err << "\n";
 	}
-	char* options = "-Werror -cl-fast-relaxed-math";
+	char* options = "-Werror -cl-fast-relaxed-math -cl-mad-enable";
 	if (program.build({ default_device }, options) != CL_SUCCESS) {
-		std::cout << " Error building: " << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device) << "\n";
+		std::cout << " Error building: " << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device) << "\n"; 
 		exit(1);
 	}
 	create_global_memory(width, height);
-	queue = cl::CommandQueue(context, default_device, 0Ui64, &err);
+	queue = cl::CommandQueue(context, default_device, 0Ui64, &err); 
 	if (err != 0) {
 		cout << "error creating queue: " << err << "\n";
 		exit(1);
@@ -199,4 +203,4 @@ void RayTracerCL::boilerPlate(int width, int height) {
 }
 
 
-#endif
+#endif 

@@ -8,6 +8,12 @@
 #include "sdlscreen.h"
 #include "testmodel.h"
 #include "bvh.h"
+#ifdef unix
+#include<sys/time.h>
+#include<sys/resource.h>
+#else
+#include <time.h>
+#endif
 struct TriangleStruct {
 	cl_float3 v0;
 	cl_float3 v1;
