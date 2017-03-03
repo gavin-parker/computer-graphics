@@ -53,15 +53,17 @@ inline float3 directLight(Ray ray, float3 lightPos, float3 normal) {
 	return (max(dot(direction, normal), 0.0f) * 500000.f / (4.0f * (float)M_PI * radius * radius)) * color;
 }
 inline float randomNumberGenerator(float seed){
-	return fmod(seed*10,1);
+	return seed;
+	//return fmod(seed*10,1);
 }
-inline Ray castRayLocal(float3 origin, float3 direction, local TriangleStruct* triangles, int triangleCount){
+inline Ray castRayLocal(float3 origin, float3 direction, global TriangleStruct* triangles, int triangleCount){
 	Ray ray;
 	ray.origin = origin;
 	ray.direction = direction;
 	ray.length = FLT_MAX;
 	ray.collision = -1;
 	ray.collisionLocation = (float3){0,0,0};
+    //barrier(CLK_LOCAL_MEM_FENCE);
 	#pragma unroll
 	for (int i = 0; i < triangleCount; i++) {
 		int index = (dot(ray.direction, triangles[i].normal) < 0) ? 1 : -1;
@@ -144,15 +146,10 @@ inline Ray castRay(float3 origin, float3 direction, global const TriangleStruct*
 	return direction;
   }
 
-kernel void pathTrace(global const TriangleStruct* triangles_global,local TriangleStruct* triangles, float3 lightLoc, global Ray* points, global float3* image, int triangleCount, int width, int height, global float* rands) {
+kernel void pathTrace(global const TriangleStruct* triangles,local TriangleStruct* triangles_local, float3 lightLoc, global Ray* points, global float3* image, int triangleCount, int width, int height, global float* rands) {
 	int x = get_global_id(0);
 	int y = get_global_id(1);
 
-	#pragma unroll
-	for(int i=0; i < triangleCount; i++){
-		triangles[i] = triangles_global[i];
-	}
-    barrier(CLK_GLOBAL_MEM_FENCE);
 	Ray cameraRay = points[(y*width + x)];
 	TriangleStruct triangle = triangles[cameraRay.collision];
 	float3 color = (float3) ( 0, 0, 0 );
@@ -241,7 +238,7 @@ kernel void pathTrace(global const TriangleStruct* triangles_global,local Triang
 	}
 	indirectLight /=sampleCount;
 	float3 finalLight = (color / (float)M_PI + 2.f * indirectLight)*0.75f;
-
+	barrier(CLK_LOCAL_MEM_FENCE);
 	image[(y*width + x)] = (float3) { min(finalLight.x, 1.0f), min(finalLight.y, 1.0f), min(finalLight.z, 1.0f) };
 
 }
@@ -314,7 +311,7 @@ kernel void standardShade(global const TriangleStruct* triangles, float3 lightLo
 		}
 		//color = (float3) { min(lightColour.x, 1.0f), min(lightColour.y, 1.0f), min(lightColour.z, 1.0f) };
 	}
-    barrier(CLK_GLOBAL_MEM_FENCE);
+    barrier(CLK_LOCAL_MEM_FENCE);
 	image[(y*width + x)] = (float3) { min(color.x, 1.0f), min(color.y, 1.0f), min(color.z, 1.0f) };
 }
 

@@ -5,20 +5,16 @@
 RastLighting::RastLighting(const shared_ptr<Scene> scene) : LightingEngine(scene->triangles, scene->light), boundingVolume(scene->volume) {};
 
 vec3 RastLighting::calculateLight(Ray ray, ivec2 pixel) {
-	vector<Ray> rays(light->rayCount);
 	vec3 lightColour(0, 0, 0);
-	light->calculateRays(rays, ray.collisionLocation);
-	for (int i = 0; i < rays.size(); i++) {
-		Ray lightRay = rays[i];
-		shared_ptr<const Material> mat = ray.collision->mat;
-		vec3 n = ray.collision->normal;
-		vec3 v = glm::normalize(ray.direction);
-		vec3 l = glm::normalize(lightRay.direction);
-		vec3 spec = mat->phong(v, l, n);
-		lightColour +=
-			light->directLight(ray) * mat->diffuse + spec * mat->specularity;
-	}
-	lightColour /= rays.size();
+	Ray lightRay;
+	lightRay.direction = light->position - ray.collisionLocation;
+	shared_ptr<const Material> mat = ray.collision->mat;
+	vec3 n = ray.collision->normal;
+	vec3 v = glm::normalize(ray.direction);
+	vec3 l = glm::normalize(lightRay.direction);
+	vec3 spec = mat->phong(v, l, n);
+	lightColour +=
+		light->directLight(ray) * mat->diffuse + spec * mat->specularity;
 	return lightColour;
 }
 

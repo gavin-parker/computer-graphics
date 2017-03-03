@@ -42,15 +42,15 @@ int main(int argc, char *argv[]) {
       return EXIT_SUCCESS;
     } else if (mode == "ray") {
 
-      shared_ptr<LightingEngine> engine(new StandardLighting(scene));
-      RayTracer screen(500, 500, engine, softLight, geometry, shared_ptr<BoundingVolume>(cornelBVH), false);
+      shared_ptr<LightingEngine> engine(new StandardLighting(scene_low_quality));
+      RayTracer screen(500, 500, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "rast") {
-		shared_ptr<LightingEngine> engine(new RastLighting(scene));
-      Rasteriser screen(500, 500, engine, scene_low_quality, false);
-      screen.run();
-      screen.saveBMP("screenshot.bmp");
+		 shared_ptr<LightingEngine> engine(new RastLighting(scene));
+		 Rasteriser screen(500, 500, engine, scene, false);
+		screen.run();
+		screen.saveBMP("screenshot.bmp");
     } else if (mode == "gi") {
 		int sampleCount = 10;
 		if (argc > 2) {

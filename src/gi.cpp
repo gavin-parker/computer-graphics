@@ -64,6 +64,7 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
       Ray bounce;
       bounce.position = ray.collisionLocation;
       bounce.direction = glm::normalize(direction);
+	  bounce.length = std::numeric_limits<float>::max();
       // return this + new collision point
       if (boundingVolume->calculateIntersection(bounce)) {
         indirectLight += r1 * trace(bounce, bounces - 1);

@@ -39,4 +39,10 @@ vec3 Triangle::getColour(vec2 uv) const {
               matColour.b * colour.b);
 }
 
-vec3 Triangle::getPixelColour(vec2 uv) const { return mat->getColour(uv); }
+vec3 Triangle::getPixelColour(vec2 uv) const {
+#ifndef textureLess
+	return mat->getColour(uv); 
+#else
+	return colour;
+#endif
+}
