@@ -160,31 +160,31 @@ kernel void pathTrace(global const TriangleStruct* triangles, float3 lightLoc, g
 	}
 	r1 = rands[y*width + (width-x)];
 
-	Ray layer3[125];
-	for(int i=0; i < 25; i++){
-		triangle = triangles[layer2[i].collision];
-		for(int j=0; j < 5; j++){
-			float r2 = randomNumberGenerator(r1);
-			float3 direction = norm(randomDirection(r1, r2, triangle.normal));
-			layer1[i*5+j] = castRay(layer2[i].collisionLocation, direction, triangles, triangleCount);
-			r1 = randomNumberGenerator(r2);
-		}
-	}
+	//Ray layer3[125];
+	//for(int i=0; i < 25; i++){
+	//	triangle = triangles[layer2[i].collision];
+	//	for(int j=0; j < 5; j++){
+	//		float r2 = randomNumberGenerator(r1);
+	//		float3 direction = norm(randomDirection(r1, r2, triangle.normal));
+	//		layer1[i*5+j] = castRay(layer2[i].collisionLocation, direction, triangles, triangleCount);
+	//		r1 = randomNumberGenerator(r2);
+	//	}
+	//}
 
 	//calculate light for each point
 	//furthest layer is only direct light
-	for(int i=0; i < 125; i++){
-		Ray lightRay = castRay(lightLoc, layer3[i].collisionLocation - lightLoc, triangles, triangleCount);
-		float3 colorHere = (float3){0.2,0.2,0.2};
-		if(lightRay.collision == layer3[i].collision && lightRay.collision > -1){
-			triangle = triangles[layer3[i].collision];
-			float3 n = triangle.normal;
-			colorHere = directLight(lightRay, lightLoc, n);
-			colorHere *= triangle.color;
-
-		}
-		layer3[i].origin = (colorHere/(float)M_PI)*0.75f;
-	}
+	//for(int i=0; i < 125; i++){
+	//	Ray lightRay = castRay(lightLoc, layer3[i].collisionLocation - lightLoc, triangles, triangleCount);
+	//	float3 colorHere = (float3){0.2,0.2,0.2};
+	//	if(lightRay.collision == layer3[i].collision && lightRay.collision > -1){
+	//		triangle = triangles[layer3[i].collision];
+	//		float3 n = triangle.normal;
+	//		colorHere = directLight(lightRay, lightLoc, n);
+	//		colorHere *= triangle.color;
+//
+	//	}
+	//	layer3[i].origin = (colorHere/(float)M_PI)*0.75f;
+	//}
 	//other layers are direct + indirect
 	for(int i=0; i < 25; i++){
 		Ray lightRay = castRay(lightLoc, layer2[i].collisionLocation - lightLoc, triangles, triangleCount);
@@ -195,12 +195,13 @@ kernel void pathTrace(global const TriangleStruct* triangles, float3 lightLoc, g
 			directLightHere = directLight(lightRay, lightLoc, n)*0.75f;
 			directLightHere *= triangle.color;
 		}
-		float3 indirectLight = (float3){0,0,0};
-		for(int j=0; j < 5; j++){
-			indirectLight += r1*layer3[i*5+j].origin;
-		}
-		indirectLight /= 5;
-		layer2[i].origin = (directLightHere / (float)M_PI + 2.f * indirectLight)*0.75f;
+		//float3 indirectLight = (float3){0,0,0};
+		//for(int j=0; j < 5; j++){
+		//	indirectLight += r1*layer3[i*5+j].origin;
+		//}
+		//indirectLight /= 5;
+		layer2[i].origin = (directLightHere/(float)M_PI)*0.75f;
+		//layer2[i].origin = (directLightHere / (float)M_PI + 2.f * indirectLight)*0.75f;
 	}
 
 	for(int i=0; i < 5; i++){
