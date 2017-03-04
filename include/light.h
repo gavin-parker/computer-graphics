@@ -25,7 +25,7 @@ class Light {
 protected:
 	int width;
 	int height;
-
+	mat3 rotations[6] = ROTATIONS;
 public:
 	vec3 color;
 	float power;
@@ -48,7 +48,6 @@ public:
 
 	int projectVertex(vec3 vert, float& depth) {
 
-		const mat3 rotations[6] = ROTATIONS;
 		for (int i = 0; i < 6; i++) {
 			mat3 rotation = rotations[i];
 			vec3 newPos = (vert - position) * rotation;
