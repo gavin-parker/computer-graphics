@@ -7,12 +7,11 @@ private:
 	vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
 	const shared_ptr<BoundingVolume> boundingVolume;
 	int lightMapResolution;
-	vector<const Triangle*> lightMap;
-	void buidLightMap(int resolution);
-	const Triangle* mappedIntersection(vec3 direction);
+	vector<float> depthMap;
+	void fillShadowMap();
 protected:
 public:
-	RastLighting(const shared_ptr<Scene> scene, int lightMapResolution = 1000);
+	RastLighting(const shared_ptr<Scene> scene, int lightMapResolution = 2000);
 	RastLighting();
 	virtual vec3 calculateLight(Ray ray, ivec2 pixel = ivec2(0, 0)) override;
 };

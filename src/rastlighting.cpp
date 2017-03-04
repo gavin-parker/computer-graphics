@@ -2,8 +2,7 @@
 
 // GlobalIllumination::GlobalIllumination(){};
 
-RastLighting::RastLighting(const shared_ptr<Scene> scene, int lightMapResolution) : LightingEngine(scene->triangles, scene->light), boundingVolume(scene->volume), lightMapResolution(lightMapResolution), lightMap(vector<const Triangle*>(lightMapResolution*lightMapResolution)) {
-	buidLightMap(lightMapResolution);
+RastLighting::RastLighting(const shared_ptr<Scene> scene, int lightMapResolution) : LightingEngine(scene->triangles, scene->light), boundingVolume(scene->volume), lightMapResolution(lightMapResolution), depthMap(vector<float>(lightMapResolution*lightMapResolution)) {
 };
 
 vec3 RastLighting::calculateLight(Ray ray, ivec2 pixel) {
@@ -15,14 +14,8 @@ vec3 RastLighting::calculateLight(Ray ray, ivec2 pixel) {
 	vec3 v = glm::normalize(ray.direction);
 	vec3 l = glm::normalize(lightRay.direction);
 	vec3 spec = mat->phong(v, l, n);
-	if (mappedIntersection(l) == ray.collision) {
-		lightColour +=
-			light->directLight(ray) * mat->diffuse + spec * mat->specularity;
-	}
-	else {
-		lightColour +=
-			ambientLight* mat->diffuse;
-	}
+	lightColour +=
+		light->directLight(ray) * mat->diffuse + spec * mat->specularity;
 
 	return lightColour;
 }
@@ -54,35 +47,16 @@ bool RastLighting::anyIntersection(Ray &ray, Ray &surface) {
 	return anyIntersection;
 }
 
-const Triangle* RastLighting::mappedIntersection(vec3 direction) {
-	//theta is 0 - 2pi, phi is 0 - pi
-	//get vector to point on light sphere
-	float theta = atan2(direction.y , direction.x) + M_PI;
-	theta = theta/(M_PI*2);
-	float phi = acos(direction.z);
-	phi = phi / M_PI;
-	int x = floor(phi*lightMapResolution);
-	int y = floor(theta*lightMapResolution);
-	return lightMap[y*lightMapResolution + x];
-}
-
-//builds a light map for current light
-void RastLighting::buidLightMap(int resolution) {
-	float increment = 1.f / static_cast<float>(lightMapResolution);
-	for (int y = 0; y < lightMapResolution; y++) {
-		float theta = static_cast<float>(y)*increment;
-		theta = theta * 2 * M_PI - M_PI;
-		for (int x = 0; x < lightMapResolution; x++) {
-			float phi = static_cast<float>(x)*increment;
-			phi *= M_PI;
-			vec3 point(cos(theta)*sin(phi), sin(theta)*sin(phi), cos(phi));
-			Ray ray;
-			ray.position = light->position;
-			ray.direction = point;
-			ClosestIntersection(ray);
-			lightMap[y*lightMapResolution + x] = ray.collision;
+void RastLighting::fillShadowMap() {
+	for (const Triangle &triangle : *triangles) {
+		vector<Vertex> vertices = {
+			Vertex(triangle.v0, triangle.normal, vec2(1, 1), triangle.colour),
+			Vertex(triangle.v1, triangle.normal, vec2(1, 1), triangle.colour),
+			Vertex(triangle.v2, triangle.normal, vec2(1, 1), triangle.colour) };
+		vector<Pixel> proj(vertices.size());
+		for (size_t i = 0; i < vertices.size(); i++) {
+			//proj[i] = light->projectVertex(vertices[i].position, );
 		}
 	}
 
 }
-

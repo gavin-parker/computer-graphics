@@ -17,6 +17,7 @@ using glm::vec2;
 class Rasteriser : public SdlScreen {
 private:
   vector<float> depthBuffer;
+  vector<float> shadowBuffer;
 
   const shared_ptr<const vector<Triangle>> triangles;
   Camera camera;
@@ -31,6 +32,9 @@ private:
 
   Pixel VertexShader(Vertex v, int width, int height);
 
+  void shadowPass(int width, int height,
+	  vector<Pixel> &leftPixels,
+	  vector<Pixel> &rightPixels, const Triangle &triangle);
 
 protected:
   void update(float dt) override;
