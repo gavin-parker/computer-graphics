@@ -30,6 +30,8 @@ private:
                        vector<Pixel> &rightPixels, const Triangle &triangle);
 
   Pixel VertexShader(Vertex v, int width, int height);
+
+
 protected:
   void update(float dt) override;
   void draw(int width, int height) override;
