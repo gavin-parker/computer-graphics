@@ -57,12 +57,12 @@ bool RastLighting::anyIntersection(Ray &ray, Ray &surface) {
 const Triangle* RastLighting::mappedIntersection(vec3 direction) {
 	//theta is 0 - 2pi, phi is 0 - pi
 	//get vector to point on light sphere
-	float theta = atan(direction.y / direction.x) + M_PI;
+	float theta = atan2(direction.y , direction.x) + M_PI;
 	theta = theta/(M_PI*2);
 	float phi = acos(direction.z);
 	phi = phi / M_PI;
-	int x = round(phi*lightMapResolution);
-	int y = round(theta*lightMapResolution);
+	int x = floor(phi*lightMapResolution);
+	int y = floor(theta*lightMapResolution);
 	return lightMap[y*lightMapResolution + x];
 }
 
@@ -71,7 +71,7 @@ void RastLighting::buidLightMap(int resolution) {
 	float increment = 1.f / static_cast<float>(lightMapResolution);
 	for (int y = 0; y < lightMapResolution; y++) {
 		float theta = static_cast<float>(y)*increment;
-		theta = theta * 2 * M_PI;
+		theta = theta * 2 * M_PI - M_PI;
 		for (int x = 0; x < lightMapResolution; x++) {
 			float phi = static_cast<float>(x)*increment;
 			phi *= M_PI;
