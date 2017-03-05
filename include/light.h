@@ -47,7 +47,7 @@ public:
 	Light(vec3 position, vec3 color, float power, int rayCount, int width = 500, int height = 500) : position(position), color(color), power(power), rayCount(rayCount), width(width), height(height) {};
 
 	int projectVertex(vec3 vert, float& depth) {
-
+		depth = numeric_limits<float>::max();
 		for (int i = 0; i < 6; i++) {
 			mat3 rotation = rotations[i];
 			vec3 newPos = (vert - position) * rotation;
@@ -57,10 +57,7 @@ public:
 				depth = abs(newPos.z);
 				return i;
 			}
-			else {
-				depth = std::numeric_limits<float>::max();
-			}
 		}
-		return 0;
+		return -1;
 	}
 };

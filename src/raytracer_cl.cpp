@@ -7,7 +7,7 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 	bool fullscreen)
 	: SdlScreen(width, height, fullscreen), triangles(triangles),
 	camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(light),
-	lighting(lighting), boundingVolume(boundingVolume) {
+	lighting(lighting), boundingVolume(boundingVolume) { 
 
 	boilerPlate(width, height);
 	int err = 0;
@@ -18,7 +18,7 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 	castRays = cl::Kernel(program, "castRays", &err);
 	if (err != 0) {
 		cout << "error creating kernel: " << err << "\n";
-		exit(1);
+		exit(1); 
 	}
 	castRays.setArg(0, triangleBuffer);
 	castRays.setArg(2, pointBuffer);
@@ -34,10 +34,10 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 	shader.setArg(1, cl::Local(sizeof(TriangleStruct)*static_cast<int>(triangles->size())));
 	shader.setArg(3, pointBuffer);
 	shader.setArg(4, imageBuffer);
-	shader.setArg(5, static_cast<int>(triangles->size()));
+	shader.setArg(5, static_cast<int>(triangles->size())); 
 	shader.setArg(6, (cl_int)width);
 	shader.setArg(7, (cl_int)height);
-	shader.setArg(8, randBuffer);
+	shader.setArg(8, randBuffer); 
 
 }
 
@@ -59,16 +59,15 @@ void RayTracerCL::create_global_memory(int width, int height) {
 	pointBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(RayStruct)* width*height);
 	cameraBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, sizeof(cl_float)*(4+9));
 	randBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, sizeof(float)* width*height);
-
 }
 
 void RayTracerCL::update(float dt) {
-	light->update(dt);
+	light->update(dt); 
 	camera.update(dt);
 }
-
+ 
 void RayTracerCL::draw(int width, int height) {
-#pragma omp parallel for
+#pragma omp parallel for 
 	for (int y = 0; y < height; ++y) {
 #ifdef unix
 #pragma omp simd
@@ -82,7 +81,7 @@ void RayTracerCL::draw(int width, int height) {
 	cl_float viewOffset = (cl_float)camera.viewOffset;
 	cameraArray[0] = camera.position.x;
 	cameraArray[1] = camera.position.y;
-	cameraArray[2] = camera.position.z;
+	cameraArray[2] = camera.position.z; 
 	cameraArray[3] = viewOffset;
 
 	for (int i = 0; i < 3; i++) {
@@ -99,10 +98,10 @@ void RayTracerCL::draw(int width, int height) {
 
 	if (err != 0) {
 		cout << "err: " << err << "\n";
-		exit(1);
+		exit(1); 
 	}
 
-
+	 
 	cl_float3 lightLoc = vecToFloat(light->position);
 	
 	castRays.setArg(1, lightLoc);
@@ -115,9 +114,6 @@ void RayTracerCL::draw(int width, int height) {
 		cout << "err: " << err << "\n";
 		exit(1);
 	}
-
-
-
 	queue.enqueueReadBuffer(imageBuffer, CL_TRUE, 0, sizeof(cl_float3) * width*height, image );
 #pragma omp parallel for
 	for (int y = 0; y < height; ++y) {
@@ -164,11 +160,11 @@ void RayTracerCL::boilerPlate(int width, int height) {
 	if (all_devices.size() == 0) {
 		std::cout << " No devices found. Check OpenCL installation!\n";
 		exit(1);
-	}
+	} 
 	else if (all_devices.size() > 1) {
 		for (int i = 0; i < all_devices.size(); i++) {
 			std::cout << "device " << i << " : " << all_devices[i].getInfo<CL_DEVICE_NAME>() << "\n";
-		}
+		} 
 		c = getchar() - '0';
 	}
 	default_device = all_devices[0];
@@ -181,13 +177,13 @@ void RayTracerCL::boilerPlate(int width, int height) {
 		(std::istreambuf_iterator<char>()));
 
 	sources.push_back(std::make_pair(sourceCode.c_str(), sourceCode.size()));
-	cout << "loaded kernel length:" << sourceCode.size(); 
-	program = cl::Program(context, sources, &err);
-
-	if (err != 0) {
-		cout << "error creating program: " << err << "\n";
+	cout << "loaded kernel length:" << sourceCode.size();  
+	program = cl::Program(context, sources, &err); 
+	 
+	if (err != 0) {  
+		cout << "error creating program: " << err << "\n";  
 	}
-	char* options = "-Werror -cl-fast-relaxed-math -cl-mad-enable";
+	char* options = " -cl-fast-relaxed-math -cl-mad-enable";
 	if (program.build({ default_device }, options) != CL_SUCCESS) {
 		std::cout << " Error building: " << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device) << "\n"; 
 		exit(1);
