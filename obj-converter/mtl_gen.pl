@@ -1,29 +1,22 @@
 :- module(mtl_gen, [
-              materials_array//1
+              generate_materials//1
           ]).
-
-:- use_module(library(dcg/basics)).
-:- use_module(library(lists)).
 
 :- use_module(values).
 
-materials_array(Materials) -->
-    "MaterialTemplate materials[] = {\n",
-    {
-        dict_pairs(Materials, _, Pairs)
-    },
-    materials(Pairs),
-    "};\n".
+generate_materials(Materials, Codes, Rest) :-
+    dict_pairs(Materials, _, Pairs),
+    materials(Pairs, Codes, Rest).
 
 materials([]) -->
     "",
     !.
 
 materials([(Name-Material)|Materials]) -->
-          "MaterialTemplate(",
+          "AddMaterial(",
           {
               compound_name_arguments(Material, _, Material_Values)
           },
           comma_separated_values([string(Name)|Material_Values]),
-          ")\n",
+          ");\n",
           materials(Materials).

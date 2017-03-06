@@ -1,7 +1,6 @@
 :- module(values, [
               comma_separated_values//1,
-              value//1,
-              triangle//10
+              value//1
           ]).
 
 :- use_module(library(dcg/basics)).
@@ -41,13 +40,6 @@ vec4(X, Y, Z, W) -->
     "vec4(",
     comma_separated_values([number(X), number(Y), number(Z), number(W)]),
     ")".
-
-
-triangle(V0, V1, V2, VT0, VT1, VT2, VN0, VN1, VN2, Material) -->
-    "TriangleTemplate(",
-    comma_separated_values([V0, V1, V2, VT0, VT1, VT2, VN0, VN1, VN2, Material]),
-    ")".
-
 
 value(number(N)) -->
     number(N).
