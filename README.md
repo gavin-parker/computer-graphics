@@ -10,5 +10,8 @@ Features:
 <li>Soft shadows</li>
 <li>Global Illumination via Path Tracing</li>
 <li>Realtime rendering with OpenCL</li>
+<li>Acceleration with BVH</li>
 </ul>
 <h2>Rasterizer</h2>
+<li>Phong & Diffuse Shading</li>
+<li>Per pixel / per vertex lighting</li>
