@@ -1,30 +1,15 @@
-#pragma once
-#define _USE_MATH_DEFINES
-#include <cmath>
-#include <SDL.h>
-#include <algorithm>
-#include <math.h>
-
-#include "lerp.h"
-#include "ray.h"
-#include "vertex.h"
-
-class PointLight {
+#include "light.h"
+class PointLight : public Light {
 private:
-  vec3 position;
-  vec3 color;
-  float power;
-
-  const float velocity = 200.0f;
-
 public:
+
   PointLight(vec3 position, vec3 color, float power);
 
-  void update(float dt);
+  void update(float dt) override;
 
-  void calculateRay(Ray &ray, vec3 target) const;
+  void calculateRays(vector<Ray> &rays, vec3 target) const override;
 
-  vec3 directLight(const Ray &ray) const;
+  vec3 directLight(const Ray &ray) const override;
 
-  vec3 vertexLight(Vertex v) const;
+  vec3 vertexLight(Vertex v) const override;
 };

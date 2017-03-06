@@ -8,15 +8,23 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
   // find diffuse light at this position
   float diffuse = ray.collision->mat->diffuse;
   vec3 lightHere(0, 0, 0);
-  Ray directLightRay;
-  light->calculateRay(directLightRay, ray.collisionLocation);
 
-  if (!boundingVolume->calculateAnyIntersection(directLightRay, ray)) {
-    lightHere = vec3(0, 0, 0);
-  } else if (directLightRay.collision == ray.collision) {
-    lightHere = light->directLight(ray)*ray.collision->getPixelColour(ray.collisionUVLocation);
+  vector<Ray> rays(light->rayCount);
+  light->calculateRays(rays, ray.collisionLocation);
+#ifdef unix
+#pragma omp simd
+#endif
+  for (int i = 0; i < light->rayCount; i++) {
+	  Ray directLightRay = rays[i];
+
+	  if (!boundingVolume->calculateAnyIntersection(directLightRay, ray)) {
+		  lightHere += vec3(0, 0, 0);
+	  }
+	  else if (directLightRay.collision == ray.collision) {
+		  lightHere += light->directLight(ray)*ray.collision->getPixelColour(ray.collisionUVLocation);
+	  }
   }
-
+  lightHere /= rays.size();
   vec3 indirectLight(0, 0, 0);
 
   // create orthogonal basis on plane
@@ -34,6 +42,10 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
 
 
   mat3 basis(normalX, normalY, normal);
+  if (bounces >= 1) {
+#ifdef unix
+#pragma omp simd
+#endif
   for (int i = 0; i < sampleCount; i++) {
 
     // generate random direction
@@ -49,10 +61,10 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
 		  sample.x * normalX.y + sample.y * normal.y + sample.z * normalY.y,
 		  sample.x * normalX.z + sample.y * normal.z + sample.z * normalY.z);
 
-    if (bounces >= 1) {
       Ray bounce;
       bounce.position = ray.collisionLocation;
       bounce.direction = glm::normalize(direction);
+	  bounce.length = std::numeric_limits<float>::max();
       // return this + new collision point
       if (boundingVolume->calculateIntersection(bounce)) {
         indirectLight += r1 * trace(bounce, bounces - 1);
@@ -60,9 +72,10 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
 	  else {
 		  indirectLight += r1 * vec3(1, 1, 1)*environment; // assume white environment sphere
 	  }
-    } else {
-      return (lightHere / static_cast<float>(M_PI))*diffuse;
     }
+  }
+  else {
+	  return (lightHere / static_cast<float>(M_PI))*diffuse;
   }
   indirectLight /= static_cast<float>(sampleCount);
   return (lightHere / static_cast<float>(M_PI) + 2.f * indirectLight)*diffuse;

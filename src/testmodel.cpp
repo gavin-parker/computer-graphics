@@ -49,20 +49,20 @@ const shared_ptr<const vector<Triangle>> loadTestModel() {
   // UV ordering = corner, width, height
 
   // Floor:
-  triangles->push_back(Triangle(C, B, A, tl, br, bl, green, marble));
-  triangles->push_back(Triangle(C, D, B, tl, tr, br, green, marble));
+  triangles->push_back(Triangle(C, B, A, tl, br, bl, white, marble));
+  triangles->push_back(Triangle(C, D, B, tl, tr, br, white, marble));
 
   // Left wall
-  triangles->push_back(Triangle(A, E, C, bl, tl, br, purple, marble));
-  triangles->push_back(Triangle(C, E, G, br, tl, tr, purple, marble));
+  triangles->push_back(Triangle(A, E, C, bl, tl, br, green, marble));
+  triangles->push_back(Triangle(C, E, G, br, tl, tr, green, marble));
 
   // Right wall
-  triangles->push_back(Triangle(F, B, D, tr, br, bl, yellow, marble));
-  triangles->push_back(Triangle(H, F, D, tl, tr, bl, yellow, marble));
+  triangles->push_back(Triangle(F, B, D, tr, br, bl, red, marble));
+  triangles->push_back(Triangle(H, F, D, tl, tr, bl, red, marble));
 
   // Ceiling
-  triangles->push_back(Triangle(E, F, G, tl, tr, bl, cyan, marble));
-  triangles->push_back(Triangle(F, H, G, tr, br, bl, cyan, marble));
+  triangles->push_back(Triangle(E, F, G, tl, tr, bl, white, marble));
+  triangles->push_back(Triangle(F, H, G, tr, br, bl, white, marble));
 
   // Back wall
   triangles->push_back(Triangle(G, D, C, tl, br, bl, white, marble));
@@ -82,24 +82,24 @@ const shared_ptr<const vector<Triangle>> loadTestModel() {
   H = vec3(82, 165, 225);
 
   // FRONT
-  triangles->push_back(Triangle(E, B, A, tl, br, bl, red, pink));
-  triangles->push_back(Triangle(E, F, B, tl, tr, br, red, pink));
+  triangles->push_back(Triangle(E, B, A, tl, br, bl, white, pink));
+  triangles->push_back(Triangle(E, F, B, tl, tr, br, white, pink));
 
   // RIGHT
-  triangles->push_back(Triangle(F, D, B, tl, br, bl, red, pink));
-  triangles->push_back(Triangle(F, H, D, tl, tr, br, red, pink));
+  triangles->push_back(Triangle(F, D, B, tl, br, bl, white, pink));
+  triangles->push_back(Triangle(F, H, D, tl, tr, br, white, pink));
 
   // BACK
-  triangles->push_back(Triangle(H, C, D, tl, br, bl, red, pink));
-  triangles->push_back(Triangle(H, G, C, tl, tr, br, red, pink));
+  triangles->push_back(Triangle(H, C, D, tl, br, bl, white, pink));
+  triangles->push_back(Triangle(H, G, C, tl, tr, br, white, pink));
 
   // LEFT
-  triangles->push_back(Triangle(G, E, C, tl, tr, bl, red, pink));
-  triangles->push_back(Triangle(E, A, C, tr, br, bl, red, pink));
+  triangles->push_back(Triangle(G, E, C, tl, tr, bl, white, pink));
+  triangles->push_back(Triangle(E, A, C, tr, br, bl, white, pink));
 
   // TOP
-  triangles->push_back(Triangle(G, F, E, tl, br, bl, red, pink));
-  triangles->push_back(Triangle(G, H, F, tl, tr, br, red, pink));
+  triangles->push_back(Triangle(G, F, E, tl, br, bl, white, pink));
+  triangles->push_back(Triangle(G, H, F, tl, tr, br, white, pink));
 
   // ---------------------------------------------------------------------------
   // Tall block
@@ -115,24 +115,24 @@ const shared_ptr<const vector<Triangle>> loadTestModel() {
   H = vec3(314, 330, 456);
 
   // FRONT
-  triangles->push_back(Triangle(E, B, A, tl, br, bl, blue, greenMat));
-  triangles->push_back(Triangle(E, F, B, tl, tr, br, blue, greenMat));
+  triangles->push_back(Triangle(E, B, A, tl, br, bl, white, greenMat));
+  triangles->push_back(Triangle(E, F, B, tl, tr, br, white, greenMat));
 
   // RIGHT
-  triangles->push_back(Triangle(F, D, B, tl, br, bl, blue, greenMat));
-  triangles->push_back(Triangle(F, H, D, tl, tr, br, blue, greenMat));
+  triangles->push_back(Triangle(F, D, B, tl, br, bl, white, greenMat));
+  triangles->push_back(Triangle(F, H, D, tl, tr, br, white, greenMat));
 
   // BACK
-  triangles->push_back(Triangle(H, C, D, tl, br, bl, blue, greenMat));
-  triangles->push_back(Triangle(H, G, C, tl, tr, br, blue, greenMat));
+  triangles->push_back(Triangle(H, C, D, tl, br, bl, white, greenMat));
+  triangles->push_back(Triangle(H, G, C, tl, tr, br, white, greenMat));
 
   // LEFT
-  triangles->push_back(Triangle(G, E, C, tl, tr, bl, blue, greenMat));
-  triangles->push_back(Triangle(E, A, C, tr, br, bl, blue, greenMat));
+  triangles->push_back(Triangle(G, E, C, tl, tr, bl, white, greenMat));
+  triangles->push_back(Triangle(E, A, C, tr, br, bl, white, greenMat));
 
   // TOP
-  triangles->push_back(Triangle(G, F, E, tl, br, bl, blue, greenMat));
-  triangles->push_back(Triangle(G, H, F, tl, tr, br, blue, greenMat));
+  triangles->push_back(Triangle(G, F, E, tl, br, bl, white, greenMat));
+  triangles->push_back(Triangle(G, H, F, tl, tr, br, white, greenMat));
 
   return triangles;
 }
@@ -188,20 +188,20 @@ const shared_ptr<BoundingVolume> loadTestModelBVH() {
 	// UV ordering = corner, width, height
 
 	// Floor:
-	walls->push_back(Triangle(C, B, A, tl, br, bl, green, marble));
-	walls->push_back(Triangle(C, D, B, tl, tr, br, green, marble));
+	walls->push_back(Triangle(C, B, A, tl, br, bl, white, marble));
+	walls->push_back(Triangle(C, D, B, tl, tr, br, white, marble));
 
 	// Left wall
-	walls->push_back(Triangle(A, E, C, bl, tl, br, purple, marble));
-	walls->push_back(Triangle(C, E, G, br, tl, tr, purple, marble));
+	walls->push_back(Triangle(A, E, C, bl, tl, br, green, marble));
+	walls->push_back(Triangle(C, E, G, br, tl, tr, green, marble));
 
 	// Right wall
-	walls->push_back(Triangle(F, B, D, tr, br, bl, yellow, marble));
-	walls->push_back(Triangle(H, F, D, tl, tr, bl, yellow, marble));
+	walls->push_back(Triangle(F, B, D, tr, br, bl, red, marble));
+	walls->push_back(Triangle(H, F, D, tl, tr, bl, red, marble));
 
 	// Ceiling
-	walls->push_back(Triangle(E, F, G, tl, tr, bl, cyan, marble));
-	walls->push_back(Triangle(F, H, G, tr, br, bl, cyan, marble));
+	walls->push_back(Triangle(E, F, G, tl, tr, bl, white, marble));
+	walls->push_back(Triangle(F, H, G, tr, br, bl, white, marble));
 
 	// Back wall
 	walls->push_back(Triangle(G, D, C, tl, br, bl, white, marble));
@@ -225,24 +225,24 @@ const shared_ptr<BoundingVolume> loadTestModelBVH() {
 	H = vec3(82, 165, 225);
 
 	// FRONT
-	small_block->push_back(Triangle(E, B, A, tl, br, bl, red, pink));
-	small_block->push_back(Triangle(E, F, B, tl, tr, br, red, pink));
+	small_block->push_back(Triangle(E, B, A, tl, br, bl, white, pink));
+	small_block->push_back(Triangle(E, F, B, tl, tr, br, white, pink));
 
 	// RIGHT
-	small_block->push_back(Triangle(F, D, B, tl, br, bl, red, pink));
-	small_block->push_back(Triangle(F, H, D, tl, tr, br, red, pink));
+	small_block->push_back(Triangle(F, D, B, tl, br, bl, white, pink));
+	small_block->push_back(Triangle(F, H, D, tl, tr, br, white, pink));
 
 	// BACK
-	small_block->push_back(Triangle(H, C, D, tl, br, bl, red, pink));
-	small_block->push_back(Triangle(H, G, C, tl, tr, br, red, pink));
+	small_block->push_back(Triangle(H, C, D, tl, br, bl, white, pink));
+	small_block->push_back(Triangle(H, G, C, tl, tr, br, white, pink));
 
 	// LEFT
-	small_block->push_back(Triangle(G, E, C, tl, tr, bl, red, pink));
-	small_block->push_back(Triangle(E, A, C, tr, br, bl, red, pink));
+	small_block->push_back(Triangle(G, E, C, tl, tr, bl, white, pink));
+	small_block->push_back(Triangle(E, A, C, tr, br, bl, white, pink));
 
 	// TOP
-	small_block->push_back(Triangle(G, F, E, tl, br, bl, red, pink));
-	small_block->push_back(Triangle(G, H, F, tl, tr, br, red, pink));
+	small_block->push_back(Triangle(G, F, E, tl, br, bl, white, pink));
+	small_block->push_back(Triangle(G, H, F, tl, tr, br, white, pink));
 
 	BoundingVolume smallVolume(small_block);
 
@@ -261,24 +261,24 @@ const shared_ptr<BoundingVolume> loadTestModelBVH() {
 	H = vec3(314, 330, 456);
 
 	// FRONT
-	tall_block->push_back(Triangle(E, B, A, tl, br, bl, blue, greenMat));
-	tall_block->push_back(Triangle(E, F, B, tl, tr, br, blue, greenMat));
+	tall_block->push_back(Triangle(E, B, A, tl, br, bl, white, greenMat));
+	tall_block->push_back(Triangle(E, F, B, tl, tr, br, white, greenMat));
 
 	// RIGHT
-	tall_block->push_back(Triangle(F, D, B, tl, br, bl, blue, greenMat));
-	tall_block->push_back(Triangle(F, H, D, tl, tr, br, blue, greenMat));
+	tall_block->push_back(Triangle(F, D, B, tl, br, bl, white, greenMat));
+	tall_block->push_back(Triangle(F, H, D, tl, tr, br, white, greenMat));
 
 	// BACK
-	tall_block->push_back(Triangle(H, C, D, tl, br, bl, blue, greenMat));
-	tall_block->push_back(Triangle(H, G, C, tl, tr, br, blue, greenMat));
+	tall_block->push_back(Triangle(H, C, D, tl, br, bl, white, greenMat));
+	tall_block->push_back(Triangle(H, G, C, tl, tr, br, white, greenMat));
 
 	// LEFT
-	tall_block->push_back(Triangle(G, E, C, tl, tr, bl, blue, greenMat));
-	tall_block->push_back(Triangle(E, A, C, tr, br, bl, blue, greenMat));
+	tall_block->push_back(Triangle(G, E, C, tl, tr, bl, white, greenMat));
+	tall_block->push_back(Triangle(E, A, C, tr, br, bl, white, greenMat));
 
 	// TOP
-	tall_block->push_back(Triangle(G, F, E, tl, br, bl, blue, greenMat));
-	tall_block->push_back(Triangle(G, H, F, tl, tr, br, blue, greenMat));
+	tall_block->push_back(Triangle(G, F, E, tl, br, bl, white, greenMat));
+	tall_block->push_back(Triangle(G, H, F, tl, tr, br, white, greenMat));
 
 	BoundingVolume tallVolume(tall_block);
 

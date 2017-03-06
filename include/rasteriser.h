@@ -2,7 +2,8 @@
 
 #include "camera.h"
 #include "lightingengine.h"
-#include "pointlight.h"
+#include "rastlighting.h"
+#include "baked_gi.h"
 #include "sdlscreen.h"
 #include "testmodel.h"
 #include <limits>
@@ -19,12 +20,12 @@ private:
 
   const shared_ptr<const vector<Triangle>> triangles;
   Camera camera;
-  shared_ptr<PointLight> light;
+  shared_ptr<Light> light;
   shared_ptr<LightingEngine> lighting;
 
   void computePolygonRows(const vector<Pixel> &vertexPixels,
                           vector<Pixel> &leftPixels,
-                          vector<Pixel> &rightPixels);
+                          vector<Pixel> &rightPixels, const Triangle &triangle);
   void drawPolygonRows(int width, int height, vector<Pixel> &leftPixels,
                        vector<Pixel> &rightPixels, const Triangle &triangle);
 

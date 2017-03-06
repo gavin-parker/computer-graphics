@@ -35,12 +35,8 @@ bool BoundingVolume::calculateIntersectionSub(Ray &ray, float num[7], float deno
 		float tn = (d[i][0] - num[i]) / denom[i];
 		float tf = (d[i][1] - num[i]) / denom[i];
 		if (denom[i] < 0) std::swap(tn, tf);
-		if (tn > tNear) {
-			tNear = tn;
-		}
-		if (tf < tFar) {
-			tFar = tf;
-		}
+		tNear = (tn > tNear) ? tn : tNear;
+		tFar = (tf < tFar) ? tf : tFar;
 		if (tNear > tFar) {
 			return false;
 		}
@@ -87,12 +83,8 @@ bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface) {
 		float tn = (d[i][0] - num[i]) / denom[i];
 		float tf = (d[i][1] - num[i]) / denom[i];
 		if (denom[i] < 0) std::swap(tn, tf);
-		if (tn > tNear) {
-			tNear = tn;
-		}
-		if (tf < tFar) {
-			tFar = tf;
-		}
+		tNear = (tn > tNear) ? tn : tNear;
+		tFar = (tf < tFar) ? tf : tFar;
 		if (tNear > tFar) {
 			return false;
 		}
@@ -102,7 +94,7 @@ bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface) {
 	bool anyIntersection = this->anyIntersection(ray, surface);
 
 	//then check sub volumes if there are any
-	for (BoundingVolume volume : subVolumes) {
+	for (BoundingVolume& volume : subVolumes) {
 		anyIntersection |= volume.calculateIntersection(ray);
 		if (anyIntersection && ray.collision != surface.collision &&
 			ray.length < lightDistance) {

@@ -10,6 +10,7 @@ screenshot.bmp
 
 # Windows Files
 Thumbs.db
+/include/glm
 
 # Generated Prolog Editor Files
 *.pl~
