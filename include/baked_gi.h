@@ -1,11 +1,6 @@
 #pragma once
 #include "lightingengine.h"
 
-#ifndef unix
-#define RAND float(rand()) / RAND_MAX
-#else
-#define RAND drand48()
-#endif
 
 
 class BakedGI : public LightingEngine {

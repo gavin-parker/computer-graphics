@@ -56,6 +56,9 @@ private:
 	shared_ptr<LightingEngine> lighting;
 	const shared_ptr<BoundingVolume> boundingVolume;
 	void create_global_memory(int width, int height);
+	vector<vec3> averageImage;
+	bool refresh = false;
+	int frameCounter = 1;
 	cl::Context context;
 	cl::Device default_device;
 	TriangleStruct* cl_triangles;
@@ -75,7 +78,7 @@ private:
 	std::vector<cl::Platform> all_platforms;
 	std::string sourceCode;
 	cl_float3* image;
-	cl_float* rands;
+	cl_uint* rands;
 	CameraStruct cameraStruct;
 	cl_float cameraArray[4] = { 0,0,0,0 };
 

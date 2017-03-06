@@ -1,8 +1,11 @@
 #include <string>
 #pragma once
+#include <ctime>
+#include <cstdlib>
 #include "rasteriser.h"
 #include "raytracer.h"
 #include "starscreen.h"
+#include "terrain_gen.h"
 #ifdef useCL
 #include "raytracer_cl.h"
 #endif
@@ -15,6 +18,9 @@ extern "C" {
 using std::string;
 
 int main(int argc, char *argv[]) {
+#ifndef unix
+	srand(static_cast <unsigned> (time(0)));
+#endif
   if (argc >= 2) {
     string mode(argv[1]);
 
@@ -23,8 +29,15 @@ int main(int argc, char *argv[]) {
 
 	const shared_ptr<const vector<Triangle>> geometry = loadTestModel();
 	const shared_ptr<BoundingVolume> cornelBVH = loadTestModelBVH();
+
     shared_ptr<Scene> scene(new Scene(softLight, geometry, cornelBVH));
 	shared_ptr<Scene> scene_low_quality(new Scene(light, geometry, cornelBVH));
+
+	TerrainGenerator terrainGen;
+	const shared_ptr<const vector<Triangle>> terrain = terrainGen.generateTerrain(1000,0,100, vec3(-100,0,-100));
+	shared_ptr<Scene> sceneB(new Scene(light, terrain, shared_ptr<BoundingVolume>(new BoundingVolume(terrain))));
+
+
 	#pragma omp parallel
 	{
 		#pragma omp master
@@ -82,6 +95,7 @@ int main(int argc, char *argv[]) {
 
 #ifdef useCL
 	else if (mode == "cl") {
+		light->power *= 10;
 		shared_ptr<LightingEngine> engine(new StandardLighting(scene));
 		RayTracerCL screen(1024, 1024, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), false);
 		screen.run();

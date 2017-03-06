@@ -4,7 +4,7 @@ Camera::Camera(vec3 position, float yaw, float viewAngle)
     : position(position), yaw(yaw),
       viewOffset(static_cast<float>(tan(viewAngle * M_PI / 180.f))) {}
 
-void Camera::update(float dt) {
+bool Camera::update(float dt) {
   Uint8 *keystate = SDL_GetKeyState(0);
 
   yaw += (keystate[SDLK_RIGHT] - keystate[SDLK_LEFT]) * yawVeclocity * dt;
@@ -22,7 +22,10 @@ void Camera::update(float dt) {
        static_cast<float>(keystate[SDLK_e] - keystate[SDLK_q]) * upwards +
        static_cast<float>(keystate[SDLK_w] - keystate[SDLK_s]) * forwards);
 
-
+  if ((keystate[SDLK_a] - keystate[SDLK_d]) != 0 || (keystate[SDLK_e] - keystate[SDLK_q]) != 0 || (keystate[SDLK_w] - keystate[SDLK_s]) != 0) {
+	  return true;
+  }
+  return false;
 }
 
 void Camera::calculateRay(Ray &ray, float x, float y) {

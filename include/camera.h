@@ -25,7 +25,7 @@ public:
 	bool moved = false;
   Camera(vec3 position, float yaw, float viewAngle);
 
-  void update(float dt);
+  bool update(float dt);
 
   void calculateRay(Ray &ray, float x, float y);
 
