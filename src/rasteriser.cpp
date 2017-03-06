@@ -1,7 +1,7 @@
 #include "rasteriser.h"
 
 Rasteriser::Rasteriser(int width, int height, shared_ptr<LightingEngine> lighting, shared_ptr<Scene> scene, bool fullscreen)
-	: SdlScreen(width, height, fullscreen), depthBuffer(width * height), shadowBuffer(6 * width * height),
+	: SdlScreen(width, height, fullscreen), depthBuffer(width * height), shadowBuffer(6*1024 * 1024),
 	triangles(scene->triangles),
 	camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene->light), lighting(lighting), leftBuffer(triangles->size()), rightBuffer(triangles->size()) {}
 
@@ -47,18 +47,18 @@ void Rasteriser::draw(int width, int height) {
 			vector<Pixel> leftPixels;
 			vector<Pixel> rightPixels;
 			computePolygonRows(proj, leftPixels, rightPixels, triangle);
-			drawPolygonRows(width, height, leftPixels, rightPixels, triangle);
-			//shadowPass(width, height, leftPixels, rightPixels, triangle);
+			//drawPolygonRows(width, height, leftPixels, rightPixels, triangle);
+			shadowPass(width, height, leftPixels, rightPixels, triangle);
 			leftBuffer[t] = leftPixels;
 			rightBuffer[t] = rightPixels;
 		}
 	}
-	//for (int t = 0; t < triangles->size(); t++) {
-	//	const Triangle &triangle = (*triangles)[t];
-	//	vector<Pixel> leftPixels = leftBuffer[t];
-	//	vector<Pixel> rightPixels = rightBuffer[t];
-	//	drawPolygonRows(width, height, leftPixels, rightPixels, triangle);
-	//}
+	for (int t = 0; t < triangles->size(); t++) {
+		const Triangle &triangle = (*triangles)[t];
+		vector<Pixel> leftPixels = leftBuffer[t];
+		vector<Pixel> rightPixels = rightBuffer[t];
+		drawPolygonRows(width, height, leftPixels, rightPixels, triangle);
+	}
 }
 
 void Rasteriser::drawPolygonRows(int width, int height,
@@ -101,22 +101,20 @@ void Rasteriser::drawPolygonRows(int width, int height,
 					ray.direction = camera.position - realPos;
 					ray.collisionLocation = realPos;
 					ray.collision = &triangle;
-					float depth;
-					//int i = light->projectVertex(pixelVert.position, depth);
-					//if (i > -1) {
-						//int shadowBufferIndex = width * leftPixels[y].y + x;
-						vec3 lightColour;
-						//float d = shadowBuffer[(i*width*height) + shadowBufferIndex];
-						//if (depth > d) {
-							//lightColour = vec3(0, 0, 0);
-						//}
-						//else {
+					float depth = 0.f;
+					indexedPixel lightPixel = light->projectVertex(pixelVert.position, depth);
+					vec3 lightColour = vec3(0, 0, 0);//triangle.colour*vec3(0.2,0.2,0.2);
+					if (lightPixel.x > -1) {
+						int shadowBufferIndex = lightPixel.i*(1024 * 1024) + 1024 * lightPixel.y + lightPixel.x;
+						float d = shadowBuffer[shadowBufferIndex] + 2.f;
+
+						if (depth <= d) {
 							lightColour = triangle.colour*pixelVert.illumination;
-						//}
-						drawPixel(x, leftPixels[y].y, vec3(std::min(lightColour.r, 1.0f),
-							std::min(lightColour.g, 1.0f),
-							std::min(lightColour.b, 1.0f)));
-					//}
+						}
+					}
+					drawPixel(x, leftPixels[y].y, vec3(std::min(lightColour.r, 1.0f),
+						std::min(lightColour.g, 1.0f),
+						std::min(lightColour.b, 1.0f)));
 				}
 			}
 		}
@@ -168,14 +166,14 @@ void Rasteriser::shadowPass(int width, int height,
 			Vertex pixelVert =
 				lerpV(leftPixels[y].v, rightPixels[y].v, leftPixels[y].depth, rightPixels[y].depth, pixelDepth,
 					deLerpF(leftPixels[y].x, rightPixels[y].x, x));
-			float depth;
-			int i = light->projectVertex(pixelVert.position, depth);
-			if (i > -1) {
-				int shadowBufferIndex = width * leftPixels[y].y + x;
+			float depth = 0;
+			indexedPixel lightPixel = light->projectVertex(pixelVert.position, depth);
+			if (lightPixel.x > -1) {
+				int shadowBufferIndex = lightPixel.i*(1024 * 1024) + 1024 * lightPixel.y + lightPixel.x;
 				//shadowBuffer stores closest depths to light source
-				float d = shadowBuffer[(i*width*height) + shadowBufferIndex];
-				if (depth < d) {
-					shadowBuffer[(i*width*height) + shadowBufferIndex] = depth;
+				float d = shadowBuffer[shadowBufferIndex];
+				if (depth < d + 10.f) {
+					shadowBuffer[shadowBufferIndex] = depth;
 				}
 			}
 		}

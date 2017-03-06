@@ -18,14 +18,20 @@ inline float RAND() {
 }
 #endif 
 
-#define RIGHT vec3(1,0,0)
-#define LEFT vec3(-1,0,0)
-#define UP vec3(0,1,0)
-#define DOWN vec3(0,-1,0)
-#define FORWARD vec3(0,0,1)
-#define BACK vec3(0,0,-1)
-#define EMPTY vec3(0,0,0)
-#define ROTATIONS {mat3(RIGHT,EMPTY,EMPTY), mat3(LEFT,EMPTY,EMPTY), mat3(EMPTY,UP,EMPTY), mat3(EMPTY,DOWN,EMPTY), mat3(EMPTY,EMPTY,FORWARD), mat3(EMPTY,EMPTY,BACK)}
+typedef struct indexedPixel{
+	int x;
+	int y;
+	int i;
+} indexedPixel;
+
+#define RIGHT vec3(1.f,0.f,0.f)
+#define LEFT vec3(-1.f,0.f,0.f)
+#define UP vec3(0.f,1.f,0.f)
+#define DOWN vec3(0.f,-1.f,0.f)
+#define FORWARD vec3(0.f,0.f,1.f)
+#define BACK vec3(0.f,0.f,-1.f)
+#define EMPTY vec3(0.f,0.f,0.f)
+#define ROTATIONS {mat3(RIGHT,UP,FORWARD), mat3(LEFT,UP,BACK), mat3(BACK,UP,RIGHT), mat3(FORWARD,UP,LEFT), mat3(RIGHT,BACK,UP),mat3(RIGHT,FORWARD,DOWN)}
 
 using glm::ivec2;
 using glm::vec3;
@@ -36,6 +42,7 @@ protected:
 	int width;
 	int height;
 	mat3 rotations[6] = ROTATIONS;
+	vec3 frutsums[8][4];
 public:
 	vec3 color;
 	float power;
@@ -54,20 +61,21 @@ public:
 
 	virtual vec3 vertexLight(Vertex v) const = 0;
 
-	Light(vec3 position, vec3 color, float power, int rayCount, int width = 500, int height = 500) : position(position), color(color), power(power), rayCount(rayCount), width(width), height(height) {};
+	Light(vec3 position, vec3 color, float power, int rayCount, int width = 1024, int height = 1024) : position(position), color(color), power(power), rayCount(rayCount), width(width), height(height) {};
 
-	int projectVertex(vec3 vert, float& depth) {
+	indexedPixel projectVertex(vec3 vert, float& depth) {
 		depth = numeric_limits<float>::max();
 		for (int i = 0; i < 6; i++) {
-			mat3 rotation = rotations[i];
-			vec3 newPos = (vert - position) * rotation;
-			int x = width * (1 - newPos.x) / 2.0;
-			int y = height * (1 - newPos.y) / 2.0;
-			if (x >= 0 && x < width && y >= 0 && y <= height && abs(newPos.z) < numeric_limits<float>::max()) {
-				depth = abs(newPos.z);
-				return i;
-			}
+				vec3 newPos = (vert - position) * rotations[i];
+				float xf = static_cast<float>((newPos.x / newPos.z));
+				float yf = static_cast<float>((newPos.y / newPos.z));
+				int x = static_cast<int>(width * (1 - xf) / 2.0);
+				int y = static_cast<int>(height * (1 - yf) / 2.0);
+				if (x > 0 && x < width && y > 0 && y < height && newPos.z < numeric_limits<float>::max() && newPos.z > 5.f) {
+					depth = abs(newPos.z);
+					return { x, y, i };
+				}
 		}
-		return -1;
+		return{ -1,-1,-1 };
 	}
 };
