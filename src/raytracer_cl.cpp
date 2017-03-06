@@ -75,8 +75,13 @@ void RayTracerCL::create_global_memory(int width, int height) {
 }
 
 void RayTracerCL::update(float dt) {
-	light->update(dt); 
-	camera.update(dt);
+	if (light->update(dt)) {
+		refresh = true;
+	}
+	if (camera.update(dt)) {
+		refresh = true;
+	}
+	
 }
  
 void RayTracerCL::draw(int width, int height) {
@@ -127,14 +132,25 @@ void RayTracerCL::draw(int width, int height) {
 			cl_float3 pixel = image[(y*height + x)];
 
 			vec3 lightColour(pixel.x, pixel.y, pixel.z);
-			averageImage[(y*height + x)] += lightColour;
+			if (refresh) {
+				averageImage[(y*height + x)] = lightColour;
+			}
+			else {
+				averageImage[(y*height + x)] += lightColour;
+			}
 			lightColour = averageImage[(y*height + x)] / (float)frameCounter;
 				drawPixel(x, y, vec3(std::min(lightColour.r, 1.0f),
 					std::min(lightColour.g, 1.0f),
 					std::min(lightColour.b, 1.0f)));
 			}
 		}
-	frameCounter++;
+	if (refresh) {
+		frameCounter = 1;
+		refresh = false;
+	}
+	else {
+		frameCounter++;
+	}
 }
 void RayTracerCL::boilerPlate(int width, int height) {
 

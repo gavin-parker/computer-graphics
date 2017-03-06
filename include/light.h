@@ -46,7 +46,7 @@ public:
 
 	vec3 position;
 
-	virtual void update(float dt) = 0;
+	virtual bool update(float dt) = 0;
 
 	virtual void calculateRays(vector<Ray> &rays, vec3 target) const = 0;
 

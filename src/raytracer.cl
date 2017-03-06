@@ -216,7 +216,7 @@ kernel void pathTrace(global const TriangleStruct* triangles, float3 lightLoc, g
         float3 n = triangle.normal;
         directLightHere = directLight(layer2[i], lightLoc, n);
         directLightHere = (lightRay.collision == layer2[i].collision) ? directLightHere : (float3){0,0,0};
-		directLightHere = (layer2[i].collision > -1) ? directLightHere*(triangle.color) : (float3){0.4,0.4,0.4 };
+		directLightHere = (layer2[i].collision > -1) ? directLightHere*(triangle.color) : (float3){0.2,0.2,0.2 };
 		layer2[i].origin = (directLightHere/(float)M_PI);
 	}
 	#pragma unroll
@@ -227,7 +227,7 @@ kernel void pathTrace(global const TriangleStruct* triangles, float3 lightLoc, g
         float3 n = triangle.normal;
         directLightHere = directLight(layer1[i], lightLoc, n);
         directLightHere = (lightRay.collision == layer1[i].collision) ? directLightHere : (float3){0,0,0};
-		directLightHere = (layer1[i].collision > -1) ? directLightHere*(triangle.color) : (float3){0.4,0.4,0.4 };
+		directLightHere = (layer1[i].collision > -1) ? directLightHere*(triangle.color) : (float3){0.2,0.2,0.2 };
 		float3 indirectLight = (float3){0,0,0};
         #pragma unroll
 		for(int j=0; j < sampleCount; j++){
