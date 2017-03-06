@@ -183,6 +183,7 @@ void RayTracerCL::boilerPlate(int width, int height) {
 	if (c == 0) {
 		macros = "#define M_PI 3.14159265359f  ";
 	}
+	macros = macros + "#define TRIANGLE_COUNT" + std::to_string(triangles->size());
 
 	default_platform.getDevices(CL_DEVICE_TYPE_ALL, &all_devices);
 	c = 0;
@@ -212,7 +213,7 @@ void RayTracerCL::boilerPlate(int width, int height) {
 	if (err != 0) {  
 		cout << "error creating program: " << err << "\n";  
 	}
-	char* options = " -Werror -cl-fast-relaxed-math -cl-mad-enable";
+	char* options = " -Werror -cl-fast-relaxed-math -cl-mad-enable -cl-unsafe-math-optimizations -cl-finite-math-only -cl-denorms-are-zero";
 	if (program.build({ default_device }, options) != CL_SUCCESS) {
 		std::cout << " Error building: " << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device) << "\n"; 
 		exit(1);
