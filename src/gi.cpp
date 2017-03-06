@@ -49,8 +49,8 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
   for (int i = 0; i < sampleCount; i++) { 
 
     // generate random direction
-	  float r1 = RAND; 
-	  float r2 = RAND;
+	  float r1 = RAND(); 
+	  float r2 = RAND();
 	  float sinTheta = sqrtf(1 - r1*r1); 
 	  float phi = 2 * M_PI * r2;
 	  float x = sinTheta * cosf(phi); 

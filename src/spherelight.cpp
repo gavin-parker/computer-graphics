@@ -15,8 +15,8 @@ void SphereLight::update(float dt) {
 void SphereLight::calculateRays(vector<Ray> &rays, glm::vec3 target) const {
 	for (int i = 0; i < rayCount; i++) {
 		//pick a random point on the sphere maybe?
-		float theta = RAND * 2 * M_PI;
-		float phi = acos(2 * RAND - 1);
+		float theta = RAND() * 2 * M_PI;
+		float phi = acos(2 * RAND() - 1);
 		vec3 point(radius*cos(theta)*sin(phi), radius*sin(theta)*sin(phi), radius*cos(phi));
 		point += position;
 		Ray ray;

@@ -8,6 +8,16 @@
 #include "ray.h"
 #include "vertex.h"
 
+#ifndef unix 
+inline float RAND() {
+	return ((float)rand() / (RAND_MAX));
+}
+#else 
+inline float RAND() {
+	return drand48();
+}
+#endif 
+
 #define RIGHT vec3(1,0,0)
 #define LEFT vec3(-1,0,0)
 #define UP vec3(0,1,0)

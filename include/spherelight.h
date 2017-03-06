@@ -1,10 +1,5 @@
 #pragma once
 #include "light.h"
-#ifndef unix
-#define RAND float(rand()) / RAND_MAX
-#else
-#define RAND drand48()
-#endif
 
 class SphereLight : public Light {
 private:
