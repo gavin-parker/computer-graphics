@@ -56,6 +56,8 @@ private:
 	shared_ptr<LightingEngine> lighting;
 	const shared_ptr<BoundingVolume> boundingVolume;
 	void create_global_memory(int width, int height);
+	vector<vec3> averageImage;
+	int frameCounter = 1;
 	cl::Context context;
 	cl::Device default_device;
 	TriangleStruct* cl_triangles;

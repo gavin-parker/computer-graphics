@@ -95,6 +95,7 @@ int main(int argc, char *argv[]) {
 
 #ifdef useCL
 	else if (mode == "cl") {
+		light->power *= 10;
 		shared_ptr<LightingEngine> engine(new StandardLighting(scene));
 		RayTracerCL screen(1024, 1024, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), false);
 		screen.run();

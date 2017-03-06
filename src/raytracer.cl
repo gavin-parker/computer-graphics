@@ -50,7 +50,7 @@ inline float3 directLight(Ray ray, float3 lightPos, float3 normal) {
 	float3 direction = norm(offset);
 	float radius = len(offset);
 	float3 color = { 0.75f, 0.75f, 0.75f };
-	return (max(dot(direction, normal), 0.0f) * 500000.f / (4.0f * (float)M_PI * radius * radius)) * color;
+	return (max(dot(direction, normal), 0.0f) * 5000000.f / (4.0f * (float)M_PI * radius * radius)) * color;
 }
 inline float randomNumberGenerator(float seed){
 	//return seed;
@@ -174,7 +174,7 @@ kernel void pathTrace(global const TriangleStruct* triangles, float3 lightLoc, g
 	float diffuse = 0.75f;
 	float specularity = 0.1f;
 	//lightColour = directLight(lightRay, lightLoc, n)*diffuse + spec * specularity;
-	color = (lightRay.collision == cameraRay.collision) ? directLight(lightRay, lightLoc, n)*diffuse : (float3){0,0,0};	
+	color = (lightRay.collision == cameraRay.collision) ? directLight(lightRay, lightLoc, n) : (float3){0,0,0};	
 
 	//generates and calculates all the ray intersections needed
 	Ray layer1[sampleCount];
@@ -216,8 +216,8 @@ kernel void pathTrace(global const TriangleStruct* triangles, float3 lightLoc, g
         float3 n = triangle.normal;
         directLightHere = directLight(layer2[i], lightLoc, n);
         directLightHere = (lightRay.collision == layer2[i].collision) ? directLightHere : (float3){0,0,0};
-		directLightHere = (layer2[i].collision > -1) ? directLightHere*norm(triangle.color) : (float3){0.4,0.4,0.4 };
-		layer2[i].origin = (directLightHere/(float)M_PI)*diffuse;
+		directLightHere = (layer2[i].collision > -1) ? directLightHere*(triangle.color) : (float3){0.4,0.4,0.4 };
+		layer2[i].origin = (directLightHere/(float)M_PI);
 	}
 	#pragma unroll
 	for(int i=0; i < sampleCount; i++){
@@ -227,7 +227,7 @@ kernel void pathTrace(global const TriangleStruct* triangles, float3 lightLoc, g
         float3 n = triangle.normal;
         directLightHere = directLight(layer1[i], lightLoc, n);
         directLightHere = (lightRay.collision == layer1[i].collision) ? directLightHere : (float3){0,0,0};
-		directLightHere = (layer1[i].collision > -1) ? directLightHere*norm(triangle.color) : (float3){0.4,0.4,0.4 };
+		directLightHere = (layer1[i].collision > -1) ? directLightHere*(triangle.color) : (float3){0.4,0.4,0.4 };
 		float3 indirectLight = (float3){0,0,0};
         #pragma unroll
 		for(int j=0; j < sampleCount; j++){
@@ -235,7 +235,7 @@ kernel void pathTrace(global const TriangleStruct* triangles, float3 lightLoc, g
 			indirectLight += sampleLight;
 		}
 		indirectLight /= (float)sampleCount;
-		layer1[i].origin = (directLightHere / (float)M_PI + 2.f * indirectLight)*diffuse;
+		layer1[i].origin = (directLightHere / (float)M_PI + 2.f * indirectLight);
 	}
 
 	float3 indirectLight = (float3){0,0,0};
@@ -249,6 +249,7 @@ kernel void pathTrace(global const TriangleStruct* triangles, float3 lightLoc, g
 	finalLight *= originalColor;
 	finalLight = debug ? (float3){0,1,0 } : finalLight;
 	image[(y*width + x)] = (float3) { min(finalLight.x, 1.0f), min(finalLight.y, 1.0f), min(finalLight.z, 1.0f) };
+	rands[(y*width + x)] = seed;
 }
 
 

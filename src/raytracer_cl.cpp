@@ -7,7 +7,7 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 	bool fullscreen)
 	: SdlScreen(width, height, fullscreen), triangles(triangles),
 	camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(light),
-	lighting(lighting), boundingVolume(boundingVolume) { 
+	lighting(lighting), boundingVolume(boundingVolume), averageImage(vector<vec3>(width*height)) { 
 
 	boilerPlate(width, height);
 	int err = 0;
@@ -38,6 +38,20 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 	shader.setArg(6, (cl_int)height);
 	shader.setArg(7, randBuffer); 
 
+
+#pragma omp parallel for 
+	for (int y = 0; y < height; ++y) {
+#ifdef unix
+#pragma omp simd
+#endif
+		for (int x = 0; x < width; ++x) {
+			float rnd = RAND();
+			rands[(y*height + x)] = static_cast<cl_uint>(RAND()*numeric_limits<cl_uint>::max());
+			averageImage[(y*height + x)] = vec3(0, 0, 0);
+		}
+	}
+	err = queue.enqueueWriteBuffer(randBuffer, CL_TRUE, 0, sizeof(cl_uint) * width*height, rands);
+
 }
 
 void RayTracerCL::create_global_memory(int width, int height) {
@@ -66,17 +80,7 @@ void RayTracerCL::update(float dt) {
 }
  
 void RayTracerCL::draw(int width, int height) {
-#pragma omp parallel for 
-	for (int y = 0; y < height; ++y) {
-#ifdef unix
-#pragma omp simd
-#endif
-		for (int x = 0; x < width; ++x) {
-			float rnd = RAND();
-			rands[(y*height + x)] = static_cast<cl_uint>(RAND()*numeric_limits<cl_uint>::max());
-		}
-	}
-	int err = queue.enqueueWriteBuffer(randBuffer, CL_TRUE, 0, sizeof(cl_uint) * width*height, rands);
+
 
 	cl_float viewOffset = (cl_float)camera.viewOffset;
 	cameraArray[0] = camera.position.x;
@@ -94,7 +98,7 @@ void RayTracerCL::draw(int width, int height) {
 	rotation[0] = vecToFloat(camera.rotation[0]);
 	rotation[1] = vecToFloat(camera.rotation[1]);
 	rotation[2] = vecToFloat(camera.rotation[2]);
-	err = queue.enqueueWriteBuffer(cameraBuffer, CL_TRUE, 0, sizeof(cl_float)*13, cameraArray);
+	int err = queue.enqueueWriteBuffer(cameraBuffer, CL_TRUE, 0, sizeof(cl_float)*13, cameraArray);
 
 	if (err != 0) {
 		cout << "err: " << err << "\n";
@@ -109,7 +113,6 @@ void RayTracerCL::draw(int width, int height) {
 	shader.setArg(1, lightLoc);
 	queue.enqueueNDRangeKernel(castRays, cl::NullRange, cl::NDRange((size_t)width, (size_t)height), cl::NullRange);
 	queue.enqueueNDRangeKernel(shader, cl::NullRange, cl::NDRange((size_t)width, (size_t)height), cl::NullRange);
-	queue.finish();
 	if (err != 0) {
 		cout << "err: " << err << "\n";
 		exit(1);
@@ -122,12 +125,16 @@ void RayTracerCL::draw(int width, int height) {
 #endif
 		for (int x = 0; x < width; ++x) {
 			cl_float3 pixel = image[(y*height + x)];
+
 			vec3 lightColour(pixel.x, pixel.y, pixel.z);
+			averageImage[(y*height + x)] += lightColour;
+			lightColour = averageImage[(y*height + x)] / (float)frameCounter;
 				drawPixel(x, y, vec3(std::min(lightColour.r, 1.0f),
 					std::min(lightColour.g, 1.0f),
 					std::min(lightColour.b, 1.0f)));
 			}
 		}
+	frameCounter++;
 }
 void RayTracerCL::boilerPlate(int width, int height) {
 
