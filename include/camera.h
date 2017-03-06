@@ -14,12 +14,12 @@ using glm::vec2;
 
 class Camera {
 private:
-  float yaw;
   const float velocity = 200.0f;
   const float yawVeclocity = 2.0f;
 
 public:
 	vec3 position;
+	float yaw;
 	mat3 rotation;
 	const float viewOffset;
 	bool moved = false;

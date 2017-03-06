@@ -17,7 +17,7 @@ void Rasteriser::draw(int width, int height) {
 	for (size_t i = 0; i < shadowBuffer.size(); ++i) {
 		shadowBuffer[i] = numeric_limits<float>::max();
 	}
-	for (int t = 0; t < triangles->size(); t++) {
+	for (size_t t = 0; t < triangles->size(); t++) {
 
 		const Triangle &triangle = (*triangles)[t];
 		vector<Vertex> vertices = {
@@ -53,7 +53,7 @@ void Rasteriser::draw(int width, int height) {
 			rightBuffer[t] = rightPixels;
 		}
 	}
-	for (int t = 0; t < triangles->size(); t++) {
+	for (size_t t = 0; t < triangles->size(); t++) {
 		const Triangle &triangle = (*triangles)[t];
 		vector<Pixel> leftPixels = leftBuffer[t];
 		vector<Pixel> rightPixels = rightBuffer[t];
@@ -91,7 +91,7 @@ void Rasteriser::drawPolygonRows(int width, int height,
 					vec3 f2 = triangle.v1 - pixelVert.position;
 					vec3 f3 = triangle.v2 - pixelVert.position;
 					float a = glm::length(glm::cross(triangle.e1, triangle.e2));
-					float a1 = glm::length(glm::cross(f2, f3)) / a;
+					//float a1 = glm::length(glm::cross(f2, f3)) / a;
 					float a2 = glm::length(glm::cross(f3, f1)) / a;
 					float a3 = glm::length(glm::cross(f1, f2)) / a;
 					vec2 uv(a2, a3);

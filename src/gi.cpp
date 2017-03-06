@@ -11,9 +11,7 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
 
   vector<Ray> rays(light->rayCount);
   light->calculateRays(rays, ray.collisionLocation);
-#ifdef unix
-#pragma omp simd
-#endif
+
   for (int i = 0; i < light->rayCount; i++) {
 	  Ray directLightRay = rays[i];
 
@@ -43,9 +41,7 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
 
   mat3 basis(normalX, normalY, normal);
   if (bounces >= 1) { 
-#ifdef unix
-#pragma omp simd
-#endif
+
   for (int i = 0; i < sampleCount; i++) { 
 
     // generate random direction

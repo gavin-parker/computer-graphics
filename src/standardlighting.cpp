@@ -7,7 +7,7 @@ StandardLighting::StandardLighting(const shared_ptr<Scene> scene) : LightingEngi
 vec3 StandardLighting::calculateLight(Ray ray, ivec2 pixel) {
   Ray lightRay;
   vector<Ray> rays(light->rayCount);
-
+   
   light->calculateRays(rays, ray.collisionLocation);
   // ClosestIntersection(lightRay);
 
@@ -16,7 +16,7 @@ vec3 StandardLighting::calculateLight(Ray ray, ivec2 pixel) {
   vec3 lightColour(0, 0, 0);
 
   //calculate average light at a point -- works with multiple light rays
-  for (int i = 0; i < rays.size(); i++) {
+  for (int i = 0; (size_t)i < rays.size(); i++) {
 	  lightRay = rays[i];
 
 	  if (boundingVolume->calculateAnyIntersection(lightRay, ray) && lightRay.collision == ray.collision) {

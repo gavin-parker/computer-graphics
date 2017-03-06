@@ -27,6 +27,7 @@ void SphereLight::calculateRays(vector<Ray> &rays, glm::vec3 target) const {
 		Ray ray;
 		ray.position = point;
 		ray.direction = target - point;
+		ray.length = glm::length(ray.direction);
 		rays[i] = ray;
 	}
 }

@@ -9,7 +9,7 @@ BakedGI::BakedGI(shared_ptr<Scene> scene, int sampleCount, int resolution) : Lig
 
 void BakedGI::constructImage() {
 	cout << "Baking lighting...";
-	for (int i = 0; i < triangles->size(); i++) {
+	for (size_t i = 0; i < triangles->size(); i++) {
 		image[i] = vector<vec3>(resolution*resolution);
 		const Triangle &triangle = (*triangles)[i];
 #pragma omp parallel for

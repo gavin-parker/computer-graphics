@@ -1,5 +1,4 @@
 #include <string>
-#pragma once
 #include <ctime>
 #include <cstdlib>
 #include "rasteriser.h"

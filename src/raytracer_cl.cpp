@@ -123,6 +123,10 @@ void RayTracerCL::draw(int width, int height) {
 		exit(1);
 	}
 	queue.enqueueReadBuffer(imageBuffer, CL_TRUE, 0, sizeof(cl_float3) * width*height, image );
+
+	if (refresh) {
+		frameCounter = 1;
+	}
 #pragma omp parallel for
 	for (int y = 0; y < height; ++y) {
 #ifdef unix
@@ -139,18 +143,16 @@ void RayTracerCL::draw(int width, int height) {
 				averageImage[(y*height + x)] += lightColour;
 			}
 			lightColour = averageImage[(y*height + x)] / (float)frameCounter;
-				drawPixel(x, y, vec3(std::min(lightColour.r, 1.0f),
+				
+			drawPixel(x, y, vec3(std::min(lightColour.r, 1.0f),
 					std::min(lightColour.g, 1.0f),
 					std::min(lightColour.b, 1.0f)));
 			}
 		}
 	if (refresh) {
-		frameCounter = 1;
 		refresh = false;
 	}
-	else {
-		frameCounter++;
-	}
+	frameCounter++;
 }
 void RayTracerCL::boilerPlate(int width, int height) {
 

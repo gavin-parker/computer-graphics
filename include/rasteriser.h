@@ -19,12 +19,12 @@ private:
   vector<float> depthBuffer;
   vector<float> shadowBuffer;
   const shared_ptr<const vector<Triangle>> triangles;
-  vector<vector<Pixel>> leftBuffer;
-  vector<vector<Pixel>> rightBuffer;
+
   Camera camera;
   shared_ptr<Light> light;
   shared_ptr<LightingEngine> lighting;
-
+  vector<vector<Pixel>> leftBuffer;
+  vector<vector<Pixel>> rightBuffer;
   void computePolygonRows(const vector<Pixel> &vertexPixels,
                           vector<Pixel> &leftPixels,
                           vector<Pixel> &rightPixels, const Triangle &triangle);

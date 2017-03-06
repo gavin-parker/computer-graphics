@@ -165,14 +165,12 @@ kernel void pathTrace(global const TriangleStruct* triangles, float3 lightLoc, g
 
 	Ray lightRay = castRayLocal(lightLoc, cameraRay.collisionLocation - lightLoc, triangles, triangleCount);
 	
-	int diff = cameraRay.collision - lightRay.collision;
 
 	float3 n = triangle.normal;
 	float3 v = norm(cameraRay.direction);
 	float3 l = norm(lightRay.direction);
 	float3 spec = phong(v, l, n);
 	float diffuse = 0.75f;
-	float specularity = 0.1f;
 	//lightColour = directLight(lightRay, lightLoc, n)*diffuse + spec * specularity;
 	color = (lightRay.collision == cameraRay.collision) ? directLight(lightRay, lightLoc, n) : (float3){0,0,0};	
 

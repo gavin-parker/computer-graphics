@@ -46,7 +46,7 @@ bool BoundingVolume::calculateIntersectionSub(Ray &ray, float num[7], float deno
 	bool anyIntersection = ClosestIntersection(ray);
 
 	//then check sub volumes if there are any
-	for (int i = 0; i < subVolumes.size(); i++) {
+	for (size_t i = 0; i < subVolumes.size(); i++) {
 		anyIntersection |= subVolumes[i].calculateIntersectionSub(ray, num, denom);
 	}
 

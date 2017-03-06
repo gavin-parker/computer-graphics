@@ -39,19 +39,20 @@ using std::numeric_limits;
 using std::vector;
 class Light {
 protected:
-	int width;
-	int height;
+
 	mat3 rotations[6] = ROTATIONS;
-	vec3 frutsums[8][4];
 public:
+	vec3 position;
 	vec3 color;
 	float power;
+	int rayCount = 1;
+	int width;
+	int height;
 
 	const float velocity = 200.0f;
 
-	int rayCount = 1;
 
-	vec3 position;
+
 
 	virtual bool update(float dt) = 0;
 

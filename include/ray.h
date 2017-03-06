@@ -13,8 +13,8 @@ struct Ray {
   vec3 position;
   vec3 direction;
 
-  Triangle const *collision;
+  Triangle const *collision = NULL;
   vec3 collisionLocation;
   vec2 collisionUVLocation;
-  float length;
+  float length = 0;
 };
