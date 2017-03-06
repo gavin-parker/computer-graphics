@@ -11,7 +11,7 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 
 	boilerPlate(width, height);
 	int err = 0;
-	queue.enqueueWriteBuffer(triangleBuffer, CL_TRUE, 0, sizeof(TriangleStruct) * triangles->size(), cl_triangles);
+	queue.enqueueWriteBuffer(triangleBuffer, CL_TRUE, 0, sizeof(cl_float3) * triangles->size()*5, cl_triangles);
 
 	cl_float3 lightLoc = { 300.0f, 400.0f, 100.0f };
 	queue.enqueueWriteBuffer(lightBuffer, CL_TRUE, 0, sizeof(cl_float3), &lightLoc);
@@ -55,7 +55,7 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 }
 
 void RayTracerCL::create_global_memory(int width, int height) {
-	cl_triangles = (TriangleStruct*)malloc(triangles->size() * sizeof(TriangleStruct));
+	cl_triangles = (cl_float3*)malloc(triangles->size() * sizeof(cl_float3)*5);
 	vector<Triangle> tris = *triangles;
 	for (int i = 0; i < triangles->size(); i++) {
 		cl_float3 v0 = { tris[i].v0.x, tris[i].v0.y, tris[i].v0.z };
@@ -63,11 +63,15 @@ void RayTracerCL::create_global_memory(int width, int height) {
 		cl_float3 v2 = { tris[i].v2.x, tris[i].v2.y, tris[i].v2.z };
 		cl_float3 c = { tris[i].colour.x, tris[i].colour.y, tris[i].colour.z };
 		cl_float3 normal = { tris[i].normal.x, tris[i].normal.y, tris[i].normal.z };
-		cl_triangles[i] = { v0, v1, v2, c, normal };
+		cl_triangles[i] = v0;
+		cl_triangles[triangles->size() + i] = v1;
+		cl_triangles[triangles->size()*2 + i] = v2;
+		cl_triangles[triangles->size()*3 + i] = c;
+		cl_triangles[triangles->size()*4 + i] = normal;
 	}
 	image = (cl_float3*)malloc(width*height * sizeof(cl_float3));
 	rands = (cl_uint*)malloc(width*height * sizeof(cl_float));
-	triangleBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, sizeof(TriangleStruct) * triangles->size());
+	triangleBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, sizeof(cl_float3) * triangles->size()*5);
 	imageBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(cl_float3)* width*height);
 	pointBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(RayStruct)* width*height);
 	cameraBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, sizeof(cl_float)*(4+9));

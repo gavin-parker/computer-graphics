@@ -19,7 +19,6 @@ private:
   vector<float> depthBuffer;
   vector<float> shadowBuffer;
   const shared_ptr<const vector<Triangle>> triangles;
-
   Camera camera;
   shared_ptr<Light> light;
   shared_ptr<LightingEngine> lighting;

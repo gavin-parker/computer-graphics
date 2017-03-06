@@ -48,8 +48,8 @@ inline cl_float3 vecToFloat(vec3 vec) {
 class RayTracerCL : public SdlScreen {
 private:
 	//bool ClosestIntersection(Ray &ray);
-	const shared_ptr<const vector<Triangle>> triangles;
-	Camera camera;
+	const shared_ptr<const vector<Triangle>> triangles; 
+	Camera camera; 
 
 	const vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
 	const shared_ptr<PointLight> light;
@@ -61,9 +61,9 @@ private:
 	int frameCounter = 1;
 	cl::Context context;
 	cl::Device default_device;
-	TriangleStruct* cl_triangles;
+	cl_float3* cl_triangles;
 	cl::Buffer triangleBuffer;
-	cl::Buffer lightBuffer;
+	cl::Buffer lightBuffer; 
 	cl::Buffer imageBuffer;
 	cl::Buffer cameraBuffer;
 	cl::Buffer pointBuffer;
