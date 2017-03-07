@@ -14,8 +14,10 @@ void Rasteriser::draw(int width, int height) {
 	for (size_t i = 0; i < depthBuffer.size(); ++i) {
 		depthBuffer[i] = numeric_limits<float>::max();
 	}
-	for (size_t i = 0; i < shadowBuffer.size(); ++i) {
-		shadowBuffer[i] = numeric_limits<float>::max();
+	float *shadow_ptr = &shadowBuffer[0];
+#pragma omp parallel for
+	for (int i = 0; (size_t)i < shadowBuffer.size(); ++i) {
+		shadow_ptr[i] = numeric_limits<float>::max();
 	}
 	for (size_t t = 0; t < triangles->size(); t++) {
 
@@ -64,6 +66,11 @@ void Rasteriser::draw(int width, int height) {
 void Rasteriser::drawPolygonRows(int width, int height,
 	vector<Pixel> &leftPixels,
 	vector<Pixel> &rightPixels, const Triangle &triangle) {
+	if (leftPixels.size() < 1) {
+		return;
+	}
+	Pixel* l_pixels = &leftPixels[0];
+	Pixel* r_pixels = &rightPixels[0];
 #pragma omp parallel for
 	for (int y = 0; y < static_cast<int>(leftPixels.size()); y++) {
 
@@ -73,18 +80,18 @@ void Rasteriser::drawPolygonRows(int width, int height,
 		//rightPixels[y].v.illumination = lighting->calculateLight(ray);
 
 
-		for (int x = leftPixels[y].x; x <= rightPixels[y].x; x++) {
-			float pixelDepth = lerpF(leftPixels[y].depth, rightPixels[y].depth,
-				deLerpF(leftPixels[y].x, rightPixels[y].x, x));
+		for (int x = l_pixels[y].x; x <= r_pixels[y].x; x++) {
+			float pixelDepth = lerpF(l_pixels[y].depth, r_pixels[y].depth,
+				deLerpF(l_pixels[y].x, r_pixels[y].x, x));
 			if (pixelDepth > 0 && x >= 0 && x < static_cast<int>(width) &&
-				leftPixels[y].y >= 0 && leftPixels[y].y < static_cast<int>(height)) {
-				float &bufferDepth = depthBuffer[width * leftPixels[y].y + x];
+				l_pixels[y].y >= 0 && l_pixels[y].y < static_cast<int>(height)) {
+				float &bufferDepth = depthBuffer[width * l_pixels[y].y + x];
 
 				if (pixelDepth < bufferDepth) {
 					bufferDepth = pixelDepth;
 					Vertex pixelVert =
-						lerpV(leftPixels[y].v, rightPixels[y].v, leftPixels[y].depth, rightPixels[y].depth, pixelDepth,
-							deLerpF(leftPixels[y].x, rightPixels[y].x, x));
+						lerpV(l_pixels[y].v, r_pixels[y].v, l_pixels[y].depth, r_pixels[y].depth, pixelDepth,
+							deLerpF(l_pixels[y].x, r_pixels[y].x, x));
 
 
 					vec3 f1 = triangle.v0 - pixelVert.position;
@@ -112,7 +119,7 @@ void Rasteriser::drawPolygonRows(int width, int height,
 							lightColour = triangle.colour*pixelVert.illumination;
 						}
 					}
-					drawPixel(x, leftPixels[y].y, vec3(std::min(lightColour.r, 1.0f),
+					drawPixel(x, l_pixels[y].y, vec3(std::min(lightColour.r, 1.0f),
 						std::min(lightColour.g, 1.0f),
 						std::min(lightColour.b, 1.0f)));
 				}

@@ -73,7 +73,7 @@ public:
 				int x = static_cast<int>(width * (1 - xf) / 2.0);
 				int y = static_cast<int>(height * (1 - yf) / 2.0);
 				if (x > 0 && x < width && y > 0 && y < height && newPos.z < numeric_limits<float>::max() && newPos.z > 5.f) {
-					depth = abs(newPos.z);
+					depth = newPos.z;
 					return { x, y, i };
 				}
 		}
