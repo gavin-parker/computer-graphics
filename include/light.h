@@ -51,9 +51,6 @@ public:
 
 	const float velocity = 200.0f;
 
-
-
-
 	virtual bool update(float dt) = 0;
 
 	virtual void calculateRays(vector<Ray> &rays, vec3 target) const = 0;
@@ -62,7 +59,7 @@ public:
 
 	virtual vec3 vertexLight(Vertex v) const = 0;
 
-	Light(vec3 position, vec3 color, float power, int rayCount, int width = 1024, int height = 1024) : position(position), color(color), power(power), rayCount(rayCount), width(width), height(height) {};
+	Light(vec3 position, vec3 color, float power, int rayCount, int width = 128, int height = 128) : position(position), color(color), power(power), rayCount(rayCount), width(width), height(height) {};
 
 	indexedPixel projectVertex(vec3 vert, float& depth) {
 		depth = numeric_limits<float>::max();
@@ -72,7 +69,7 @@ public:
 				float yf = static_cast<float>((newPos.y / newPos.z));
 				int x = static_cast<int>(width * (1 - xf) / 2.0);
 				int y = static_cast<int>(height * (1 - yf) / 2.0);
-				if (x > 0 && x < width && y > 0 && y < height && newPos.z < numeric_limits<float>::max() && newPos.z > 5.f) {
+				if (x >= 0 && x < width && y >= 0 && y < height && newPos.z < numeric_limits<float>::max() && newPos.z > 0.f) {
 					depth = newPos.z;
 					return { x, y, i };
 				}

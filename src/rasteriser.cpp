@@ -1,7 +1,7 @@
 #include "rasteriser.h"
 
 Rasteriser::Rasteriser(int width, int height, shared_ptr<LightingEngine> lighting, shared_ptr<Scene> scene, bool fullscreen)
-	: SdlScreen(width, height, fullscreen), depthBuffer(width * height), shadowBuffer(6*1024 * 1024),
+	: SdlScreen(width, height, fullscreen), depthBuffer(width * height), shadowBuffer(6* 128 * 128),
 	triangles(scene->triangles),
 	camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene->light), lighting(lighting), leftBuffer(triangles->size()), rightBuffer(triangles->size()) {}
 
@@ -93,15 +93,14 @@ void Rasteriser::drawPolygonRows(int width, int height,
 						lerpV(l_pixels[y].v, r_pixels[y].v, l_pixels[y].depth, r_pixels[y].depth, pixelDepth,
 							deLerpF(l_pixels[y].x, r_pixels[y].x, x));
 
-
 					vec3 f1 = triangle.v0 - pixelVert.position;
 					vec3 f2 = triangle.v1 - pixelVert.position;
 					vec3 f3 = triangle.v2 - pixelVert.position;
 					float a = glm::length(glm::cross(triangle.e1, triangle.e2));
-					//float a1 = glm::length(glm::cross(f2, f3)) / a;
+					float a1 = glm::length(glm::cross(f2, f3)) / a;
 					float a2 = glm::length(glm::cross(f3, f1)) / a;
 					float a3 = glm::length(glm::cross(f1, f2)) / a;
-					vec2 uv(a2, a3);
+					vec3 bary(a1, a2, a3);
 					//if calculating per pixel...
 					Ray ray;
 					vec3 realPos = pixelVert.position;
@@ -110,13 +109,19 @@ void Rasteriser::drawPolygonRows(int width, int height,
 					ray.collision = &triangle;
 					float depth = 0.f;
 					indexedPixel lightPixel = light->projectVertex(pixelVert.position, depth);
-					vec3 lightColour = vec3(0, 0, 0);//triangle.colour*vec3(0.2,0.2,0.2);
-					if (lightPixel.x > -1) {
-						int shadowBufferIndex = lightPixel.i*(1024 * 1024) + 1024 * lightPixel.y + lightPixel.x;
-						float d = shadowBuffer[shadowBufferIndex] + 2.f;
+					vec3 lightColour = vec3(0, 1, 0);//triangle.colour*vec3(0.2,0.2,0.2);
 
-						if (depth <= d) {
-							lightColour = triangle.colour*pixelVert.illumination;
+					pixelVert.illumination = light->directLight(ray);
+					if (lightPixel.x > -1) {
+						int shadowBufferIndex = lightPixel.i*(128 * 128) + 128 * lightPixel.y + lightPixel.x;
+						float d = shadowBuffer[shadowBufferIndex];
+						float bias = 20.f;
+						if (depth <= (d+ 20.f)) {
+							lightColour = triangle.getColour(bary)*pixelVert.illumination;
+						}
+						else {
+							//lightColour = vec3(0, 0, 1);
+							lightColour = triangle.getColour(bary)*vec3(0.1,0.1,0.1);
 						}
 					}
 					drawPixel(x, l_pixels[y].y, vec3(std::min(lightColour.r, 1.0f),
@@ -131,6 +136,7 @@ void Rasteriser::drawPolygonRows(int width, int height,
 void Rasteriser::computePolygonRows(const vector<Pixel> &vertexPixels,
 	vector<Pixel> &leftPixels,
 	vector<Pixel> &rightPixels, const Triangle &triangle) {
+
 	int max = -numeric_limits<int>::max();
 	int min = numeric_limits<int>::max();
 
@@ -165,21 +171,26 @@ void Rasteriser::computePolygonRows(const vector<Pixel> &vertexPixels,
 void Rasteriser::shadowPass(int width, int height,
 	vector<Pixel> &leftPixels,
 	vector<Pixel> &rightPixels, const Triangle &triangle) {
+	if (leftPixels.size() < 1) {
+		return;
+	}
+	Pixel* l_pixels = &leftPixels[0];
+	Pixel* r_pixels = &rightPixels[0];
 	//gets the depth in 6 directions from the light source
 	for (int y = 0; y < static_cast<int>(leftPixels.size()); y++) {
-		for (int x = leftPixels[y].x; x <= rightPixels[y].x; x++) {
-			float pixelDepth = lerpF(leftPixels[y].depth, rightPixels[y].depth,
-				deLerpF(leftPixels[y].x, rightPixels[y].x, x));
+		for (int x = l_pixels[y].x; x <= r_pixels[y].x; x++) {
+			float pixelDepth = lerpF(l_pixels[y].depth, r_pixels[y].depth,
+				deLerpF(l_pixels[y].x, r_pixels[y].x, x));
 			Vertex pixelVert =
-				lerpV(leftPixels[y].v, rightPixels[y].v, leftPixels[y].depth, rightPixels[y].depth, pixelDepth,
-					deLerpF(leftPixels[y].x, rightPixels[y].x, x));
+				lerpV(l_pixels[y].v, r_pixels[y].v, l_pixels[y].depth, r_pixels[y].depth, pixelDepth,
+					deLerpF(l_pixels[y].x, r_pixels[y].x, x));
 			float depth = 0;
 			indexedPixel lightPixel = light->projectVertex(pixelVert.position, depth);
 			if (lightPixel.x > -1) {
-				int shadowBufferIndex = lightPixel.i*(1024 * 1024) + 1024 * lightPixel.y + lightPixel.x;
+				int shadowBufferIndex = lightPixel.i*(128 * 128) + 128 * lightPixel.y + lightPixel.x;
 				//shadowBuffer stores closest depths to light source
 				float d = shadowBuffer[shadowBufferIndex];
-				if (depth < d + 10.f) {
+				if (depth < (d + 10.f)) {
 					shadowBuffer[shadowBufferIndex] = depth;
 				}
 			}

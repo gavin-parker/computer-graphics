@@ -59,8 +59,8 @@ int main(int argc, char *argv[]) {
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "rast") {
-		 shared_ptr<LightingEngine> engine(new RastLighting(scene));
-		 Rasteriser screen(500, 500, engine, scene, false);
+		 shared_ptr<LightingEngine> engine(new RastLighting(scene_low_quality));
+		 Rasteriser screen(500, 500, engine, scene_low_quality, false);
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
     } else if (mode == "gi") {

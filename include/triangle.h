@@ -25,7 +25,11 @@ public:
 
   bool calculateIntersection(Ray &ray) const;
 
+
   vec3 getColour(vec2 uv) const;
+
+  vec3 getColour(vec3 bary) const;
+
 
   vec3 getPixelColour(vec2 uv) const;
 };
