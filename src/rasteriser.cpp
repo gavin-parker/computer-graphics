@@ -67,6 +67,72 @@ void Rasteriser::draw(int width, int height) {
 	}
 }
 
+int computeClipping(float x, float y, int xMax, int yMax) {
+	int clipping = INSIDE;
+
+	if (x < -xMax) {
+		clipping |= LEFT;
+	}
+	else if (x > xMax) {
+		clipping |= RIGHT;
+	}
+	if (y < -yMax) {
+		clipping |= BOTTOM;
+	}
+	else if (y > yMax) {
+		clipping |= TOP;
+	}
+	return clipping;
+
+}
+vec4 CohenSutherland(vec2 A, vec2 B, ivec2 bounds) {
+	int clipA = computeClipping(A.x, A.y, bounds.x, bounds.y);
+	int clipB = computeClipping(B.x, B.y, bounds.x, bounds.y);
+	while (true) {
+		//line within screen
+		if (!(clipA | clipB)) {
+			break;
+		}
+		//line out of screen
+		else if (clipA & clipB) {
+			break;
+		}
+		else {
+			float x, y;
+			int clippedPoint = clipA ? clipA : clipB;
+
+			if (clippedPoint & TOP) {
+				x = A.x + (B.x - A.x) * (bounds.y - A.y) / (B.y - A.y);
+				y = bounds.y;
+			}
+			else if (clippedPoint & BOTTOM) {
+				x = A.x + (B.x - A.x) * ((-bounds.y) - A.y) / (B.y - A.y);
+				y = (-bounds.y);
+			}
+			else if (clippedPoint & RIGHT) {
+				y = A.y + (B.y - A.y) * (bounds.x - A.x) / (B.x - A.x);
+				x = bounds.x;
+			}
+			else if (clippedPoint & LEFT) {
+				y = A.y + (B.y - A.y) * ((-bounds.x) - A.x) / (B.x - A.x);
+				x = (-bounds.x);
+			}
+			if (clippedPoint == clipA) {
+				A.x = x;
+				A.y = y;
+				clipA = computeClipping(A.x, A.y, bounds.x, bounds.y);
+			}
+			else {
+				B.x = x;
+				B.y = y;
+				clipB = computeClipping(B.x, B.y, bounds.x, bounds.y);
+			}
+
+		}
+	}
+	return vec4(A, B);
+}
+
 void Rasteriser::clip(int width, int height) {
 	for (size_t t = 0; t < triangles->size(); t++) {
 		const Triangle &triangle = (*triangles)[t];
@@ -78,19 +144,21 @@ void Rasteriser::clip(int width, int height) {
 		float xMax = (float)width/2.0;
 		float yMax = (float)height / 2.0;
 
-		bool clip = false;
+		int clippedVerts = 0;
+		int clippings[3] = { 0,0,0 };
+		vec4 lines[3];
 		for (int i = 0; i < 3; i++) {
-			vec4 hom = camera.clipSpace(vertices[i]);
-			if (abs(hom.x) > abs(hom.w * xMax)) {
-				clip = true;
-			}
-			if (abs(hom.y) > abs(hom.w * yMax)) {
-				clip = true;
+			vec4 homA = camera.clipSpace(vertices[i]);
+			vec4 homB = camera.clipSpace(vertices[(i+1)%3]);
+			vec2 A(homA.x, homA.y);
+			vec2 B(homB.x, homB.y);
+			vec4 line = CohenSutherland(A, B, ivec2(xMax, yMax));
+			//if this vertex not changed
+			if (line[0] == A.x && line[1] == A.y) {
+
 			}
 		}
-		if (!clip) {
-			clipped_triangles.push_back(triangle);
-		}
+		clipped_triangles.push_back(triangle);
 	}
 
 
