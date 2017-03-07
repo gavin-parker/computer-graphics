@@ -51,7 +51,7 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 		}
 	}
 	err = queue.enqueueWriteBuffer(randBuffer, CL_TRUE, 0, sizeof(cl_uint) * width*height, rands);
-
+	refresh = true;
 }
 
 void RayTracerCL::create_global_memory(int width, int height) {
@@ -89,39 +89,41 @@ void RayTracerCL::update(float dt) {
 }
  
 void RayTracerCL::draw(int width, int height) {
-
-
-	cl_float viewOffset = (cl_float)camera.viewOffset;
-	cameraArray[0] = camera.position.x;
-	cameraArray[1] = camera.position.y;
-	cameraArray[2] = camera.position.z;
-	cameraArray[3] = viewOffset;
-
-	for (int i = 0; i < 3; i++) {
-		cameraArray[4 + i * 3] = camera.rotation[i].x;
-		cameraArray[4 + i * 3 + 1] = camera.rotation[i].y;
-		cameraArray[4 + i * 3 + 2] = camera.rotation[i].z;
-	}
-
-	cl_float3 rotation[3];
-	rotation[0] = vecToFloat(camera.rotation[0]);
-	rotation[1] = vecToFloat(camera.rotation[1]);
-	rotation[2] = vecToFloat(camera.rotation[2]);
-	int err = queue.enqueueWriteBuffer(cameraBuffer, CL_TRUE, 0, sizeof(cl_float)*13, cameraArray);
-
-	if (err != 0) {
-		cout << "err: " << err << "\n";
-		exit(1); 
-	}
-
-	 
 	cl_float3 lightLoc = vecToFloat(light->position);
-	
-	castRays.setArg(1, lightLoc);
-	castRays.setArg(3, cameraBuffer);
+
+	if (refresh) {
+		cl_float viewOffset = (cl_float)camera.viewOffset;
+		cameraArray[0] = camera.position.x;
+		cameraArray[1] = camera.position.y;
+		cameraArray[2] = camera.position.z;
+		cameraArray[3] = viewOffset;
+
+		for (int i = 0; i < 3; i++) {
+			cameraArray[4 + i * 3] = camera.rotation[i].x;
+			cameraArray[4 + i * 3 + 1] = camera.rotation[i].y;
+			cameraArray[4 + i * 3 + 2] = camera.rotation[i].z;
+		}
+
+		cl_float3 rotation[3];
+		rotation[0] = vecToFloat(camera.rotation[0]);
+		rotation[1] = vecToFloat(camera.rotation[1]);
+		rotation[2] = vecToFloat(camera.rotation[2]);
+		int err = queue.enqueueWriteBuffer(cameraBuffer, CL_TRUE, 0, sizeof(cl_float) * 13, cameraArray);
+
+		if (err != 0) {
+			cout << "err: " << err << "\n";
+			exit(1);
+		}
+
+
+
+		castRays.setArg(1, lightLoc);
+		castRays.setArg(3, cameraBuffer);
+		queue.enqueueNDRangeKernel(castRays, cl::NullRange, cl::NDRange((size_t)width, (size_t)height), cl::NullRange);
+	}
 	shader.setArg(1, lightLoc);
-	queue.enqueueNDRangeKernel(castRays, cl::NullRange, cl::NDRange((size_t)width, (size_t)height), cl::NullRange);
-	queue.enqueueNDRangeKernel(shader, cl::NullRange, cl::NDRange((size_t)width, (size_t)height), cl::NullRange);
+
+	int err = queue.enqueueNDRangeKernel(shader, cl::NullRange, cl::NDRange((size_t)width, (size_t)height), cl::NullRange);
 	if (err != 0) {
 		cout << "err: " << err << "\n";
 		exit(1);
@@ -181,7 +183,7 @@ void RayTracerCL::boilerPlate(int width, int height) {
 	std::cout << "Using platform: " << default_platform.getInfo<CL_PLATFORM_NAME>() << "\n";
 
 	if (c == 0) {
-		macros = "#define M_PI 3.14159265359f  ";
+		macros = "#define M_PI 3.14159265359f  \n";
 	}
 	macros = macros + "#define TRIANGLE_COUNT" + std::to_string(triangles->size());
 
@@ -213,7 +215,7 @@ void RayTracerCL::boilerPlate(int width, int height) {
 	if (err != 0) {  
 		cout << "error creating program: " << err << "\n";  
 	}
-	char* options = " -Werror -cl-fast-relaxed-math -cl-mad-enable -cl-unsafe-math-optimizations -cl-finite-math-only -cl-denorms-are-zero";
+	char* options = " -Werror -cl-fast-relaxed-math -cl-mad-enable -cl-unsafe-math-optimizations -cl-denorms-are-zero";
 	if (program.build({ default_device }, options) != CL_SUCCESS) {
 		std::cout << " Error building: " << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device) << "\n"; 
 		exit(1);

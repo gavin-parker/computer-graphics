@@ -84,9 +84,10 @@ inline Ray castRayLocal(float3 origin, float3 direction, const global float3* tr
 	#pragma unroll
 	for (int i = 0; i < TRIANGLE_COUNT; i++) {
 		bool intersected =  (dot(ray.direction, NORM(i)) < 0) ? true : false;
-		float3 b = origin - V0(i); 
-		float3 e1 = V1(i) -V0(i); 
-		float3 e2 = V2(i) - V0(i); 
+		float3 v0 = V0(i);
+		float3 b = origin - v0; 
+		float3 e1 = V1(i) - v0; 
+		float3 e2 = V2(i) - v0; 
  
 		float3 A[3] = { -direction, e1, e2 }; 
 		float det_A = native_recip(det(A)); 
@@ -100,7 +101,7 @@ inline Ray castRayLocal(float3 origin, float3 direction, const global float3* tr
 		intersected = (u >= 0 && v >= 0 && (u + v) <= 1) ? intersected : false;
 		ray.length = intersected ? t : ray.length; 
 		ray.collision = intersected ? i : ray.collision; 
-		ray.collisionLocation = intersected ? V0(i) + u * e1 + v * e2 : ray.collisionLocation; 
+		ray.collisionLocation = intersected ? v0 + u * e1 + v * e2 : ray.collisionLocation; 
 
 	}
 		return ray;
@@ -266,8 +267,7 @@ kernel void castRays(global const float3* triangles, float3 lightLoc, global Ray
 	cameraRay.direction.x = dot(rotation[0], cameraSpaceDirection);
 	cameraRay.direction.y = dot(rotation[1], cameraSpaceDirection);
 	cameraRay.direction.z = dot(rotation[2], cameraSpaceDirection);
-	points[(y*width + x)] = castRayLocal(cameraRay.origin, cameraRay.direction, triangles, TRIANGLE_COUNT);;
+	points[(y*width + x)] = castRayLocal(cameraRay.origin, cameraRay.direction, triangles, TRIANGLE_COUNT);
 	return;
-
 }
 
