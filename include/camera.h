@@ -11,6 +11,7 @@
 
 using glm::vec3;
 using glm::vec2;
+using glm::vec4;
 
 class Camera {
 private:
@@ -30,4 +31,6 @@ public:
   void calculateRay(Ray &ray, float x, float y);
 
   vec3 projectVertex(Vertex v);
+
+  vec4 clipSpace(Vertex v);
 };

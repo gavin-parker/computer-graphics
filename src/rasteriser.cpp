@@ -3,7 +3,7 @@
 Rasteriser::Rasteriser(int width, int height, shared_ptr<LightingEngine> lighting, shared_ptr<Scene> scene, bool fullscreen)
 	: SdlScreen(width, height, fullscreen), depthBuffer(width * height), shadowBuffer(6* 128 * 128),
 	triangles(scene->triangles),
-	camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene->light), lighting(lighting), leftBuffer(triangles->size()), rightBuffer(triangles->size()) {}
+	camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene->light), lighting(lighting), leftBuffer(triangles->size()), rightBuffer(triangles->size()), clipped_triangles(vector<Triangle>()) {}
 
 void Rasteriser::update(float dt) {
 	camera.update(dt);
@@ -11,6 +11,10 @@ void Rasteriser::update(float dt) {
 }
 
 void Rasteriser::draw(int width, int height) {
+	clipped_triangles.clear();
+	clip(width, height);
+
+
 	for (size_t i = 0; i < depthBuffer.size(); ++i) {
 		depthBuffer[i] = numeric_limits<float>::max();
 	}
@@ -19,9 +23,9 @@ void Rasteriser::draw(int width, int height) {
 	for (int i = 0; (size_t)i < shadowBuffer.size(); ++i) {
 		shadow_ptr[i] = numeric_limits<float>::max();
 	}
-	for (size_t t = 0; t < triangles->size(); t++) {
+	for (size_t t = 0; t < clipped_triangles.size(); t++) {
 
-		const Triangle &triangle = (*triangles)[t];
+		const Triangle &triangle = (clipped_triangles)[t];
 		vector<Vertex> vertices = {
 			Vertex(triangle.v0, triangle.normal, vec2(1, 1), triangle.colour),
 			Vertex(triangle.v1, triangle.normal, vec2(1, 1), triangle.colour),
@@ -55,12 +59,41 @@ void Rasteriser::draw(int width, int height) {
 			rightBuffer[t] = rightPixels;
 		}
 	}
-	for (size_t t = 0; t < triangles->size(); t++) {
-		const Triangle &triangle = (*triangles)[t];
+	for (size_t t = 0; t < clipped_triangles.size(); t++) {
+		const Triangle &triangle = (clipped_triangles)[t];
 		vector<Pixel> leftPixels = leftBuffer[t];
 		vector<Pixel> rightPixels = rightBuffer[t];
 		drawPolygonRows(width, height, leftPixels, rightPixels, triangle);
 	}
+}
+
+void Rasteriser::clip(int width, int height) {
+	for (size_t t = 0; t < triangles->size(); t++) {
+		const Triangle &triangle = (*triangles)[t];
+		vector<Vertex> vertices = {
+			Vertex(triangle.v0, triangle.normal, vec2(1, 1), triangle.colour),
+			Vertex(triangle.v1, triangle.normal, vec2(1, 1), triangle.colour),
+			Vertex(triangle.v2, triangle.normal, vec2(1, 1), triangle.colour) };
+		
+		float xMax = (float)width/2.0;
+		float yMax = (float)height / 2.0;
+
+		bool clip = false;
+		for (int i = 0; i < 3; i++) {
+			vec4 hom = camera.clipSpace(vertices[i]);
+			if (abs(hom.x) > abs(hom.w * xMax)) {
+				clip = true;
+			}
+			if (abs(hom.y) > abs(hom.w * yMax)) {
+				clip = true;
+			}
+		}
+		if (!clip) {
+			clipped_triangles.push_back(triangle);
+		}
+	}
+
+
 }
 
 void Rasteriser::drawPolygonRows(int width, int height,
@@ -73,12 +106,6 @@ void Rasteriser::drawPolygonRows(int width, int height,
 	Pixel* r_pixels = &rightPixels[0];
 #pragma omp parallel for
 	for (int y = 0; y < static_cast<int>(leftPixels.size()); y++) {
-
-		//
-		//ray.direction = camera.position - rightPixels[y].v.position;
-		//ray.collisionLocation = rightPixels[y].v.position;
-		//rightPixels[y].v.illumination = lighting->calculateLight(ray);
-
 
 		for (int x = l_pixels[y].x; x <= r_pixels[y].x; x++) {
 			float pixelDepth = lerpF(l_pixels[y].depth, r_pixels[y].depth,

@@ -43,3 +43,9 @@ vec3 Camera::projectVertex(Vertex v) {
 
   return vec3((newPos.x / newPos.z), (newPos.y / newPos.z), newPos.z);
 }
+
+vec4 Camera::clipSpace(Vertex v) {
+	vec3 newPos = (v.position - position) * rotation;
+
+	return vec4(newPos, newPos.z / 250.0);
+}

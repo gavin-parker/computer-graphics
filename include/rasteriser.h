@@ -13,12 +13,14 @@ using std::numeric_limits;
 using std::max;
 using glm::ivec2;
 using glm::vec2;
+using glm::vec4;
 
 class Rasteriser : public SdlScreen {
 private:
   vector<float> depthBuffer;
   vector<float> shadowBuffer;
   const shared_ptr<const vector<Triangle>> triangles;
+  vector<Triangle> clipped_triangles;
   Camera camera;
   shared_ptr<Light> light;
   shared_ptr<LightingEngine> lighting;
@@ -35,7 +37,7 @@ private:
   void shadowPass(int width, int height,
 	  vector<Pixel> &leftPixels,
 	  vector<Pixel> &rightPixels, const Triangle &triangle);
-
+  void clip(int width, int height);
 protected:
   void update(float dt) override;
   void draw(int width, int height) override;
