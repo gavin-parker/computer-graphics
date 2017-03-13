@@ -5,6 +5,7 @@
 #include "raytracer.h"
 #include "starscreen.h"
 #include "terrain_gen.h"
+#include "obj_reader.h"
 #ifdef useCL
 #include "raytracer_cl.h"
 #endif
@@ -36,6 +37,9 @@ int main(int argc, char *argv[]) {
 	const shared_ptr<const vector<Triangle>> terrain = terrainGen.generateTerrain(1000,0,100, vec3(-100,0,-100));
 	shared_ptr<Scene> sceneB(new Scene(light, terrain, shared_ptr<BoundingVolume>(new BoundingVolume(terrain))));
 
+	char* filename = "teapot.obj";
+	const shared_ptr<const vector<Triangle>> teapot = loadObj(string(filename));
+	shared_ptr<Scene> teapotScene(new Scene(light, teapot, shared_ptr<BoundingVolume>(new BoundingVolume(teapot))));
 
 	#pragma omp parallel
 	{
@@ -91,12 +95,24 @@ int main(int argc, char *argv[]) {
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
 	}
+	else if (mode == "teapot") {
+		//shared_ptr<LightingEngine> engine(new FlatLighting(teapotScene));
+		//Rasteriser screen(500, 500, engine, teapotScene, false);
+		//screen.run();
+		//screen.saveBMP("screenshot.bmp");
+
+		light->power *= 10;
+		shared_ptr<LightingEngine> engine(new StandardLighting(teapotScene));
+		RayTracerCL screen(1024, 1024, engine, light, teapot, teapotScene->volume, vec3(0.f, 0.f, -480.64), false);
+		screen.run();
+		screen.saveBMP("screenshot.bmp");
+	}
 
 #ifdef useCL
 	else if (mode == "cl") {
 		light->power *= 10;
 		shared_ptr<LightingEngine> engine(new StandardLighting(scene));
-		RayTracerCL screen(1024, 1024, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), false);
+		RayTracerCL screen(1024, 1024, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), vec3(277.5f, 277.5f, -480.64), false);
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
 	}
@@ -108,7 +124,7 @@ int main(int argc, char *argv[]) {
     cout << "Please enter a mode:" << endl
          << "\tstars - starts" << endl
          << "\tray - raytracer" << endl
-        //<< "\trast - rasterizer" << endl
+        //<< "\trast - rasterizer" << endl	
         ;
   }
   return EXIT_SUCCESS;

@@ -89,6 +89,6 @@ protected:
 public:
 	RayTracerCL(int width, int height, shared_ptr<LightingEngine> lighting,
 		const shared_ptr<PointLight> light,
-		const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume,
+		const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume, vec3 cameraPos = vec3(277.5f, 277.5f, -480.64),
 		bool fullscreen = false);
 };
