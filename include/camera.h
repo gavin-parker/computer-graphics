@@ -33,4 +33,6 @@ public:
   vec3 projectVertex(Vertex v);
 
   vec4 clipSpace(Vertex v);
+
+  vec3 worldSpace(vec4 cameraCoordinate);
 };

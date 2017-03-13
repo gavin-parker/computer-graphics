@@ -9,13 +9,14 @@
 #include "testmodel.h"
 #include <limits>
 #include <omp.h>
+#include <unordered_set>
 
 #define INSIDE 0
 #define LEFT 1
 #define RIGHT 2
 #define BOTTOM 4
 #define TOP 8 
-
+#define NEAR 16
 
 using std::numeric_limits;
 using std::max;
@@ -23,7 +24,6 @@ using glm::ivec2;
 using glm::vec2;
 using glm::vec4;
 using glm::ivec4;
-
 
 class Rasteriser : public SdlScreen {
 private:
@@ -56,3 +56,21 @@ protected:
 public:
   Rasteriser(int width, int height, shared_ptr<LightingEngine> lighting, shared_ptr<Scene> scene,vec3 cameraPos,bool useShadows = true, bool fullscreen = false);
 };
+
+namespace std {
+	template<>
+	struct hash<vec3>
+	{
+		size_t operator()(const vec3& k)const
+		{
+			return std::hash<float>()(k.x) ^ std::hash<float>()(k.y) ^ std::hash<float>()(k.z);
+		}
+
+		bool operator()(const vec3& a, const vec3& b)const
+		{
+			return a.x == b.x && a.y == b.y && a.z == b.z;
+		}
+	};
+}
+
+

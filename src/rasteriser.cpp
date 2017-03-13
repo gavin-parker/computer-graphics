@@ -13,7 +13,8 @@ void Rasteriser::update(float dt) {
 void Rasteriser::draw(int width, int height) {
 	clipped_triangles.clear();
 	clip(width, height);
-
+	leftBuffer.resize(clipped_triangles.size());
+	rightBuffer.resize(clipped_triangles.size());
 
 	for (size_t i = 0; i < depthBuffer.size(); ++i) {
 		depthBuffer[i] = numeric_limits<float>::max();
@@ -67,70 +68,98 @@ void Rasteriser::draw(int width, int height) {
 	}
 }
 
-int computeClipping(float x, float y, int xMax, int yMax) {
+int computeClipping(vec4 point, vec2 bounds) {
 	int clipping = INSIDE;
 
-	if (x < -xMax) {
+	if (point.x < -abs(point.w*bounds.x)) {
 		clipping |= LEFT;
 	}
-	else if (x > xMax) {
+	else if (point.x > abs(point.w*bounds.x)) {
 		clipping |= RIGHT;
 	}
-	if (y < -yMax) {
+	if (point.y < -abs(point.w*bounds.y)) {
 		clipping |= BOTTOM;
 	}
-	else if (y > yMax) {
+	else if (point.y > abs(point.w*bounds.y)) {
 		clipping |= TOP;
+	}
+	if (point.z < 10.f) {
+		clipping |= NEAR;
 	}
 	return clipping;
 
 }
-vec4 CohenSutherland(vec2 A, vec2 B, ivec2 bounds) {
-	int clipA = computeClipping(A.x, A.y, bounds.x, bounds.y);
-	int clipB = computeClipping(B.x, B.y, bounds.x, bounds.y);
+
+Line CohenSutherland(vec4 A, vec4 B, vec2 bounds, int &draw) {
+	int clipA = computeClipping(A, bounds);
+	int clipB = computeClipping(B, bounds);
+	Line ab = { A, B };
+
+	if (!(clipA | clipB)) {
+		draw = 2;
+		return{ A,B };
+	}
+	int clipCount = 0;
 	while (true) {
+		if (clipCount > 4) {
+			cout << "oh bugger \n";
+			return{ A,B };
+		}
+		clipCount++;
 		//line within screen
 		if (!(clipA | clipB)) {
+			draw = 1;
 			break;
 		}
 		//line out of screen
 		else if (clipA & clipB) {
+			draw = 0;
 			break;
 		}
 		else {
-			float x, y;
+			float x, y, z;
+			vec3 newPoint;
 			int clippedPoint = clipA ? clipA : clipB;
 
 			if (clippedPoint & TOP) {
-				x = A.x + (B.x - A.x) * (bounds.y - A.y) / (B.y - A.y);
+				//x = A.x + (B.x - A.x) * (bounds.y - A.y) / (B.y - A.y);
 				y = bounds.y;
+
 			}
 			else if (clippedPoint & BOTTOM) {
-				x = A.x + (B.x - A.x) * ((-bounds.y) - A.y) / (B.y - A.y);
+				//x = A.x + (B.x - A.x) * ((-bounds.y) - A.y) / (B.y - A.y);
 				y = (-bounds.y);
 			}
 			else if (clippedPoint & RIGHT) {
-				y = A.y + (B.y - A.y) * (bounds.x - A.x) / (B.x - A.x);
+				//y = A.y + (B.y - A.y) * (bounds.x - A.x) / (B.x - A.x);
 				x = bounds.x;
 			}
 			else if (clippedPoint & LEFT) {
-				y = A.y + (B.y - A.y) * ((-bounds.x) - A.x) / (B.x - A.x);
+				//y = A.y + (B.y - A.y) * ((-bounds.x) - A.x) / (B.x - A.x);
 				x = (-bounds.x);
 			}
+			if (clippedPoint & NEAR) {
+				z = 10.f;
+
+			}
 			if (clippedPoint == clipA) {
-				A.x = x;
-				A.y = y;
-				clipA = computeClipping(A.x, A.y, bounds.x, bounds.y);
+				A = pointOnLine(ab, ivec2(x, y));
+				if (clippedPoint & TOP || clippedPoint & BOTTOM) {
+					float newY = glm::length(ab.a.y - y) / glm::length(ab.a.y - ab.b.y);
+					
+				}
+
+
+				clipA = computeClipping(A, bounds);
 			}
 			else {
-				B.x = x;
-				B.y = y;
-				clipB = computeClipping(B.x, B.y, bounds.x, bounds.y);
+				B = pointOnLine(ab, ivec2(x, y));
+				clipB = computeClipping(B,bounds);
 			}
 
 		}
 	}
-	return vec4(A, B);
+	return{ A, B };
 }
 
 void Rasteriser::clip(int width, int height) {
@@ -147,30 +176,45 @@ void Rasteriser::clip(int width, int height) {
 		int clippedVerts = 0;
 		int clippings[3] = { 0,0,0 };
 		vec4 lines[3];
-		bool clip = false;
+		std::unordered_set<vec3> newPoints;
+		bool clipped = false;
 		for (int i = 0; i < 3; i++) {
 			vec4 homA = camera.clipSpace(vertices[i]);
 			vec4 homB = camera.clipSpace(vertices[(i+1)%3]);
-			vec2 A(homA.x, homA.y);
-			vec2 B(homB.x, homB.y);
+			int draw;
+			Line original = { homA, homB };
+			if (homA.z > 0 && homB.z > 0) {
+				Line newline = CohenSutherland(homA, homB, vec2(xMax, yMax), draw);
 
-			int inPlane = computeClipping(homA.x, homA.y, xMax, yMax);
-			if (inPlane != INSIDE) {
-				//clip = true;
-			}
-			vec4 line = CohenSutherland(A, B, ivec2(xMax, yMax));
-			//if this vertex not changed
-			if (line[0] == A.x && line[1] == A.y) {
-
+				if (draw) {
+					newPoints.insert(camera.worldSpace(newline.a));
+					newPoints.insert(camera.worldSpace(newline.b));
+					if (draw != 2) {
+						clipped = true;
+					}
+				}
 			}
 		}
-		if (!clip) {
+
+		//unique points to vector
+		vector<vec3> points;
+		for (auto local_it = newPoints.begin(); local_it != newPoints.end(); ++local_it) points.push_back(*local_it);
+
+		if (!clipped) {
 			clipped_triangles.push_back(triangle);
+		}else if (points.size() == 3) {
+			cout << "clipping triangle \n";
+			clipped_triangles.push_back(Triangle(points[0], points[1], points[2], vec2(0,0), vec2(0, 0), vec2(0, 0), triangle.colour, triangle.mat));
+		}
+		else if (points.size() > 3) {
+			cout << "split poly for clipping: " << points.size() << " \n";
+			for (int i = 0; i < points.size() - 1; i++) {
+				clipped_triangles.push_back(Triangle(points[i+1], points[i], points[0], vec2(0, 0), vec2(0, 0), vec2(0, 0), triangle.colour, triangle.mat));
+			}
 		}
 	}
-
-
 }
+
 
 void Rasteriser::drawPolygonRows(int width, int height,
 	vector<Pixel> &leftPixels,
@@ -220,11 +264,11 @@ void Rasteriser::drawPolygonRows(int width, int height,
 						float d = shadowBuffer[shadowBufferIndex];
 						float bias = 20.f;
 						if (depth <= (d+ 20.f)) {
-							lightColour = triangle.getColour(bary)*pixelVert.illumination;
+							lightColour = triangle.colour*pixelVert.illumination;
 						}
 						else {
 							//lightColour = vec3(0, 0, 1);
-							lightColour = triangle.getColour(bary)*vec3(0.1,0.1,0.1);
+							lightColour = triangle.colour*vec3(0.1,0.1,0.1);
 						}
 					}
 					else {
@@ -251,6 +295,9 @@ void Rasteriser::computePolygonRows(const vector<Pixel> &vertexPixels,
 		min = std::min(vertexPixels[i].y, min);
 	}
 	int rows = max - min + 1;
+	if (rows < 2) {
+		return;
+	}
 	for (int i = 0; i < rows; i++) {
 		leftPixels.push_back(Pixel(numeric_limits<int>::max(), 0, 0.0f));
 		rightPixels.push_back(Pixel(-numeric_limits<int>::max(), 0, 0.0f));
