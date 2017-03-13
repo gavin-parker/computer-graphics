@@ -68,98 +68,58 @@ void Rasteriser::draw(int width, int height) {
 	}
 }
 
-int computeClipping(vec4 point, vec2 bounds) {
-	int clipping = INSIDE;
-
-	if (point.x < -abs(point.w*bounds.x)) {
-		clipping |= LEFT;
+Line clipLine(Line line, vec2 bounds, bool &draw) {
+	vec2 clippedA;
+	vec2 clippedB;
+	int clipA = 0;
+	int clipB = 0;
+	if (line.a.x < -abs(line.a.w*bounds.x)) {
+		clippedA.x = -abs(line.a.w*bounds.x);
+		clipA |= LEFT;
 	}
-	else if (point.x > abs(point.w*bounds.x)) {
-		clipping |= RIGHT;
+	else if (line.a.x > abs(line.a.w*bounds.x)) {
+		clippedA.x = abs(line.a.w*bounds.x);
+		clipA |= RIGHT;
 	}
-	if (point.y < -abs(point.w*bounds.y)) {
-		clipping |= BOTTOM;
+	if (line.a.y < -abs(line.a.w*bounds.y)) {
+		clippedA.y = -abs(line.a.w*bounds.y);
+		clipA |= BOTTOM;
 	}
-	else if (point.y > abs(point.w*bounds.y)) {
-		clipping |= TOP;
+	else if (line.a.y > abs(line.a.w*bounds.y)) {
+		clippedA.y = abs(line.a.w*bounds.y);
+		clipA |= TOP;
 	}
-	if (point.z < 10.f) {
-		clipping |= NEAR;
+	if (line.b.x < -abs(line.b.w*bounds.x)) {
+		clippedB.x = -abs(line.b.w*bounds.x);
+		clipB |= LEFT;
 	}
-	return clipping;
-
-}
-
-Line CohenSutherland(vec4 A, vec4 B, vec2 bounds, int &draw) {
-	int clipA = computeClipping(A, bounds);
-	int clipB = computeClipping(B, bounds);
-	Line ab = { A, B };
-
+	else if (line.b.x > abs(line.b.w*bounds.x)) {
+		clippedB.x = abs(line.b.w*bounds.x);
+		clipB |= RIGHT;
+	}
+	if (line.b.y < -abs(line.b.w*bounds.y)) {
+		clippedB.y = -abs(line.b.w*bounds.y);
+		clipB |= BOTTOM;
+	}
+	else if (line.b.y > abs(line.b.w*bounds.y)) {
+		clippedB.y = abs(line.b.w*bounds.y);
+		clipB |= TOP;
+	}
+	if (clipA & clipB) {
+		draw = false;
+		return line;
+	}
 	if (!(clipA | clipB)) {
-		draw = 2;
-		return{ A,B };
+		return line;
 	}
-	int clipCount = 0;
-	while (true) {
-		if (clipCount > 4) {
-			cout << "oh bugger \n";
-			return{ A,B };
-		}
-		clipCount++;
-		//line within screen
-		if (!(clipA | clipB)) {
-			draw = 1;
-			break;
-		}
-		//line out of screen
-		else if (clipA & clipB) {
-			draw = 0;
-			break;
-		}
-		else {
-			float x, y, z;
-			vec3 newPoint;
-			int clippedPoint = clipA ? clipA : clipB;
 
-			if (clippedPoint & TOP) {
-				//x = A.x + (B.x - A.x) * (bounds.y - A.y) / (B.y - A.y);
-				y = bounds.y;
+	vec2 originalA(line.a.x, line.a.y);
+	vec2 originalB(line.a.x, line.a.y);
 
-			}
-			else if (clippedPoint & BOTTOM) {
-				//x = A.x + (B.x - A.x) * ((-bounds.y) - A.y) / (B.y - A.y);
-				y = (-bounds.y);
-			}
-			else if (clippedPoint & RIGHT) {
-				//y = A.y + (B.y - A.y) * (bounds.x - A.x) / (B.x - A.x);
-				x = bounds.x;
-			}
-			else if (clippedPoint & LEFT) {
-				//y = A.y + (B.y - A.y) * ((-bounds.x) - A.x) / (B.x - A.x);
-				x = (-bounds.x);
-			}
-			if (clippedPoint & NEAR) {
-				z = 10.f;
+	float ta = glm::distance(originalA, clippedA) / glm::distance(originalA, originalB);
+	float tb = glm::distance(originalB, clippedB) / glm::distance(originalA, originalB);
 
-			}
-			if (clippedPoint == clipA) {
-				A = pointOnLine(ab, ivec2(x, y));
-				if (clippedPoint & TOP || clippedPoint & BOTTOM) {
-					float newY = glm::length(ab.a.y - y) / glm::length(ab.a.y - ab.b.y);
-					
-				}
-
-
-				clipA = computeClipping(A, bounds);
-			}
-			else {
-				B = pointOnLine(ab, ivec2(x, y));
-				clipB = computeClipping(B,bounds);
-			}
-
-		}
-	}
-	return{ A, B };
+	return{lerp(line.a, line.b, ta), lerp(line.a, line.b, tb) };
 }
 
 void Rasteriser::clip(int width, int height) {
@@ -176,40 +136,36 @@ void Rasteriser::clip(int width, int height) {
 		int clippedVerts = 0;
 		int clippings[3] = { 0,0,0 };
 		vec4 lines[3];
-		std::unordered_set<vec3> newPoints;
-		bool clipped = false;
+		vector<vec3> newPoints;
+		vec3 lastPoint;
 		for (int i = 0; i < 3; i++) {
 			vec4 homA = camera.clipSpace(vertices[i]);
 			vec4 homB = camera.clipSpace(vertices[(i+1)%3]);
-			int draw;
 			Line original = { homA, homB };
-			if (homA.z > 0 && homB.z > 0) {
-				Line newline = CohenSutherland(homA, homB, vec2(xMax, yMax), draw);
-
+			if (homA.z > 10.f && homB.z > 10.f) {
+				bool draw = true;
+				Line newline = clipLine(original, vec2(xMax, yMax), draw);
 				if (draw) {
-					newPoints.insert(camera.worldSpace(newline.a));
-					newPoints.insert(camera.worldSpace(newline.b));
-					if (draw != 2) {
-						clipped = true;
-					}
+					vec3 worldA = camera.worldSpace(newline.a);
+					//if (lastPoint.x == worldA.x && lastPoint.y == worldA.y) {
+					//	newPoints.push_back(worldA);
+					//}
+					newPoints.push_back(camera.worldSpace(newline.b));
+					lastPoint = newline.b;
 				}
 			}
+			else {
+				cout << "near clipped \n";
+			}
 		}
-
-		//unique points to vector
-		vector<vec3> points;
-		for (auto local_it = newPoints.begin(); local_it != newPoints.end(); ++local_it) points.push_back(*local_it);
-
-		if (!clipped) {
-			clipped_triangles.push_back(triangle);
-		}else if (points.size() == 3) {
-			cout << "clipping triangle \n";
-			clipped_triangles.push_back(Triangle(points[0], points[1], points[2], vec2(0,0), vec2(0, 0), vec2(0, 0), triangle.colour, triangle.mat));
+		 if (newPoints.size() == 3) {
+			// cout << "clipped \n";
+			clipped_triangles.push_back(Triangle(newPoints[0], newPoints[1], newPoints[2], vec2(0,0), vec2(0, 0), vec2(0, 0), triangle.colour, triangle.mat));
 		}
-		else if (points.size() > 3) {
-			cout << "split poly for clipping: " << points.size() << " \n";
-			for (int i = 0; i < points.size() - 1; i++) {
-				clipped_triangles.push_back(Triangle(points[i+1], points[i], points[0], vec2(0, 0), vec2(0, 0), vec2(0, 0), triangle.colour, triangle.mat));
+		else if (newPoints.size() > 3) {
+			cout << "split poly for clipping: " << newPoints.size() << " \n";
+			for (int i = 0; i < newPoints.size() - 1; i++) {
+				clipped_triangles.push_back(Triangle(newPoints[i+1], newPoints[i], newPoints[0], vec2(0, 0), vec2(0, 0), vec2(0, 0), triangle.colour, triangle.mat));
 			}
 		}
 	}

@@ -20,6 +20,14 @@ inline vec3 lerp(vec3 a, vec3 b, float t) { return a + (b - a) * t; }
 
 inline vec4 lerp(vec4 a, vec4 b, float t) { return a + (b - a) * t; }
 
+inline vec4 persp_lerp(vec4 a, vec4 b, float t) {
+	float f = a.z*a.w;
+	vec3 worldCoord = lerp(vec3(a.x, a.y, a.z), vec3(b.x, b.y, b.z), t);
+
+	return vec4(worldCoord, worldCoord.z / 250.f);
+}
+
+
 inline int lerpI(int a, int b, float t) {
   return static_cast<int>(
       lerpF(static_cast<float>(a), static_cast<float>(b), t));
