@@ -8,4 +8,4 @@
 using namespace std;
 
 
-const shared_ptr<const vector<Triangle>> loadObj(string filename);
+const shared_ptr<const vector<Triangle>> loadObj(string filename, float scale_factor = 30.f, bool inCornell = true);

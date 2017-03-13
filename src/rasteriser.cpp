@@ -147,18 +147,26 @@ void Rasteriser::clip(int width, int height) {
 		int clippedVerts = 0;
 		int clippings[3] = { 0,0,0 };
 		vec4 lines[3];
+		bool clip = false;
 		for (int i = 0; i < 3; i++) {
 			vec4 homA = camera.clipSpace(vertices[i]);
 			vec4 homB = camera.clipSpace(vertices[(i+1)%3]);
 			vec2 A(homA.x, homA.y);
 			vec2 B(homB.x, homB.y);
+
+			int inPlane = computeClipping(homA.x, homA.y, xMax, yMax);
+			if (inPlane != INSIDE) {
+				//clip = true;
+			}
 			vec4 line = CohenSutherland(A, B, ivec2(xMax, yMax));
 			//if this vertex not changed
 			if (line[0] == A.x && line[1] == A.y) {
 
 			}
 		}
-		clipped_triangles.push_back(triangle);
+		if (!clip) {
+			clipped_triangles.push_back(triangle);
+		}
 	}
 
 

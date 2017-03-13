@@ -37,9 +37,12 @@ int main(int argc, char *argv[]) {
 	const shared_ptr<const vector<Triangle>> terrain = terrainGen.generateTerrain(1000,0,100, vec3(-100,0,-100));
 	shared_ptr<Scene> sceneB(new Scene(light, terrain, shared_ptr<BoundingVolume>(new BoundingVolume(terrain))));
 
-	char* filename = "teapot.obj";
-	const shared_ptr<const vector<Triangle>> teapot = loadObj(string(filename));
+	char* filename = "bunny.obj";
+	const shared_ptr<const vector<Triangle>> teapot = loadObj(string(filename), 1200.f, true);
 	shared_ptr<Scene> teapotScene(new Scene(light, teapot, shared_ptr<BoundingVolume>(new BoundingVolume(teapot))));
+
+
+
 
 	#pragma omp parallel
 	{
@@ -96,18 +99,20 @@ int main(int argc, char *argv[]) {
 		screen.saveBMP("screenshot.bmp");
 	}
 	else if (mode == "teapot") {
-		light->position += vec3(0, 200.f, 0);
-		//light->power *= 10;
-		//shared_ptr<LightingEngine> engine(new FlatLighting(teapotScene));
-		//Rasteriser screen(500, 500, engine, teapotScene, vec3(0.f, 0.f, -300), false, false);
-		//screen.run();
-		//screen.saveBMP("screenshot.bmp");
+
+#ifdef useCL
 
 		light->power *= 100;
 		shared_ptr<LightingEngine> engine(new StandardLighting(teapotScene));
 		RayTracerCL screen(500, 500, engine, light, teapot, teapotScene->volume, vec3(277.5f, 277.5f, -480.64), false);
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
+#else
+		shared_ptr<LightingEngine> engine(new FlatLighting(teapotScene));
+		Rasteriser screen(500, 500, engine, teapotScene, vec3(277.5f, 277.5f, -480.64), false, false);
+		screen.run();
+		screen.saveBMP("screenshot.bmp");
+#endif
 	}
 
 #ifdef useCL

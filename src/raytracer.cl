@@ -235,7 +235,7 @@ kernel void standardShade(global const float3* triangles, float3 lightLoc, globa
 	//TriangleStruct triangle = triangles[cameraRay.collision];
 	Ray lightRay = castRayLocal(lightLoc, cameraRay.collisionLocation - lightLoc, triangles, TRIANGLE_COUNT);
 	int diff = cameraRay.collision - lightRay.collision;
-	float3 ambient = 0.1f;
+	float3 ambient = 0.4f;
 
 	float3 n = NORM(cameraRay.collision);
 	float3 v = norm(cameraRay.direction);
