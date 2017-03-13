@@ -3,6 +3,9 @@
 #include <iostream>
 #include <string>
 #include <utility>
+#include <vector>
+
+#include "lodepng.h"
 
 using std::string;
 

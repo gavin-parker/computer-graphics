@@ -1,35 +1,23 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <iostream>
-#include <algorithm>
-#include "lodepng.h"
-using glm::vec2;
+#include "texture.h"
+
 using glm::vec3;
-using std::cout;
-using std::endl;
-using std::string;
-using std::vector;
-using std::min;
 
 class Material {
 private:
-  vector<unsigned char> texture;
-  unsigned width, height;
+  Texture ambientTexture, diffuseTexture, specularTexture,
+      specularExponentTexture;
 
 public:
-  int specular_falloff = 100;
-  float specularity = 0.5f;
-  float diffuse = 0.5f;
   Material();
 
-  Material(int specular_falloff, float specularity, float diffuse)
-      : specular_falloff(specular_falloff), specularity(specularity),
-        diffuse(diffuse){};
+  Material(vec3 ka, vec3 kd, vec3 ks, vec4::value_type ns, const string &mapKa,
+           const string &mapKd, const string &mapKs, const string &mapNs);
 
-  bool loadPNG(string filename);
+  vec3 ambient(vec2 uv) const;
 
-  vec3 getColour(vec2 uv) const;
+  vec3 diffuse(vec2 uv) const;
 
-  vec3 phong(vec3 view, vec3 light, vec3 normal) const;
+  vec3 specular(vec2 uv) const;
 };

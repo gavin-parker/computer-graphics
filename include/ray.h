@@ -16,5 +16,6 @@ struct Ray {
   Triangle const *collision;
   vec3 collisionLocation;
   vec2 collisionUVLocation;
+  vec3 collisionNormal;
   float length;
 };
