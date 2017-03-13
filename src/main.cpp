@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "rast") {
 		 shared_ptr<LightingEngine> engine(new RastLighting(scene_low_quality));
-		 Rasteriser screen(500, 500, engine, scene_low_quality, false);
+		 Rasteriser screen(500, 500, engine, scene_low_quality, vec3(277.5f, 277.5f, -480.64), true, false);
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
     } else if (mode == "gi") {
@@ -91,19 +91,21 @@ int main(int argc, char *argv[]) {
 	}
 	else if (mode == "baked") {
 		shared_ptr<LightingEngine> engine(new BakedGI(scene, 5, 100));
-		Rasteriser screen(500, 500, engine, scene, false);
+		Rasteriser screen(500, 500, engine, scene, vec3(277.5f, 277.5f, -480.64), false);
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
 	}
 	else if (mode == "teapot") {
+		light->position += vec3(0, 200.f, 0);
+		//light->power *= 10;
 		//shared_ptr<LightingEngine> engine(new FlatLighting(teapotScene));
-		//Rasteriser screen(500, 500, engine, teapotScene, false);
+		//Rasteriser screen(500, 500, engine, teapotScene, vec3(0.f, 0.f, -300), false, false);
 		//screen.run();
 		//screen.saveBMP("screenshot.bmp");
 
-		light->power *= 10;
+		light->power *= 100;
 		shared_ptr<LightingEngine> engine(new StandardLighting(teapotScene));
-		RayTracerCL screen(1024, 1024, engine, light, teapot, teapotScene->volume, vec3(0.f, 0.f, -480.64), false);
+		RayTracerCL screen(500, 500, engine, light, teapot, teapotScene->volume, vec3(277.5f, 277.5f, -480.64), false);
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
 	}

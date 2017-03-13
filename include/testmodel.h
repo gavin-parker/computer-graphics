@@ -6,6 +6,6 @@
 #include "bvh.h"
 
 
-const shared_ptr<const vector<Triangle>> loadTestModel();
+shared_ptr<vector<Triangle>> loadTestModel();
 
 const shared_ptr<BoundingVolume> loadTestModelBVH(); 

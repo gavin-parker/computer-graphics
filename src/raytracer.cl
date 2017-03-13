@@ -210,6 +210,7 @@ kernel void pathTrace(global const float3* triangles, float3 lightLoc, global Ra
 	float3 finalLight = (color / (float)M_PI + 2.f * indirectLight)*0.75f;
 	finalLight *= originalColor;
 	finalLight = debug ? (float3){0,1,0 } : finalLight;
+	finalLight = (cameraRay.collision > -1) ? finalLight : (float3){0,0,0};
 	image[(y*width + x)] = (float3) { min(finalLight.x, 1.0f), min(finalLight.y, 1.0f), min(finalLight.z, 1.0f) };
 	rands[(y*width + x)] = seed;
 }

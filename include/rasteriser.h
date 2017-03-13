@@ -36,6 +36,7 @@ private:
   shared_ptr<LightingEngine> lighting;
   vector<vector<Pixel>> leftBuffer;
   vector<vector<Pixel>> rightBuffer;
+  bool useShadows;
   void computePolygonRows(const vector<Pixel> &vertexPixels,
                           vector<Pixel> &leftPixels,
                           vector<Pixel> &rightPixels, const Triangle &triangle);
@@ -53,5 +54,5 @@ protected:
   void draw(int width, int height) override;
 
 public:
-  Rasteriser(int width, int height, shared_ptr<LightingEngine> lighting, shared_ptr<Scene> scene, bool fullscreen = false);
+  Rasteriser(int width, int height, shared_ptr<LightingEngine> lighting, shared_ptr<Scene> scene,vec3 cameraPos,bool useShadows = true, bool fullscreen = false);
 };

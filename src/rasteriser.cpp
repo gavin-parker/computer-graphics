@@ -1,9 +1,9 @@
 #include "rasteriser.h"
 
-Rasteriser::Rasteriser(int width, int height, shared_ptr<LightingEngine> lighting, shared_ptr<Scene> scene, bool fullscreen)
+Rasteriser::Rasteriser(int width, int height, shared_ptr<LightingEngine> lighting, shared_ptr<Scene> scene,vec3 cameraPos, bool useShadows, bool fullscreen)
 	: SdlScreen(width, height, fullscreen), depthBuffer(width * height), shadowBuffer(6* 128 * 128),
 	triangles(scene->triangles),
-	camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene->light), lighting(lighting), leftBuffer(triangles->size()), rightBuffer(triangles->size()), clipped_triangles(vector<Triangle>()) {}
+	camera(cameraPos, 0.0f, 30.0f), light(scene->light), lighting(lighting), leftBuffer(triangles->size()), rightBuffer(triangles->size()), clipped_triangles(vector<Triangle>()) {}
 
 void Rasteriser::update(float dt) {
 	camera.update(dt);
@@ -207,7 +207,7 @@ void Rasteriser::drawPolygonRows(int width, int height,
 					vec3 lightColour = vec3(0, 1, 0);//triangle.colour*vec3(0.2,0.2,0.2);
 
 					pixelVert.illumination = light->directLight(ray);
-					if (lightPixel.x > -1) {
+					if (lightPixel.x > -1 && useShadows) {
 						int shadowBufferIndex = lightPixel.i*(128 * 128) + 128 * lightPixel.y + lightPixel.x;
 						float d = shadowBuffer[shadowBufferIndex];
 						float bias = 20.f;
@@ -218,6 +218,9 @@ void Rasteriser::drawPolygonRows(int width, int height,
 							//lightColour = vec3(0, 0, 1);
 							lightColour = triangle.getColour(bary)*vec3(0.1,0.1,0.1);
 						}
+					}
+					else {
+						lightColour = triangle.getColour(bary)*pixelVert.illumination;
 					}
 					drawPixel(x, l_pixels[y].y, vec3(std::min(lightColour.r, 1.0f),
 						std::min(lightColour.g, 1.0f),

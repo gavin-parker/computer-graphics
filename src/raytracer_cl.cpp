@@ -25,7 +25,7 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 	castRays.setArg(4, static_cast<int>(triangles->size()));
 	castRays.setArg(5, (cl_int)width);
 	castRays.setArg(6, (cl_int)height);
-	shader = cl::Kernel(program, "flatShade", &err);
+	shader = cl::Kernel(program, "pathTrace", &err);
 	if (err != 0) {
 		cout << "error creating kernel: " << err << "\n";
 		exit(1);

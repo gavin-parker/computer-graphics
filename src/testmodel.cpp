@@ -1,6 +1,6 @@
 #include "testmodel.h"
 
-const shared_ptr<const vector<Triangle>> loadTestModel() {
+shared_ptr<vector<Triangle>> loadTestModel() {
   shared_ptr<vector<Triangle>> triangles(new vector<Triangle>());
 
   // Material tiles, green;
