@@ -17,14 +17,29 @@ BoundingVolume::BoundingVolume(const shared_ptr<const vector<Triangle>> triangle
 }
 
 
-bool BoundingVolume::calculateIntersection(Ray &ray) {
+bool BoundingVolume::calculateIntersection(Ray &ray, bool topVolume) {
 	float num[7];
 	float denom[7];
 	for (int i = 0; i < 7; i++) {
 		num[i] = glm::dot(normals[i], ray.position);
 		denom[i] = glm::dot(normals[i], ray.direction);
 	}
-	return calculateIntersectionSub(ray, num, denom);
+	bool intersection =  calculateIntersectionSub(ray, num, denom);
+	if (intersection && topVolume && ray.collision->reflective) {
+		vec3 reflection = ray.direction - 2.f*(ray.collision->normal * ray.direction)*ray.collision->normal;
+		Ray reflectedRay;
+		reflectedRay.position = ray.collisionLocation;
+		reflectedRay.direction = reflection;
+		reflectedRay.length = numeric_limits<float>::max();
+		bool bounce = calculateIntersection(reflectedRay, true);
+		ray.collision = reflectedRay.collision;
+		ray.collisionLocation = reflectedRay.collisionLocation;
+		ray.collisionUVLocation = reflectedRay.collisionUVLocation;
+		return bounce;
+	}
+	else {
+		return intersection;
+	}
 }
 
 //ray must have max length before initial call
@@ -50,7 +65,6 @@ bool BoundingVolume::calculateIntersectionSub(Ray &ray, float num[7], float deno
 		anyIntersection |= subVolumes[i].calculateIntersectionSub(ray, num, denom);
 	}
 
-
 	return anyIntersection;
 }
 
@@ -71,7 +85,7 @@ void BoundingVolume::setSubVolume(BoundingVolume volume) {
 
 
 // recursively checks for ANY intersection, backs out early
-bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface) {
+bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface, bool topVolume) {
 	float lightDistance = ray.length;
 	float num[7];
 	float denom[7];
@@ -98,10 +112,21 @@ bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface) {
 		anyIntersection |= volume.calculateIntersection(ray);
 		if (anyIntersection && ray.collision != surface.collision &&
 			ray.length < lightDistance) {
-			return anyIntersection;
+			break;
 		}
 	}
-
+	if (anyIntersection && topVolume && ray.collision->reflective) {
+		vec3 reflection = ray.direction - 2.f*(ray.collision->normal * ray.direction)*ray.collision->normal;
+		Ray reflectedRay;
+		reflectedRay.position = ray.collisionLocation;
+		reflectedRay.direction = reflection;
+		reflectedRay.length = numeric_limits<float>::max();
+		bool bounce = calculateAnyIntersection(reflectedRay, surface, true);
+		ray.collision = reflectedRay.collision;
+		ray.collisionLocation = reflectedRay.collisionLocation;
+		ray.collisionUVLocation = reflectedRay.collisionUVLocation;
+		return bounce;
+	}
 
 	return anyIntersection;
 }

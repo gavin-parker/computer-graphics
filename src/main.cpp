@@ -37,8 +37,8 @@ int main(int argc, char *argv[]) {
 	const shared_ptr<const vector<Triangle>> terrain = terrainGen.generateTerrain(1000,0,100, vec3(-100,0,-100));
 	shared_ptr<Scene> sceneB(new Scene(light, terrain, shared_ptr<BoundingVolume>(new BoundingVolume(terrain))));
 
-	char* filename = "bunny.obj";
-	const shared_ptr<const vector<Triangle>> teapot = loadObj(string(filename), 1200.f, true);
+	char* filename = "teapot.obj";
+	const shared_ptr<const vector<Triangle>> teapot = loadObj(string(filename), 50.f, true);
 	shared_ptr<Scene> teapotScene(new Scene(light, teapot, shared_ptr<BoundingVolume>(new BoundingVolume(teapot))));
 
 
@@ -87,18 +87,11 @@ int main(int argc, char *argv[]) {
 			sampleCount = atoi(samples.c_str());
 		}
 		shared_ptr<LightingEngine> engine(new ConvergentGlobalIllumination(scene, sampleCount, 1024, 1024));
-		RayTracer screen(1024, 1024, engine, softLight, geometry, shared_ptr<BoundingVolume>(cornelBVH),false);
-		screen.run();
-		screen.saveBMP("screenshot.bmp");
-	}
-	else if (mode == "baked") {
-		shared_ptr<LightingEngine> engine(new BakedGI(scene, 5, 100));
-		Rasteriser screen(500, 500, engine, scene, vec3(277.5f, 277.5f, -480.64), false);
+		RayTracer screen(500, 500, engine, softLight, geometry, shared_ptr<BoundingVolume>(cornelBVH),false);
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
 	}
 	else if (mode == "teapot") {
-
 #ifdef useCL
 
 		light->power *= 100;

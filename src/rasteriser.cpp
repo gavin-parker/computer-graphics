@@ -133,9 +133,6 @@ void Rasteriser::clip(int width, int height) {
 		float xMax = (float)width/2.0;
 		float yMax = (float)height / 2.0;
 
-		int clippedVerts = 0;
-		int clippings[3] = { 0,0,0 };
-		vec4 lines[3];
 		vector<vec3> newPoints;
 		vec3 lastPoint;
 		for (int i = 0; i < 3; i++) {
@@ -146,12 +143,11 @@ void Rasteriser::clip(int width, int height) {
 				bool draw = true;
 				Line newline = clipLine(original, vec2(xMax, yMax), draw);
 				if (draw) {
-					vec3 worldA = camera.worldSpace(newline.a);
 					//if (lastPoint.x == worldA.x && lastPoint.y == worldA.y) {
 					//	newPoints.push_back(worldA);
 					//}
 					newPoints.push_back(camera.worldSpace(newline.b));
-					lastPoint = newline.b;
+					lastPoint = camera.worldSpace(newline.b);
 				}
 			}
 			else {
@@ -164,7 +160,7 @@ void Rasteriser::clip(int width, int height) {
 		}
 		else if (newPoints.size() > 3) {
 			cout << "split poly for clipping: " << newPoints.size() << " \n";
-			for (int i = 0; i < newPoints.size() - 1; i++) {
+			for (size_t i = 0; i < (size_t)(newPoints.size() - 1); i++) {
 				clipped_triangles.push_back(Triangle(newPoints[i+1], newPoints[i], newPoints[0], vec2(0, 0), vec2(0, 0), vec2(0, 0), triangle.colour, triangle.mat));
 			}
 		}
@@ -218,7 +214,6 @@ void Rasteriser::drawPolygonRows(int width, int height,
 					if (lightPixel.x > -1 && useShadows) {
 						int shadowBufferIndex = lightPixel.i*(128 * 128) + 128 * lightPixel.y + lightPixel.x;
 						float d = shadowBuffer[shadowBufferIndex];
-						float bias = 20.f;
 						if (depth <= (d+ 20.f)) {
 							lightColour = triangle.colour*pixelVert.illumination;
 						}

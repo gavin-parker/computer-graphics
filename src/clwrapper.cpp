@@ -1,3 +1,4 @@
+#ifdef useCL
 #include "clwrapper.h"
 
 
@@ -31,7 +32,7 @@ Accelerator getGPU(int triangleCount) {
 	if (c == 0) {
 		macros = "#define M_PI 3.14159265359f  \n";
 	}
-	macros = macros + "#define TRIANGLE_COUNT" + std::to_string(triangleCount);
+	macros = macros + "#define TRIANGLE_COUNT " + std::to_string(triangleCount);
 
 	gpu.platform.getDevices(CL_DEVICE_TYPE_ALL, &all_devices);
 	c = 0;
@@ -74,3 +75,4 @@ Accelerator getGPU(int triangleCount) {
 	}
 	return gpu;
 }
+#endif

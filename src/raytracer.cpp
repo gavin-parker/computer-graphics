@@ -39,7 +39,7 @@ void RayTracer::draw(int width, int height) {
 					super_y / height);
 
 				cameraRay.length = numeric_limits<float>::max();
-				if (boundingVolume->calculateIntersection(cameraRay)) {
+				if (boundingVolume->calculateIntersection(cameraRay, true)) {
 					shared_ptr<const Material> mat = cameraRay.collision->mat;
 
 					vec3 spec(0, 0, 0);

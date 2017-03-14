@@ -1,11 +1,11 @@
 #include "triangle.h"
 
 Triangle::Triangle(vec3 v0, vec3 v1, vec3 v2, vec2 vt0, vec2 vt1, vec2 vt2,
-                   vec3 colour, const shared_ptr<const Material> mat)
+                   vec3 colour, const shared_ptr<const Material> mat, bool refractive, bool reflective)
     : v0(v0), v1(v1), v2(v2), e1(v1 - v0), e2(v2 - v0), vt0(vt0), vt1(vt1),
       vt2(vt2), et1(vt1 - vt0), et2(vt2 - vt0),
       normal(glm::normalize(glm::cross(v2 - v0, v1 - v0))), colour(colour),
-      mat(mat) {}
+      mat(mat), refractive(refractive), reflective(reflective) {}
 
 bool Triangle::calculateIntersection(Ray &ray) const {
   if (glm::dot(normal, ray.direction) < 0) {

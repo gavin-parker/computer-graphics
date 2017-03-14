@@ -60,7 +60,7 @@ inline float3 directLight(Ray ray, float3 lightPos, float3 normal) {
 }
 inline float randomNumberGenerator(float seed){
 	//return seed;
-	return fmod(seed*10,1);
+	return fmod(seed*10.0,1.0);
 }
 uint xorshift32(uint seed)
 {
@@ -72,7 +72,7 @@ uint xorshift32(uint seed)
 }
 
 
-inline Ray castRayLocal(float3 origin, float3 direction, const global float3* triangles, int TRIANGLE_COUNT){
+inline Ray castRayLocal(float3 origin, float3 direction, const global float3* triangles){
 	Ray ray;
 	ray.origin = origin;
 	ray.direction = direction;
@@ -81,7 +81,6 @@ inline Ray castRayLocal(float3 origin, float3 direction, const global float3* tr
 	ray.collisionLocation = (float3){0,0,0};
     //barrier(CLK_LOCAL_MEM_FENCE);
 	barrier(CLK_LOCAL_MEM_FENCE);	
-	#pragma unroll
 	for (int i = 0; i < TRIANGLE_COUNT; i++) {
 		bool intersected =  (dot(ray.direction, NORM(i)) < 0) ? true : false;
 		float3 v0 = V0(i);
@@ -126,16 +125,28 @@ inline Ray castRayLocal(float3 origin, float3 direction, const global float3* tr
   }
 
   //Casts a given number of rays
-  kernel void fastRayCast(global const float3 * triangles, global Ray* points, int TRIANGLE_COUNT, int width, int height){
+kernel void fastRayCast(global const float3 * triangles, global Ray* points, int tCount, int width, int height){
   	int x = get_global_id(0);
 	int y = get_global_id(1);
 	int index = (y*width + x);
 	float3 origin = points[index].origin;
 	float3 direction = points[index].direction;
-	points[index] = castRayLocal(origin, direction, triangles, TRIANGLE_COUNT);
+	points[index] = castRayLocal(origin, direction, triangles);
    }
 
-kernel void pathTrace(global const float3* triangles, float3 lightLoc, global Ray* points, global float3* image, int TRIANGLE_COUNT, int width, int height, global uint* rands) {
+//calculates shadows
+kernel void calculateShadows(global const float3 * triangles, global Ray* points, global bool* shadowBuffer, int width, int height){
+  	int x = get_global_id(0);
+	int y = get_global_id(1);
+	int index = (y*width + x);
+	float3 origin = points[index].origin;
+	float3 direction = points[index].direction;
+	int currentTriangle = points[index].collision;
+	Ray result = castRayLocal(origin, direction, triangles);
+	shadowBuffer[index] = (result.collision == currentTriangle && currentTriangle > -1) ? true : false;
+   }
+
+kernel void pathTrace(global const float3* triangles, float3 lightLoc, global Ray* points, global float3* image, int tCount, int width, int height, global uint* rands) {
 	int x = get_global_id(0);
 	int y = get_global_id(1);
 	bool debug = false;
@@ -144,7 +155,7 @@ kernel void pathTrace(global const float3* triangles, float3 lightLoc, global Ra
 	float3 color = (float3) ( 0, 0, 0 );
 	//DIRECT LIGHT
 
-	Ray lightRay = castRayLocal(lightLoc, cameraRay.collisionLocation - lightLoc, triangles, TRIANGLE_COUNT);
+	Ray lightRay = castRayLocal(lightLoc, cameraRay.collisionLocation - lightLoc, triangles);
 	
 
 	float3 n = NORM(cameraRay.collision);
@@ -160,7 +171,7 @@ kernel void pathTrace(global const float3* triangles, float3 lightLoc, global Ra
 		seed = xorshift32(seed);
 		float r2 = (float)seed / UINT_MAX;
 		float3 direction = norm(randomDirection(r1, r2, n));
-		layer1[i] = castRayLocal(cameraRay.collisionLocation, direction, triangles, TRIANGLE_COUNT);
+		layer1[i] = castRayLocal(cameraRay.collisionLocation, direction, triangles);
 		layer1[i].length = r1;
 
 		seed = xorshift32(seed);
@@ -175,7 +186,7 @@ kernel void pathTrace(global const float3* triangles, float3 lightLoc, global Ra
 			seed = xorshift32(seed);
 			float r2 = (float)seed / UINT_MAX;
 			float3 direction = norm(randomDirection(r1, r2, NORM(layer1[i].collision)));
-			layer2[i*sampleCount+j] = castRayLocal(layer1[i].collisionLocation, direction, triangles, TRIANGLE_COUNT);
+			layer2[i*sampleCount+j] = castRayLocal(layer1[i].collisionLocation, direction, triangles);
 			layer2[i*sampleCount+j].length = r1;
 			seed = xorshift32(seed);
 			r1 = (float)seed / UINT_MAX;
@@ -184,7 +195,7 @@ kernel void pathTrace(global const float3* triangles, float3 lightLoc, global Ra
 	}
 	#pragma unroll
 	for(int i=0; i < (sampleCount*sampleCount); i++){
-		Ray lightRay = castRayLocal(lightLoc, layer2[i].collisionLocation - lightLoc, triangles, TRIANGLE_COUNT);
+		Ray lightRay = castRayLocal(lightLoc, layer2[i].collisionLocation - lightLoc, triangles);
 		float3 directLightHere;
         float3 n = NORM(layer2[i].collision);
         directLightHere = directLight(layer2[i], lightLoc, n);
@@ -194,7 +205,7 @@ kernel void pathTrace(global const float3* triangles, float3 lightLoc, global Ra
 	}
 	#pragma unroll
 	for(int i=0; i < sampleCount; i++){
-		Ray lightRay = castRayLocal(lightLoc, layer1[i].collisionLocation - lightLoc, triangles, TRIANGLE_COUNT);
+		Ray lightRay = castRayLocal(lightLoc, layer1[i].collisionLocation - lightLoc, triangles);
 		float3 directLightHere;
         float3 n = NORM(layer1[i].collision);
         directLightHere = directLight(layer1[i], lightLoc, n);
@@ -226,7 +237,7 @@ kernel void pathTrace(global const float3* triangles, float3 lightLoc, global Ra
 }
 
 
-kernel void flatShade(global const float3* triangles, float3 lightLoc, global Ray* points, global float3* image, int TRIANGLE_COUNT, int width, int height, global uint* rands) {
+kernel void flatShade(global const float3* triangles, float3 lightLoc, global Ray* points, global float3* image, int tCount, int width, int height, global uint* rands) {
 	int x = get_global_id(0);
 	int y = get_global_id(1);
 	Ray ray = points[(y*width + x)];
@@ -237,13 +248,13 @@ kernel void flatShade(global const float3* triangles, float3 lightLoc, global Ra
 	image[(y*width + x)] = color;
 }
 
-kernel void standardShade(global const float3* triangles, float3 lightLoc, global Ray* points, global float3* image, int TRIANGLE_COUNT, int width, int height, global uint* rands) {
+kernel void standardShade(global const float3* triangles, float3 lightLoc, global Ray* points, global float3* image, int tCount, int width, int height, global uint* rands) {
 	int x = get_global_id(0);
 	int y = get_global_id(1);
 
 	Ray cameraRay = points[(y*width + x)];
 	//TriangleStruct triangle = triangles[cameraRay.collision];
-	Ray lightRay = castRayLocal(lightLoc, cameraRay.collisionLocation - lightLoc, triangles, TRIANGLE_COUNT);
+	Ray lightRay = castRayLocal(lightLoc, cameraRay.collisionLocation - lightLoc, triangles);
 	int diff = cameraRay.collision - lightRay.collision;
 	float3 ambient = 0.4f;
 
@@ -260,7 +271,7 @@ kernel void standardShade(global const float3* triangles, float3 lightLoc, globa
 	image[(y*width + x)] = (float3) { min(color.x, 1.0f), min(color.y, 1.0f), min(color.z, 1.0f) };
 }
 
-kernel void castRays(global const float3* triangles, float3 lightLoc, global Ray* points, global float* camera, int TRIANGLE_COUNT, int width, int height) {
+kernel void castRays(global const float3* triangles, float3 lightLoc, global Ray* points, global float* camera, int tCount, int width, int height) {
 
 	int x = get_global_id(0);
 	int y = get_global_id(1);
@@ -278,7 +289,7 @@ kernel void castRays(global const float3* triangles, float3 lightLoc, global Ray
 	cameraRay.direction.x = dot(rotation[0], cameraSpaceDirection);
 	cameraRay.direction.y = dot(rotation[1], cameraSpaceDirection);
 	cameraRay.direction.z = dot(rotation[2], cameraSpaceDirection);
-	points[(y*width + x)] = castRayLocal(cameraRay.origin, cameraRay.direction, triangles, TRIANGLE_COUNT);
+	points[(y*width + x)] = castRayLocal(cameraRay.origin, cameraRay.direction, triangles);
 	return;
 }
 
