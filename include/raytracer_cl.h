@@ -8,6 +8,7 @@
 #include "sdlscreen.h"
 #include "testmodel.h"
 #include "bvh.h"
+#include "clwrapper.h"
 #ifdef unix
 #include<sys/time.h>
 #include<sys/resource.h>
@@ -44,7 +45,6 @@ inline cl_float3 vecToFloat(vec3 vec) {
 	return f;
 }
 
-
 class RayTracerCL : public SdlScreen {
 private:
 	//bool ClosestIntersection(Ray &ray);
@@ -59,8 +59,7 @@ private:
 	vector<vec3> averageImage;
 	bool refresh = false;
 	int frameCounter = 1;
-	cl::Context context;
-	cl::Device default_device;
+	Accelerator gpu;
 	cl_float3* cl_triangles;
 	cl::Buffer triangleBuffer;
 	cl::Buffer lightBuffer; 
@@ -68,14 +67,8 @@ private:
 	cl::Buffer cameraBuffer;
 	cl::Buffer pointBuffer;
 	cl::Buffer randBuffer;
-	cl::CommandQueue queue;
 	cl::Kernel castRays;
 	cl::Kernel shader;
-	cl::Program program;
-	cl::Program::Sources sources;
-	std::vector<cl::Device> all_devices;
-	cl::Platform default_platform;
-	std::vector<cl::Platform> all_platforms;
 	std::string sourceCode;
 	cl_float3* image;
 	cl_uint* rands;
@@ -85,7 +78,6 @@ private:
 protected:
 	void update(float dt) override;
 	void draw(int width, int height) override;
-	void boilerPlate(int width, int height);
 public:
 	RayTracerCL(int width, int height, shared_ptr<LightingEngine> lighting,
 		const shared_ptr<PointLight> light,

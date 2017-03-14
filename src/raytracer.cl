@@ -1,5 +1,5 @@
 //#define M_PI 3.14159265359f
-#define sampleCount 1
+#define sampleCount 2
 #define V0(i) triangles[i]
 #define V1(i) triangles[TRIANGLE_COUNT + i]
 #define V2(i) triangles[(TRIANGLE_COUNT*2) + i]
@@ -124,6 +124,16 @@ inline Ray castRayLocal(float3 origin, float3 direction, const global float3* tr
 		sample.x * normalX.z + sample.y * normal.z + sample.z * normalY.z};
 	return direction;
   }
+
+  //Casts a given number of rays
+  kernel void fastRayCast(global const float3 * triangles, global Ray* points, int TRIANGLE_COUNT, int width, int height){
+  	int x = get_global_id(0);
+	int y = get_global_id(1);
+	int index = (y*width + x);
+	float3 origin = points[index].origin;
+	float3 direction = points[index].direction;
+	points[index] = castRayLocal(origin, direction, triangles, TRIANGLE_COUNT);
+   }
 
 kernel void pathTrace(global const float3* triangles, float3 lightLoc, global Ray* points, global float3* image, int TRIANGLE_COUNT, int width, int height, global uint* rands) {
 	int x = get_global_id(0);

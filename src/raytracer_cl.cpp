@@ -9,13 +9,14 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 	camera(cameraPos, 0.0f, 30.0f), light(light),
 	lighting(lighting), boundingVolume(boundingVolume), averageImage(vector<vec3>(width*height)) { 
 
-	boilerPlate(width, height);
+	gpu = getGPU(triangles->size());
+	create_global_memory(width, height);
 	int err = 0;
-	queue.enqueueWriteBuffer(triangleBuffer, CL_TRUE, 0, sizeof(cl_float3) * triangles->size()*5, cl_triangles);
+	gpu.queue.enqueueWriteBuffer(triangleBuffer, CL_TRUE, 0, sizeof(cl_float3) * triangles->size()*5, cl_triangles);
 
 	cl_float3 lightLoc = { 300.0f, 400.0f, 100.0f };
-	queue.enqueueWriteBuffer(lightBuffer, CL_TRUE, 0, sizeof(cl_float3), &lightLoc);
-	castRays = cl::Kernel(program, "castRays", &err);
+	gpu.queue.enqueueWriteBuffer(lightBuffer, CL_TRUE, 0, sizeof(cl_float3), &lightLoc);
+	castRays = cl::Kernel(gpu.program, "castRays", &err);
 	if (err != 0) {
 		cout << "error creating kernel: " << err << "\n";
 		exit(1); 
@@ -25,7 +26,7 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 	castRays.setArg(4, static_cast<int>(triangles->size()));
 	castRays.setArg(5, (cl_int)width);
 	castRays.setArg(6, (cl_int)height);
-	shader = cl::Kernel(program, "pathTrace", &err);
+	shader = cl::Kernel(gpu.program, "pathTrace", &err);
 	if (err != 0) {
 		cout << "error creating kernel: " << err << "\n";
 		exit(1);
@@ -50,7 +51,7 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 			averageImage[(y*height + x)] = vec3(0, 0, 0);
 		}
 	}
-	err = queue.enqueueWriteBuffer(randBuffer, CL_TRUE, 0, sizeof(cl_uint) * width*height, rands);
+	err = gpu.queue.enqueueWriteBuffer(randBuffer, CL_TRUE, 0, sizeof(cl_uint) * width*height, rands);
 	refresh = true;
 }
 
@@ -71,11 +72,11 @@ void RayTracerCL::create_global_memory(int width, int height) {
 	}
 	image = (cl_float3*)malloc(width*height * sizeof(cl_float3));
 	rands = (cl_uint*)malloc(width*height * sizeof(cl_float));
-	triangleBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, sizeof(cl_float3) * triangles->size()*5);
-	imageBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(cl_float3)* width*height);
-	pointBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(RayStruct)* width*height);
-	cameraBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, sizeof(cl_float)*(4+9));
-	randBuffer = cl::Buffer(context, CL_MEM_READ_ONLY, sizeof(cl_uint)* width*height);
+	triangleBuffer = cl::Buffer(gpu.context, CL_MEM_READ_ONLY, sizeof(cl_float3) * triangles->size()*5);
+	imageBuffer = cl::Buffer(gpu.context, CL_MEM_READ_WRITE, sizeof(cl_float3)* width*height);
+	pointBuffer = cl::Buffer(gpu.context, CL_MEM_READ_WRITE, sizeof(RayStruct)* width*height);
+	cameraBuffer = cl::Buffer(gpu.context, CL_MEM_READ_ONLY, sizeof(cl_float)*(4+9));
+	randBuffer = cl::Buffer(gpu.context, CL_MEM_READ_ONLY, sizeof(cl_uint)* width*height);
 }
 
 void RayTracerCL::update(float dt) {
@@ -108,7 +109,7 @@ void RayTracerCL::draw(int width, int height) {
 		rotation[0] = vecToFloat(camera.rotation[0]);
 		rotation[1] = vecToFloat(camera.rotation[1]);
 		rotation[2] = vecToFloat(camera.rotation[2]);
-		int err = queue.enqueueWriteBuffer(cameraBuffer, CL_TRUE, 0, sizeof(cl_float) * 13, cameraArray);
+		int err = gpu.queue.enqueueWriteBuffer(cameraBuffer, CL_TRUE, 0, sizeof(cl_float) * 13, cameraArray);
 
 		if (err != 0) {
 			cout << "err: " << err << "\n";
@@ -119,16 +120,16 @@ void RayTracerCL::draw(int width, int height) {
 
 		castRays.setArg(1, lightLoc);
 		castRays.setArg(3, cameraBuffer);
-		queue.enqueueNDRangeKernel(castRays, cl::NullRange, cl::NDRange((size_t)width, (size_t)height), cl::NullRange);
+		gpu.queue.enqueueNDRangeKernel(castRays, cl::NullRange, cl::NDRange((size_t)width, (size_t)height), cl::NullRange);
 	}
 	shader.setArg(1, lightLoc);
 
-	int err = queue.enqueueNDRangeKernel(shader, cl::NullRange, cl::NDRange((size_t)width, (size_t)height), cl::NullRange);
+	int err = gpu.queue.enqueueNDRangeKernel(shader, cl::NullRange, cl::NDRange((size_t)width, (size_t)height), cl::NullRange);
 	if (err != 0) {
 		cout << "err: " << err << "\n";
 		exit(1);
 	}
-	queue.enqueueReadBuffer(imageBuffer, CL_TRUE, 0, sizeof(cl_float3) * width*height, image );
+	gpu.queue.enqueueReadBuffer(imageBuffer, CL_TRUE, 0, sizeof(cl_float3) * width*height, image );
 
 	if (refresh) {
 		frameCounter = 1;
@@ -160,75 +161,4 @@ void RayTracerCL::draw(int width, int height) {
 	}
 	frameCounter++;
 }
-void RayTracerCL::boilerPlate(int width, int height) {
-
-	std::string macros = "";
-	int err;
-	//ANNOYING OPENCL BOILERPLATE
-	cl::Platform::get(&all_platforms);
-	int c = 0;
-	if (all_platforms.size() == 0) {
-		std::cout << " No platforms found. Check OpenCL installation!\n";
-		exit(1);
-	}
-	else if (all_platforms.size() > 1) {
-		for (int i = 0; i < all_platforms.size(); i++) {
-			std::cout << "platform " << i << " : " << all_platforms[i].getInfo<CL_PLATFORM_NAME>() << "\n";
-		}
-		c = getchar() - '0';
-
-
-	}
-	default_platform = all_platforms[c];
-	std::cout << "Using platform: " << default_platform.getInfo<CL_PLATFORM_NAME>() << "\n";
-
-	if (c == 0) {
-		macros = "#define M_PI 3.14159265359f  \n";
-	}
-	macros = macros + "#define TRIANGLE_COUNT" + std::to_string(triangles->size());
-
-	default_platform.getDevices(CL_DEVICE_TYPE_ALL, &all_devices);
-	c = 0;
-	if (all_devices.size() == 0) {
-		std::cout << " No devices found. Check OpenCL installation!\n";
-		exit(1);
-	} 
-	else if (all_devices.size() > 1) {
-		for (int i = 0; i < all_devices.size(); i++) {
-			std::cout << "device " << i << " : " << all_devices[i].getInfo<CL_DEVICE_NAME>() << "\n";
-		} 
-		c = getchar() - '0';
-	}
-	default_device = all_devices[0];
-	std::cout << "Using device: " << default_device.getInfo<CL_DEVICE_NAME>() << "\n";
-	context = cl::Context({ default_device });
-
-	std::ifstream sourceFile("raytracer.cl");
-	sourceCode = macros + std::string(
-		std::istreambuf_iterator<char>(sourceFile),
-		(std::istreambuf_iterator<char>()));
-
-	sources.push_back(std::make_pair(sourceCode.c_str(), sourceCode.size()));
-	cout << "loaded kernel length:" << sourceCode.size();  
-	program = cl::Program(context, sources, &err); 
-	 
-	if (err != 0) {  
-		cout << "error creating program: " << err << "\n";  
-	}
-	char* options = " -Werror -cl-fast-relaxed-math -cl-mad-enable -cl-unsafe-math-optimizations -cl-denorms-are-zero";
-	if (program.build({ default_device }, options) != CL_SUCCESS) {
-		std::cout << " Error building: " << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(default_device) << "\n"; 
-		exit(1);
-	}
-	create_global_memory(width, height);
-	queue = cl::CommandQueue(context, default_device, 0Ui64, &err); 
-	if (err != 0) {
-		cout << "error creating queue: " << err << "\n";
-		exit(1);
-	}
-
-
-}
-
-
 #endif 
