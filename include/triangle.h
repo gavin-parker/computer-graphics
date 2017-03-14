@@ -3,10 +3,10 @@
 #include "material.h"
 #include <algorithm>
 #include <memory>
-#include <vector>
 
-using std::shared_ptr;
-using std::vector;
+using glm::dot;
+using glm::normalize;
+using glm::reflect;
 
 class Triangle;
 
@@ -24,8 +24,33 @@ public:
 
   bool calculateIntersection(Ray &ray) const;
 
-  vec3 colour(vec2 uv, vec3 ambientLight) const;
+  inline vec3 getPosition(vec2 uv) const { return v0 + uv.x * e1 + uv.y * e2; }
 
-  vec3 colour(vec2 uv, vec3 ambientLight, vec3 lightDirection,
-              vec3 diffuseLight) const;
+  inline vec2 getTexUV(vec2 uv) const { return vt0 + uv.x * et1 + uv.y * et2; }
+
+  inline vec3 getNormal(vec2 uv) const {
+    return normalize(vn0 + uv.x * en1 + uv.y * en2);
+  }
+
+  inline vec3 ambientColour(vec2 uv, vec3 lightColour) const {
+    return scaleVec(lightColour, mat.ambient(getTexUV(uv)));
+  }
+
+  inline vec3 diffuseColour(vec2 uv, vec3 lightIncidentDirection,
+                            vec3 lightColour) const {
+    return scaleVec(lightColour, dot(lightIncidentDirection, getNormal(uv)) *
+                                     mat.diffuse(getTexUV(uv)));
+  }
+
+  inline vec3 specularColour(vec2 uv, vec3 lightIncidentDirection,
+                             vec3 lightColour,
+                             vec3 cameraIncidentDirection) const {
+    auto reflection = normalize(reflect(lightIncidentDirection, getNormal(uv)));
+    auto specularCoefficient =
+        glm::pow(dot(cameraIncidentDirection, reflection),
+                 mat.specularExponent(getTexUV(uv)));
+
+    return scaleVec(lightColour,
+                    specularCoefficient * mat.specular(getTexUV(uv)));
+  }
 };

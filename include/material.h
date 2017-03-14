@@ -10,14 +10,22 @@ private:
       specularExponentTexture;
 
 public:
-  Material();
+  Material() {}
 
   Material(vec3 ka, vec3 kd, vec3 ks, vec4::value_type ns, const string &mapKa,
-           const string &mapKd, const string &mapKs, const string &mapNs);
+           const string &mapKd, const string &mapKs, const string &mapNs)
+      : ambientTexture(vec4(ka, 1.0f), mapKa),
+        diffuseTexture(vec4(kd, 1.0f), mapKd),
+        specularTexture(vec4(ka, 1.0f), mapKa),
+        specularExponentTexture(vec4(1.0f, 1.0f, 1.0f, ns), mapNs) {}
 
-  vec3 ambient(vec2 uv) const;
+  inline vec3 ambient(vec2 uv) const { return vec3(ambientTexture[uv]); }
 
-  vec3 diffuse(vec2 uv) const;
+  inline vec3 diffuse(vec2 uv) const { return vec3(diffuseTexture[uv]); }
 
-  vec3 specular(vec2 uv) const;
+  inline vec3 specular(vec2 uv) const { return vec3(specularTexture[uv]); }
+
+  inline float specularExponent(vec2 uv) const {
+    return specularExponentTexture[uv].a;
+  }
 };
