@@ -125,13 +125,11 @@ inline Ray castRayLocal(float3 origin, float3 direction, const global float3* tr
   }
 
   //Casts a given number of rays
-kernel void fastRayCast(global const float3 * triangles, global Ray* points, int tCount, int width, int height){
-  	int x = get_global_id(0);
-	int y = get_global_id(1);
-	int index = (y*width + x);
-	float3 origin = points[index].origin;
-	float3 direction = points[index].direction;
-	points[index] = castRayLocal(origin, direction, triangles);
+kernel void fastRayCast(global const float3 * triangles, global Ray* rays){
+  	int i = get_global_id(0);
+	float3 origin = rays[i].origin;
+	float3 direction = rays[i].direction;
+	rays[i] = castRayLocal(origin, direction, triangles);
    }
 
 //calculates shadows

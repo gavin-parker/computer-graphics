@@ -44,6 +44,13 @@ inline cl_float3 vecToFloat(vec3 vec) {
 	f.z = vec.z;
 	return f;
 }
+inline vec3 floatToVec(cl_float3 clf) {
+	vec3 v;
+	v.x = clf.x;
+	v.y = clf.y;
+	v.z = clf.z;
+	return v;
+}
 
 class RayTracerCL : public SdlScreen {
 private:
