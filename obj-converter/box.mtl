@@ -1,0 +1,49 @@
+newmtl white
+
+Ka 0.75 0.75 0.75
+map_Ka marble.png
+Kd 0.75 0.75 0.75
+map_Kd marble.png
+Ks 0.75 0.75 0.75
+map_Ks marble.png
+Ns 500
+
+newmtl red
+
+Ka 0.75 0.15 0.15
+map_Ka marble.png
+Kd 0.75 0.15 0.15
+map_Kd marble.png
+Ks 0.75 0.15 0.15
+map_Ks marble.png
+Ns 500
+
+newmtl green
+
+Ka 0.15 0.75 0.15
+map_Ka marble.png
+Kd 0.15 0.75 0.15
+map_Kd marble.png
+Ks 0.15 0.75 0.15
+map_Ks marble.png
+Ns 500
+
+newmtl short
+
+Ka 0.75 0.75 0.75
+map_Ka red.png
+Kd 0.75 0.75 0.75
+map_Kd red.png
+Ks 0.75 0.75 0.75
+map_Ks red.png
+Ns 500
+
+newmtl tall
+
+Ka 0.75 0.75 0.75
+map_Ka green.png
+Kd 0.75 0.75 0.75
+map_Kd green.png
+Ks 0.75 0.75 0.75
+map_Ks green.png
+Ns 500

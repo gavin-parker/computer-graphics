@@ -56,8 +56,9 @@ read_lines(Initial_State, Final_State) -->
 read_line(o(Vs0, Ts, Ns, G_Current, G_All, M_Current, M_All), o(Vs1, Ts, Ns, G_Current, G_All, M_Current, M_All)) -->
     vertex(V),
     {
-        format("vertex: ~w\n", V),
-        diff_list_append(Vs0, V, Vs1)
+	convert_to_vec3(V, V3),
+        format("vertex: ~w\n", V3),
+        diff_list_append(Vs0, V3, Vs1)
     }.
 
 read_line(o(Vs, Ts0, Ns, G_Current, G_All, M_Current, M_All), o(Vs, Ts1, Ns, G_Current, G_All, M_Current, M_All)) -->
@@ -70,8 +71,9 @@ read_line(o(Vs, Ts0, Ns, G_Current, G_All, M_Current, M_All), o(Vs, Ts1, Ns, G_C
 read_line(o(Vs, Ts, Ns0, G_Current, G_All, M_Current, M_All), o(Vs, Ts, Ns1, G_Current, G_All, M_Current, M_All)) -->
     vertex_normal(N),
     {
-        format("normal: ~w\n", N),
-        diff_list_append(Ns0, N, Ns1)
+	convert_to_vec3(N, N3),
+        format("normal: ~w\n", N3),
+        diff_list_append(Ns0, N3, Ns1)
     }.
 
 read_line(o(Vs, Ts, Ns, G_Current, G_All0, M_Current, M_All), o(Vs, Ts, Ns, G_Current, G_All1, M_Current, M_All)) -->
@@ -108,6 +110,22 @@ read_line(State, State) -->
 	}.
 
 
+convert_to_vec3(Input, Output) :-
+	compound_name_arguments(Input, Name, [X, Y]),
+	compound_name_arguments(Output, Name, [X, Y, 0.0]).
+
+convert_to_vec3(Input, Output) :-
+	compound_name_arguments(Input, Name, [X, Y, Z]),
+	compound_name_arguments(Output, Name, [X, Y, Z]).
+
+convert_to_vec3(Input, Output) :-
+	compound_name_arguments(Input, Name, [X, Y, Z, W]),
+	XW is X / W,
+	YW is Y / W,
+	ZW is Z / W,
+	compound_name_arguments(Output, Name, [XW, YW, ZW]).
+
+
 vertex(v(X, Y, Z, W)) -->
     "v",
     white_number(X),
@@ -118,11 +136,10 @@ vertex(v(X, Y, Z, W)) -->
     !.
 
 
-texture_coordinate(vt(U, V, W)) -->
+texture_coordinate(vt(U, V)) -->
     "vt",
     white_number(U),
     white_number(V),
-    white_maybe_number(W, 0.0),
     white_eol.
 
 
@@ -196,12 +213,10 @@ material_library(File) -->
 	whites,
 	"mtllib",
 	whites,
-	"[",
-	string_without("]", File_Codes),
+	nonblanks(File_Codes),
 	{
 	    atom_codes(File, File_Codes)
 	},
-	"]",
 	white_eol.
 
 
@@ -209,12 +224,10 @@ use_material(Material) -->
 	whites,
 	"usemtl",
 	whites,
-	"[",
-	string_without("]", Material_Codes),
+	nonblanks(Material_Codes),
 	{
 	    atom_codes(Material, Material_Codes)
 	},
-	"]",
 	white_eol.
 
 

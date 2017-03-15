@@ -21,7 +21,7 @@ class Texture {
 private:
   static const unsigned PNG_PIXEL_SIZE = 4;
 
-  const vec4 &scale;
+  vec4 scale;
   bool hasTexture;
   unsigned width, height;
   vector<unsigned char> texture;
@@ -29,7 +29,7 @@ private:
 public:
   Texture();
 
-  Texture(const vec4 &scale, const string &textureFile);
+  Texture(vec4 scale, const string &textureFile);
 
   vec4 operator[](vec2 uv) const;
 };

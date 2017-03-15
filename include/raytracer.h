@@ -3,22 +3,21 @@
 #include <limits>
 #include <omp.h>
 
-#include "camera.h"
-
-#include "convergent_gi.h"
-
-#include "standardlighting.h"
-#include "cube.h"
-#include "lightingengine.h"
-#include "light.h"
-#include "sdlscreen.h"
-#include "testmodel.h"
 #include "bvh.h"
+#include "camera.h"
+#include "convergent_gi.h"
+#include "cube.h"
+#include "light.h"
+#include "lightingengine.h"
+#include "sdlscreen.h"
+#include "standardlighting.h"
+#include "testmodel.h"
+
 using std::numeric_limits;
 
 class RayTracer : public SdlScreen {
 private:
-  //bool ClosestIntersection(Ray &ray);
+  // bool ClosestIntersection(Ray &ray);
   const shared_ptr<const vector<Triangle>> triangles;
   Camera camera;
 
@@ -34,7 +33,8 @@ protected:
 
 public:
   RayTracer(int width, int height, shared_ptr<LightingEngine> lighting,
-	  const shared_ptr<Light> light,
-            const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume,
+            const shared_ptr<Light> light,
+            const shared_ptr<const vector<Triangle>> triangles,
+            const shared_ptr<BoundingVolume> boundingVolume,
             bool fullscreen = false, bool antialias = true);
 };

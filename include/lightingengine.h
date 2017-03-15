@@ -4,13 +4,14 @@
 #include <omp.h>
 
 #include "camera.h"
-#include "pointlight.h"
-#include "spherelight.h"
+#include "cube.h"
 #include "light.h"
+#include "pointlight.h"
 #include "scene.h"
 #include "sdlscreen.h"
+#include "spherelight.h"
 #include "testmodel.h"
-#include "cube.h"
+
 using glm::ivec2;
 using std::numeric_limits;
 
@@ -21,6 +22,7 @@ public:
   shared_ptr<const vector<Triangle>> triangles;
   shared_ptr<const Light> light;
   int countedSamples = 1;
-  LightingEngine(const shared_ptr<const vector<Triangle>> triangles, shared_ptr<Light> light)
+  LightingEngine(const shared_ptr<const vector<Triangle>> triangles,
+                 shared_ptr<Light> light)
       : triangles(triangles), light(light){};
 };

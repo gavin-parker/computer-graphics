@@ -18,7 +18,7 @@ convert(Name, Input, Output) :-
     convert([Name-Input], Output).
 
 objects_file(Objects) -->
-    "#include \"objects.h\";\n\n",
+    "#include \"objects.h\"\n\n",
     objects(Objects).
 
 objects([]) -->

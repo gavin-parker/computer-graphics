@@ -1,27 +1,26 @@
+#include "objects.h"
 #include "rasteriser.h"
 #include "raytracer.h"
 #include "starscreen.h"
-#include <string>
+
 #ifdef useCL
 #include "raytracer_cl.h"
 #endif
+
 #ifndef unix
 extern "C" {
 FILE __iob_func[3] = {stdin, stdout, *stderr};
 }
 #endif
 
-using std::string;
-
 int main(int argc, char *argv[]) {
   if (argc >= 2) {
     string mode(argv[1]);
 
-    shared_ptr<PointLight> light(new PointLight(
-        vec3(300.0f, 400.0f, 100.0f), vec3(1.0, 1.0f, 1.0f), 1000000.0f));
-    shared_ptr<SphereLight> softLight(
-        new SphereLight(vec3(300.0f, 400.0f, 100.0f), vec3(1.0, 1.0f, 1.0f),
-                        1000000.0f, 4.0f, 5));
+    PointLight light(vec3(300.0f, 400.0f, 100.0f), vec3(1.0, 1.0f, 1.0f),
+                     1000000.0f);
+    SphereLight softLight(vec3(300.0f, 400.0f, 100.0f), vec3(1.0, 1.0f, 1.0f),
+                          1000000.0f, 4.0f, 5);
 
     const shared_ptr<const vector<Triangle>> geometry = loadTestModel();
     const shared_ptr<BoundingVolume> cornelBVH = loadTestModelBVH();

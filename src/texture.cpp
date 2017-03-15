@@ -2,7 +2,7 @@
 
 Texture::Texture() : Texture(vec4(), "") {}
 
-Texture::Texture(const vec4 &scale, const string &textureFile)
+Texture::Texture(vec4 scale, const string &textureFile)
     : scale(scale), hasTexture(false), width(0), height(0) {
 
   if (textureFile != "") {

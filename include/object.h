@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 
+#include "bvh.h"
 #include "lodepng.h"
 #include "triangle.h"
 
@@ -14,20 +15,25 @@ using std::string;
 using std::vector;
 
 class Object {
-private:
+protected:
   map<string, Material> materials;
   map<string, vector<Triangle>> groups;
 
-protected:
   template <typename... MatArgs>
   void AddMaterial(string Name, MatArgs &&... matArgs) {
-    materials.emplace(Name, std::forward<MatArgs>(matArgs)...));
+    materials.emplace(Name, Material(std::forward<MatArgs>(matArgs)...));
   }
 
-  template <typename... FaceArgs>
-  void AddFace(string groupName, FaceArgs &&... faceArgs, string matName) {
-    groups[groupName].emplace_back(std::forward<MatArgs>(faceArgs),
-                                   materials[matName]);
+  void AddFace(string groupName, vec3 v0, vec3 v1, vec3 v2, vec2 vt0, vec2 vt1,
+               vec2 vt2, string matName) {
+    groups[groupName].emplace_back(v0, v1, v2, vt0, vt1, vt2,
+                                   &materials[matName]);
+  }
+
+  void AddFace(string groupName, vec3 v0, vec3 v1, vec3 v2, vec2 vt0, vec2 vt1,
+               vec2 vt2, vec3 vn0, vec3 vn1, vec3 vn2, string matName) {
+    groups[groupName].emplace_back(v0, v1, v2, vt0, vt1, vt2, vn0, vn1, vn2,
+                                   &materials[matName]);
   }
 
 public:
@@ -35,5 +41,16 @@ public:
 
   virtual ~Object() {}
 
-  const vector<Triangle> &operator[](string name) const { return groups[name]; }
+  vector<Triangle> allTriangles() {
+    vector<Triangle> triangles;
+
+    for (const auto &group : groups) {
+      triangles.insert(triangles.end(), group.second.begin(),
+                       group.second.end());
+    }
+
+    return triangles;
+  }
+
+  virtual BoundingVolume createBoundingVolume() = 0;
 };

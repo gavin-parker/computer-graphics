@@ -45,7 +45,7 @@ generate_face(Group, Positions, Texture_Coordinates, Normals, f(Vertex0, Vertex1
         vertex_info(Positions, Texture_Coordinates, Normals, Vertex0, V0, VT0, VN0),
         vertex_info(Positions, Texture_Coordinates, Normals, Vertex1, V1, VT1, VN1),
         vertex_info(Positions, Texture_Coordinates, Normals, Vertex2, V2, VT2, VN2),
-        format("triangle: ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w ~w\n", [Group, V0, V1, V2, VT0, VT1, VT2, VN0, VN1, VN2, Material])
+        format("triangle: ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w\n", [Group, V0, V1, V2, VT0, VT1, VT2, VN0, VN1, VN2, Material])
     },
     "AddFace(",
     comma_separated_values([string(Group), V0, V1, V2, VT0, VT1, VT2, VN0, VN1, VN2, string(Material)]),
@@ -84,7 +84,7 @@ vertex_info(Positions, Texture_Coordinates, Normals, Position_Index/Texture_Inde
 default_texture_coordinate(vt(0.0, 0.0)).
 
 
-default_normal(vn(1.0, 1.0, 1.0, 1.0)).
+default_normal(null).
 
 
 
