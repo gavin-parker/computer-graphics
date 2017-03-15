@@ -30,9 +30,9 @@ Accelerator getGPU(int triangleCount) {
 	std::cout << "Using platform: " << gpu.platform.getInfo<CL_PLATFORM_NAME>() << "\n";
 
 	if (c == 0) {
-		macros = "#define M_PI 3.14159265359f  \n";
+		macros = "#define M_PI (float)3.14159265359f  \n";
 	}
-	macros = macros + "#define TRIANGLE_COUNT " + std::to_string(triangleCount);
+	macros = macros + "#define TRIANGLE_COUNT (int)" + std::to_string(triangleCount);
 
 	gpu.platform.getDevices(CL_DEVICE_TYPE_ALL, &all_devices);
 	c = 0;
@@ -51,9 +51,12 @@ Accelerator getGPU(int triangleCount) {
 	gpu.context = cl::Context({ gpu.device });
 
 	std::ifstream sourceFile("raytracer.cl");
-	sourceCode = macros + std::string(
+	sourceCode = std::string(
 		std::istreambuf_iterator<char>(sourceFile),
 		(std::istreambuf_iterator<char>()));
+
+	sourceCode.erase(0, 24);
+	sourceCode = macros + sourceCode;
 
 	sources.push_back(std::make_pair(sourceCode.c_str(), sourceCode.size()));
 	cout << "loaded kernel length:" << sourceCode.size();

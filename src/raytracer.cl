@@ -1,4 +1,4 @@
-//#define M_PI 3.14159265359f
+#define TRIANGLE_COUNT 0
 #define sampleCount 2
 #define V0(i) triangles[i]
 #define V1(i) triangles[TRIANGLE_COUNT + i]

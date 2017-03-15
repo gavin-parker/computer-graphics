@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 	const shared_ptr<const vector<Triangle>> teapot = loadObj(string(filename), 50.f, true);
 	shared_ptr<Scene> teapotScene(new Scene(light, teapot, shared_ptr<BoundingVolume>(new BoundingVolume(teapot))));
 
-	shared_ptr<RayCaster> rayCaster(new RayCaster(geometry, cornelBVH));
+	//shared_ptr<RayCaster> rayCaster(new RayCaster(geometry, cornelBVH));
 
 	#pragma omp parallel
 	{
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     } else if (mode == "ray") {
 
       shared_ptr<LightingEngine> engine(new StandardLighting(scene_low_quality));
-      RayTracer screen(512, 512, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), rayCaster, false, false);
+      RayTracer screen(512, 512, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), NULL, false, false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "rast") {
