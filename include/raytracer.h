@@ -10,7 +10,7 @@
 #include "sdlscreen.h"
 #include "testmodel.h"
 #include "bvh.h"
-#include "raycaster.h"
+//#include "raycaster.h"
 
 using std::numeric_limits;
 

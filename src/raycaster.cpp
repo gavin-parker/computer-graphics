@@ -68,6 +68,7 @@ Ray RayCaster::getRay(int index, bool &anyCollision) {
 	Ray ray;
 	if (cl_ray.collision > -1) {
 		ray.collision = &(*triangles)[cl_ray.collision];
+		anyCollision = true;
 	}
 	else {
 		anyCollision = false;
@@ -111,29 +112,40 @@ bool RayCaster::castRays(bool sync, int bottom, int size) {
 }
 #else
 #include "raycaster.h"
-RayCaster::RayCaster(const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume) : triangles(triangles), boundingVolume(boundingVolume), rays(vector<RayStruct>(maxRays)) {
+RayCaster::RayCaster(const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume, bool shittyDrivers) : triangles(triangles), boundingVolume(boundingVolume), rays(vector<Ray>(maxRays)), shittyDrivers(shittyDrivers) {
 }
 
 int RayCaster::enqueueRay(Ray ray) {
-	if (bufferPointer >= maxRays) {
-		return -1;
+	if (!boundingVolume->calculateIntersection(ray, true)) {
+		ray.collision = NULL;
 	}
-	boundingVolume->calculateIntersection(ray, true);
-	rays[bufferPointer] = ray;
-	bufferPointer++;
-	return bufferPointer - 1;
-}
-
-int RayCaster::getRayCollision(int index) {
-	return (int)rays[index].collision;
+	rays.push_back(ray);
+	return rays.size() - 1;
 }
 
 Triangle RayCaster::getRayTriangleCollision(int index) {
-	return (triangles)[rays[index].collision];
+	return *rays[index].collision;
 }
 
-bool RayCaster::castRays() {
+bool RayCaster::castRays(bool sync, int bottom, int size) {
 	return true;
+}
+
+bool RayCaster::flushBuffer() {
+	rays.clear();
+	chunkIndex = 0;
+	return true;
+}
+
+Ray RayCaster::getRay(int index, bool &anyCollision) {
+	Ray ray = rays[index];
+	if (ray.collision != NULL) {
+		anyCollision = true;
+	}
+	else {
+		anyCollision = false;
+	}
+	return ray;
 }
 
 

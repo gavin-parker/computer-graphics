@@ -8,7 +8,6 @@
 #include "sdlscreen.h"
 #include "testmodel.h"
 #include "bvh.h"
-#include "clwrapper.h"
 #ifdef unix
 #include<sys/time.h>
 #include<sys/resource.h>
@@ -29,30 +28,9 @@ typedef struct CameraStruct {
 	//cl_float3 rotation[3];
 } CameraStruct;
 
-typedef struct RayStruct {
-	cl_float3 origin;
-	cl_float3 direction;
-	cl_float3 collisionLocation;
-	cl_float2 dummy;
-	cl_float length;
-	cl_int collision;
-} RayStruct;
+
 #pragma pack()
 
-inline cl_float3 vecToFloat(vec3 vec) {
-	cl_float3 f;
-	f.x = vec.x;
-	f.y = vec.y;
-	f.z = vec.z;
-	return f;
-}
-inline vec3 floatToVec(cl_float3 clf) {
-	vec3 v;
-	v.x = clf.x;
-	v.y = clf.y;
-	v.z = clf.z;
-	return v;
-}
 
 class RayTracerCL : public SdlScreen {
 private:

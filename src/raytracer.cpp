@@ -17,6 +17,7 @@ void RayTracer::update(float dt) {
 void RayTracer::fastCast(int height, int width) {
 
 	rayCaster->flushBuffer();
+#pragma omp parallel for
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				float realY = static_cast<float>(y);
@@ -27,14 +28,15 @@ void RayTracer::fastCast(int height, int width) {
 					realY / height);
 
 				cameraRay.length = numeric_limits<float>::max();
-
-				rayIndices[y*width+x] = rayCaster->enqueueRay(cameraRay);
+#pragma omp critical
+				{
+					rayIndices[y*width + x] = rayCaster->enqueueRay(cameraRay);
+				}
 			}
 		}
 
 
 		rayCaster->castRays();
-#pragma omp parallel for
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				bool anyCollision = true;

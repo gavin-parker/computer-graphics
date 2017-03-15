@@ -6,6 +6,9 @@
 #include "starscreen.h"
 #include "terrain_gen.h"
 #include "obj_reader.h"
+#ifdef useCL
+#include "raytracer_cl.h"
+#endif
 #ifndef unix
 extern "C" {
 	FILE __iob_func[3] = { stdin, stdout,*stderr };
@@ -38,7 +41,7 @@ int main(int argc, char *argv[]) {
 	const shared_ptr<const vector<Triangle>> teapot = loadObj(string(filename), 50.f, true);
 	shared_ptr<Scene> teapotScene(new Scene(light, teapot, shared_ptr<BoundingVolume>(new BoundingVolume(teapot))));
 
-	shared_ptr<RayCaster> rayCaster(new RayCaster(geometry, cornelBVH, true));
+	shared_ptr<RayCaster> rayCaster(new RayCaster(geometry, cornelBVH, false));
 
 	#pragma omp parallel
 	{
