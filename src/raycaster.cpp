@@ -1,6 +1,6 @@
 #ifdef useCL
 #include "raycaster.h"
-RayCaster::RayCaster(const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume) : triangles(triangles), boundingVolume(boundingVolume) {
+RayCaster::RayCaster(const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume, bool shittyDrivers) : triangles(triangles), boundingVolume(boundingVolume), shittyDrivers(shittyDrivers) {
 	gpu = getGPU(triangles->size());
 	cl_float3* cl_triangles = (cl_float3*)malloc(triangles->size() * sizeof(cl_float3) * 5);
 	vector<Triangle> tris = *triangles;
@@ -20,8 +20,10 @@ RayCaster::RayCaster(const shared_ptr<const vector<Triangle>> triangles, const s
 	gpu.queue.enqueueWriteBuffer(triangleBuffer, CL_TRUE, 0, sizeof(cl_float3) * triangles->size() * 5, cl_triangles);
 	int err = 0;
 	rayCastKernel = cl::Kernel(gpu.program, "fastRayCast", &err);
-	rayCastKernel.setArg(0, triangleBuffer);
-	rayCastKernel.setArg(1, rayBuffer);
+	rayCastKernel.setArg(0, triangleBuffer	);
+	rayBuffer = cl::Buffer(gpu.context, CL_MEM_READ_WRITE, sizeof(RayStruct) * maxRays, NULL, &err);
+
+
 }
 
 RayStruct clifyRay(Ray ray) {
@@ -36,12 +38,19 @@ RayStruct clifyRay(Ray ray) {
 
 
 int RayCaster::enqueueRay(Ray ray) {
+
 	rays.push_back(clifyRay(ray));
-	return rays.size()-1;
+	if ((rays.size() % maxRays) == 0 && rays.size() > 0) {
+		castRays(false | shittyDrivers, chunkIndex*maxRays, maxRays);
+
+		chunkIndex++;
+	}
+	return rays.size() - 1;
 }
 
 bool RayCaster::flushBuffer() {
 	rays.clear();
+	chunkIndex = 0;
 	return true;
 }
 
@@ -71,30 +80,32 @@ Ray RayCaster::getRay(int index, bool &anyCollision) {
 	return ray;
 }
 
-bool RayCaster::castRays() {
-	int err = 0;
-	rayBuffer = cl::Buffer(gpu.context, CL_MEM_READ_WRITE, sizeof(RayStruct) * rays.size(), NULL,  &err);
-	if (err != 0) {
-		cout << "failed make ray buffer: " << err;
-		return false;
+bool RayCaster::castRays(bool sync, int bottom, int size) {
+	if (size == -1) {
+		size = rays.size() % maxRays;
+		bottom = maxRays * chunkIndex;
+		sync = true;
 	}
-	err = gpu.queue.enqueueWriteBuffer(rayBuffer, CL_TRUE, 0, sizeof(RayStruct) * rays.size(), &rays[0]);
+	int err = 0;
+	err = gpu.queue.enqueueWriteBuffer(rayBuffer, sync, 0, sizeof(RayStruct) * size, &rays[bottom]);
+
 	if (err != 0) {
 		cout << "failed write rays: " << err;
 		return false;
 	}
 	rayCastKernel.setArg(1, rayBuffer);
-	err = gpu.queue.enqueueNDRangeKernel(rayCastKernel, 0, cl::NDRange(rays.size()), cl::NullRange);
+	err = gpu.queue.enqueueNDRangeKernel(rayCastKernel, 0, cl::NDRange(size), cl::NullRange);
 	if (err != 0) {
 		cout << "failed to cast rays: " << err;
 		return false;
 	}
-	err = gpu.queue.enqueueReadBuffer(rayBuffer, CL_TRUE, 0, sizeof(RayStruct) * rays.size(), &rays[0]);
+
+	err = gpu.queue.enqueueReadBuffer(rayBuffer, sync, 0, sizeof(RayStruct) * size, &rays[bottom]);
 	if (err != 0) {
 		cout << "failed to read rays: " << err;
 		return false;
 	}
-	gpu.queue.finish();
+
 
 	return true;
 }

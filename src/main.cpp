@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 	const shared_ptr<const vector<Triangle>> teapot = loadObj(string(filename), 50.f, true);
 	shared_ptr<Scene> teapotScene(new Scene(light, teapot, shared_ptr<BoundingVolume>(new BoundingVolume(teapot))));
 
-	shared_ptr<RayCaster> rayCaster(new RayCaster(geometry, cornelBVH));
+	shared_ptr<RayCaster> rayCaster(new RayCaster(geometry, cornelBVH, true));
 
 	#pragma omp parallel
 	{

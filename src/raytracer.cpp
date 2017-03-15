@@ -34,7 +34,7 @@ void RayTracer::fastCast(int height, int width) {
 
 
 		rayCaster->castRays();
-
+#pragma omp parallel for
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				bool anyCollision = true;
@@ -47,7 +47,7 @@ void RayTracer::fastCast(int height, int width) {
 
 				}
 				else {
-					vec3 debug(0, 1, 0);
+					vec3 debug(0, 0, 0);
 					drawPixel(x, y, vec3(std::min(debug.r, 1.0f),
 						std::min(debug.g, 1.0f),
 						std::min(debug.b, 1.0f)));
@@ -74,7 +74,7 @@ void RayTracer::draw(int width, int height) {
 		margin_x--;
 	}
 
-#pragma omp parallel for
+//#pragma omp parallel for
 	for (int y = 0; y < margin_y; ++y) {
 		for (int x = 0; x < margin_x; ++x) {
 			vec3 average(0, 0, 0);
