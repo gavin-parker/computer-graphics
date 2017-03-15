@@ -13,6 +13,11 @@
 using glm::ivec2;
 using std::numeric_limits;
 
+//bad bodge until I fix triangle pointers for BVH
+inline bool sametriangle(const Triangle* a, const Triangle* b) {
+	return (a->v0 == b->v0) && (a->v1 == b->v1) && (a->v2 == b->v2) && (a->normal == b->normal);
+}
+
 class LightingEngine {
 public:
   virtual vec3 calculateLight(Ray ray, ivec2 pixel = ivec2(0, 0)) = 0;

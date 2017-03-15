@@ -19,7 +19,7 @@ vec3 StandardLighting::calculateLight(Ray ray, ivec2 pixel) {
   for (int i = 0; (size_t)i < rays.size(); i++) {
 	  lightRay = rays[i];
 
-	  if (boundingVolume->calculateAnyIntersection(lightRay, ray) && lightRay.collision == ray.collision) {
+	  if (boundingVolume->calculateAnyIntersection(lightRay, ray) && sametriangle(lightRay.collision, ray.collision)) {
 
 		  vec3 n = lightRay.collision->normal;
 		  vec3 v = glm::normalize(ray.direction);

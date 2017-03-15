@@ -18,6 +18,7 @@ typedef struct Ray {
 	float3 origin;
 	float3 direction;
 	float3 collisionLocation;
+	float2 dummy;
 	float length;
 	int collision;
 } Ray;

@@ -28,14 +28,16 @@ typedef struct CameraStruct {
 	cl_float3 position;
 	//cl_float3 rotation[3];
 } CameraStruct;
-#pragma pack()
+
 typedef struct RayStruct {
 	cl_float3 origin;
 	cl_float3 direction;
 	cl_float3 collisionLocation;
+	cl_float2 dummy;
 	cl_float length;
 	cl_int collision;
 } RayStruct;
+#pragma pack()
 
 inline cl_float3 vecToFloat(vec3 vec) {
 	cl_float3 f;

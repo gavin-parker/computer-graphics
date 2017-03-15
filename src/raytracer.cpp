@@ -6,7 +6,7 @@ RayTracer::RayTracer(int width, int height, shared_ptr<LightingEngine> lighting,
 	bool fullscreen, bool antialias)
 	: SdlScreen(width, height, fullscreen), triangles(triangles),
 	camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(light),
-	lighting(lighting), rayCaster(rayCaster), boundingVolume(boundingVolume), antialias(antialias), rayIndices(vector<int>(width*4)) {}
+	lighting(lighting), rayCaster(rayCaster), boundingVolume(boundingVolume), antialias(antialias), rayIndices(vector<int>(width*height)) {}
 
 void RayTracer::update(float dt) {
 	light->update(dt);
@@ -15,14 +15,11 @@ void RayTracer::update(float dt) {
 
 
 void RayTracer::fastCast(int height, int width) {
-	int index = 0;
-	int chunkHeight = 4;
-	int chunkNum = 0;
 
-	for (int chunk = 0; chunk < (height / chunkHeight); chunk++) {
-		for (int y = 0; y < chunkHeight; y++) {
+	rayCaster->flushBuffer();
+		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				float realY = static_cast<float>((chunkHeight*chunk) + y);
+				float realY = static_cast<float>(y);
 				float realX = static_cast<float>(x);
 				Ray cameraRay;
 
@@ -34,20 +31,30 @@ void RayTracer::fastCast(int height, int width) {
 				rayIndices[y*width+x] = rayCaster->enqueueRay(cameraRay);
 			}
 		}
-		cout << "casting a chunk of rays on GPU\n";
+
+
 		rayCaster->castRays();
-		for (int y = 0; y < chunkHeight; y++) {
+
+		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				if (rayCaster->getRayCollision(y*width + x) > -1) {
-					vec3 lightColour = rayCaster->getRayTriangleCollision(y*width + x).colour;
+				bool anyCollision = true;
+				Ray cameraRay = rayCaster->getRay(rayIndices[y*width + x], anyCollision);
+				if (anyCollision) {
+					vec3 lightColour = lighting->calculateLight(cameraRay);
 					drawPixel(x, y, vec3(std::min(lightColour.r, 1.0f),
 						std::min(lightColour.g, 1.0f),
 						std::min(lightColour.b, 1.0f)));
 
 				}
+				else {
+					vec3 debug(0, 1, 0);
+					drawPixel(x, y, vec3(std::min(debug.r, 1.0f),
+						std::min(debug.g, 1.0f),
+						std::min(debug.b, 1.0f)));
+
+				}
 			}
 		}
-	}
 }
 
 void RayTracer::draw(int width, int height) {

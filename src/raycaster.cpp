@@ -1,7 +1,6 @@
 #ifdef useCL
 #include "raycaster.h"
-RayCaster::RayCaster(const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume) : triangles(triangles), boundingVolume(boundingVolume), rays(vector<RayStruct>()) {
-
+RayCaster::RayCaster(const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume) : triangles(triangles), boundingVolume(boundingVolume) {
 	gpu = getGPU(triangles->size());
 	cl_float3* cl_triangles = (cl_float3*)malloc(triangles->size() * sizeof(cl_float3) * 5);
 	vector<Triangle> tris = *triangles;
@@ -19,7 +18,6 @@ RayCaster::RayCaster(const shared_ptr<const vector<Triangle>> triangles, const s
 	}
 	triangleBuffer = cl::Buffer(gpu.context, CL_MEM_READ_ONLY, sizeof(cl_float3) * triangles->size() * 5);
 	gpu.queue.enqueueWriteBuffer(triangleBuffer, CL_TRUE, 0, sizeof(cl_float3) * triangles->size() * 5, cl_triangles);
-	rayBuffer = cl::Buffer(gpu.context, CL_MEM_READ_WRITE, sizeof(RayStruct) * maxRays);
 	int err = 0;
 	rayCastKernel = cl::Kernel(gpu.program, "fastRayCast", &err);
 	rayCastKernel.setArg(0, triangleBuffer);
@@ -31,12 +29,20 @@ RayStruct clifyRay(Ray ray) {
 	cl_ray.origin = (cl_float3)vecToFloat(ray.position);
 	cl_ray.direction = (cl_float3)vecToFloat(ray.direction);
 	cl_ray.collision = (cl_int)-1;
+	cl_ray.collisionLocation = (cl_float3)vecToFloat(vec3(0, 0, 0));
+	cl_ray.length = (cl_float)numeric_limits<float>::max();
 	return cl_ray;
 }
+
 
 int RayCaster::enqueueRay(Ray ray) {
 	rays.push_back(clifyRay(ray));
 	return rays.size()-1;
+}
+
+bool RayCaster::flushBuffer() {
+	rays.clear();
+	return true;
 }
 
 int RayCaster::getRayCollision(int index) {
@@ -45,20 +51,51 @@ int RayCaster::getRayCollision(int index) {
 
 Triangle RayCaster::getRayTriangleCollision(int index) {
 	int triangle = rays[index].collision;
-	return (*triangles)[rays[index].collision];
+	return (*triangles)[triangle];
+}
+
+Ray RayCaster::getRay(int index, bool &anyCollision) {
+	RayStruct cl_ray = rays[index];
+	Ray ray;
+	if (cl_ray.collision > -1) {
+		ray.collision = &(*triangles)[cl_ray.collision];
+	}
+	else {
+		anyCollision = false;
+	}
+	ray.collisionLocation = floatToVec(cl_ray.collisionLocation);
+	ray.collisionUVLocation = vec3(0, 0, 0);
+	ray.direction = floatToVec(cl_ray.direction);
+	ray.length = cl_ray.length;
+	ray.position = floatToVec(cl_ray.origin);
+	return ray;
 }
 
 bool RayCaster::castRays() {
 	int err = 0;
+	rayBuffer = cl::Buffer(gpu.context, CL_MEM_READ_WRITE, sizeof(RayStruct) * rays.size(), NULL,  &err);
+	if (err != 0) {
+		cout << "failed make ray buffer: " << err;
+		return false;
+	}
 	err = gpu.queue.enqueueWriteBuffer(rayBuffer, CL_TRUE, 0, sizeof(RayStruct) * rays.size(), &rays[0]);
+	if (err != 0) {
+		cout << "failed write rays: " << err;
+		return false;
+	}
+	rayCastKernel.setArg(1, rayBuffer);
 	err = gpu.queue.enqueueNDRangeKernel(rayCastKernel, 0, cl::NDRange(rays.size()), cl::NullRange);
-	err = gpu.queue.enqueueReadBuffer(rayBuffer, CL_TRUE, 0, sizeof(RayStruct) * rays.size(), &rays[0]);
-	gpu.queue.finish();
-
 	if (err != 0) {
 		cout << "failed to cast rays: " << err;
 		return false;
 	}
+	err = gpu.queue.enqueueReadBuffer(rayBuffer, CL_TRUE, 0, sizeof(RayStruct) * rays.size(), &rays[0]);
+	if (err != 0) {
+		cout << "failed to read rays: " << err;
+		return false;
+	}
+	gpu.queue.finish();
+
 	return true;
 }
 #else
