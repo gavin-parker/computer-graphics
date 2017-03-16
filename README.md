@@ -12,6 +12,7 @@ Features:
 <li>Realtime rendering with OpenCL</li>
 <li>Acceleration with BVH</li>
 <li>.obj file loading</li>
+<li>Reflective Materials</li>
 </ul>
 <h2>Rasterizer</h2>
 <li>Phong & Diffuse Shading</li>
