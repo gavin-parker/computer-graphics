@@ -8,6 +8,7 @@
 #include "sdlscreen.h"
 #include "testmodel.h"
 #include "bvh.h"
+#include "raycaster.h"
 #ifdef unix
 #include<sys/time.h>
 #include<sys/resource.h>

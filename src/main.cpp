@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
 			sampleCount = atoi(samples.c_str());
 		}
 		shared_ptr<LightingEngine> engine(new ConvergentGlobalIllumination(scene, sampleCount, 1024, 1024));
-		RayTracer screen(500, 500, engine, softLight, geometry, shared_ptr<BoundingVolume>(cornelBVH),false);
+		RayTracer screen(500, 500, engine, softLight, geometry, shared_ptr<BoundingVolume>(cornelBVH), rayCaster, false, true);
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
 	}

@@ -13,58 +13,7 @@ void RayTracer::update(float dt) {
 	camera.update(dt);
 }
 
-
-void RayTracer::fastCast(int height, int width) {
-
-	rayCaster->flushBuffer();
-#pragma omp parallel for
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				float realY = static_cast<float>(y);
-				float realX = static_cast<float>(x);
-				Ray cameraRay;
-
-				camera.calculateRay(cameraRay, realX / width,
-					realY / height);
-
-				cameraRay.length = numeric_limits<float>::max();
-#pragma omp critical
-				{
-					rayIndices[y*width + x] = rayCaster->enqueueRay(cameraRay);
-				}
-			}
-		}
-
-
-		rayCaster->castRays();
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				bool anyCollision = true;
-				Ray cameraRay = rayCaster->getRay(rayIndices[y*width + x], anyCollision);
-				if (anyCollision) {
-					vec3 lightColour = lighting->calculateLight(cameraRay);
-					drawPixel(x, y, vec3(std::min(lightColour.r, 1.0f),
-						std::min(lightColour.g, 1.0f),
-						std::min(lightColour.b, 1.0f)));
-
-				}
-				else {
-					vec3 debug(0, 0, 0);
-					drawPixel(x, y, vec3(std::min(debug.r, 1.0f),
-						std::min(debug.g, 1.0f),
-						std::min(debug.b, 1.0f)));
-
-				}
-			}
-		}
-}
-
 void RayTracer::draw(int width, int height) {
-
-	if (!antialias) {
-		fastCast(height, width);
-		return;
-	}
 
 	static int rows_completed = 0;
 	static int counter_last = 0;
@@ -76,7 +25,7 @@ void RayTracer::draw(int width, int height) {
 		margin_x--;
 	}
 
-//#pragma omp parallel for
+#pragma omp parallel for
 	for (int y = 0; y < margin_y; ++y) {
 		for (int x = 0; x < margin_x; ++x) {
 			vec3 average(0, 0, 0);

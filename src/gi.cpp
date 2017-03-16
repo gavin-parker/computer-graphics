@@ -2,27 +2,30 @@
 
 // GlobalIllumination::GlobalIllumination(){};
 
-GlobalIllumination::GlobalIllumination(shared_ptr<Scene> scene, shared_ptr<RayCaster> rayCaster, int sampleCount) : LightingEngine(scene->triangles, scene->light, rayCaster), sampleCount(sampleCount), boundingVolume(scene->volume) {};
+GlobalIllumination::GlobalIllumination(shared_ptr<Scene> scene, int sampleCount) : LightingEngine(scene->triangles, scene->light), sampleCount(sampleCount), boundingVolume(scene->volume) {};
 
 vec3 GlobalIllumination::trace(Ray ray, int bounces) {
-	// find diffuse light at this position
+	// find diffuse light at this position 
 	float diffuse = ray.collision->mat->diffuse;
 	vec3 lightHere(0, 0, 0);
 
 	vector<Ray> rays(light->rayCount);
 	light->calculateRays(rays, ray.collisionLocation);
-	vector<int> lightIndices(light->rayCount);
+
 	for (int i = 0; i < light->rayCount; i++) {
 		Ray directLightRay = rays[i];
 
-#pragma omp critical
-		{
-			lightIndices[i] = rayCaster->enqueueRay(rays[i]);
+		if (!boundingVolume->calculateAnyIntersection(directLightRay, ray, true)) {
+			lightHere += vec3(0, 0, 0);
+		}
+		else if (directLightRay.collision == ray.collision) {
+			lightHere += light->directLight(ray)*ray.collision->getPixelColour(ray.collisionUVLocation);
 		}
 	}
+	lightHere /= rays.size();
 	vec3 indirectLight(0, 0, 0);
 
-	// create orthogonal basis on plane
+	// create orthogonal basis on plane 
 	vec3 normal = ray.collision->normal;
 	vec3 normalX;
 	vec3 normalY;
@@ -37,12 +40,11 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
 
 
 	mat3 basis(normalX, normalY, normal);
-	vector<int> bounceIndices(sampleCount);
-	vector<float> angles(sampleCount);
 	if (bounces >= 1) {
+
 		for (int i = 0; i < sampleCount; i++) {
 
-			// generate random direction
+			// generate random direction 
 			float r1 = RAND();
 			float r2 = RAND();
 			float sinTheta = sqrtf(1 - r1*r1);
@@ -59,47 +61,16 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
 			bounce.position = ray.collisionLocation;
 			bounce.direction = glm::normalize(direction);
 			bounce.length = std::numeric_limits<float>::max();
-			#pragma omp critical
-			{
-				bounceIndices[i] = rayCaster->enqueueRay(bounce);
-			}
-			// return this + new collision point
-			angles[i] = r1;
-		}
-	}
-#pragma omp barrier
-#pragma omp single
-	{
-		rayCaster->castRays();
-	}
-	//accumulate direct light
-	for (int i = 0; i < light->rayCount; i++) {
-		bool collision = false;
-		Ray lightRay = rayCaster->getRay(lightIndices[i], collision);
-		if (collision) {
-			lightHere += light->directLight(ray)*ray.collision->getPixelColour(ray.collisionUVLocation);
-		}
-		else {
-			lightHere += vec3(0, 0, 0);
-		}
-	}
-	lightHere /= rays.size();
-	if (bounces >= 1) {
-		//accumulate indirect light
-		for (int i = 0; i < sampleCount; i++) {
-			bool collision = false;
-			Ray bounce = rayCaster->getRay(bounceIndices[i], collision);
-			float r1 = angles[i];
-			if (collision) {
+			// return this + new collision point 
+			if (boundingVolume->calculateIntersection(bounce)) {
 				indirectLight += r1 * trace(bounce, bounces - 1);
 			}
 			else {
-				indirectLight += r1 * vec3(1, 1, 1)*environment;
+				indirectLight += r1 * vec3(1, 1, 1)*environment; // assume white environment sphere 
 			}
 		}
 	}
-
-	if (bounces < 1) {
+	else {
 		return (lightHere / static_cast<float>(M_PI))*diffuse;
 	}
 	indirectLight /= static_cast<float>(sampleCount);

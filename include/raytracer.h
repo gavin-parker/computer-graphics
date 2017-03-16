@@ -10,7 +10,7 @@
 #include "sdlscreen.h"
 #include "testmodel.h"
 #include "bvh.h"
-//#include "raycaster.h"
+#include "raycaster.h"
 
 using std::numeric_limits;
 
@@ -28,7 +28,6 @@ private:
   bool antialias;
   int chunkSize = 4000;
   vector<int> rayIndices;
-  void fastCast(int height, int width);
 protected:
   void update(float dt) override;
   void draw(int width, int height) override;
