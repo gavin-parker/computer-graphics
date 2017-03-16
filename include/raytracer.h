@@ -16,7 +16,6 @@ using std::numeric_limits;
 
 class RayTracer : public SdlScreen {
 private:
-  //bool ClosestIntersection(Ray &ray);
   const shared_ptr<const vector<Triangle>> triangles;
   Camera camera;
 
@@ -24,10 +23,8 @@ private:
   const shared_ptr<Light> light;
   shared_ptr<LightingEngine> lighting;
   const shared_ptr<BoundingVolume> boundingVolume;
-  const shared_ptr<RayCaster> rayCaster;
   bool antialias;
   int chunkSize = 4000;
-  vector<int> rayIndices;
 protected:
   void update(float dt) override;
   void draw(int width, int height) override;
@@ -35,6 +32,6 @@ protected:
 public:
   RayTracer(int width, int height, shared_ptr<LightingEngine> lighting,
 	  const shared_ptr<Light> light,
-            const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume, const shared_ptr<RayCaster> rayCaster,
+            const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume,
             bool fullscreen = false, bool antialias = true);
 };

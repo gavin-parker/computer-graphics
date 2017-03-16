@@ -9,9 +9,6 @@
 
 class RayCaster {
 private:
-	int maxRays = 26000;
-	int chunkIndex = 0;
-	int lastSize = 0;
 	bool shittyDrivers;
 #ifdef useCL
 	Accelerator gpu;
@@ -30,7 +27,7 @@ public:
 	int enqueueRay(Ray ray);
 
 	//fire off the current buffer of rays
-	bool castRays(bool sync = true, int bottom = 0, int size = -1);
+	bool castRays(bool sync = true);
 
 	//get the index of the triangle this ray collided with
 	int getRayCollision(int index);

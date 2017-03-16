@@ -2,11 +2,11 @@
 
 RayTracer::RayTracer(int width, int height, shared_ptr<LightingEngine> lighting,
 	shared_ptr<Light> light,
-	const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume, const shared_ptr<RayCaster> rayCaster,
+	const shared_ptr<const vector<Triangle>> triangles, const shared_ptr<BoundingVolume> boundingVolume,
 	bool fullscreen, bool antialias)
 	: SdlScreen(width, height, fullscreen), triangles(triangles),
 	camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(light),
-	lighting(lighting), rayCaster(rayCaster), boundingVolume(boundingVolume), antialias(antialias), rayIndices(vector<int>(width*height)) {}
+	lighting(lighting), boundingVolume(boundingVolume), antialias(antialias) {}
 
 void RayTracer::update(float dt) {
 	light->update(dt);

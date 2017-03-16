@@ -4,6 +4,7 @@
 #include "rasteriser.h"
 #include "raytracer.h"
 #include "starscreen.h"
+#include "wavefront.h"
 #include "terrain_gen.h"
 #include "obj_reader.h"
 #ifdef useCL
@@ -41,7 +42,7 @@ int main(int argc, char *argv[]) {
 	const shared_ptr<const vector<Triangle>> teapot = loadObj(string(filename), 50.f, true);
 	shared_ptr<Scene> teapotScene(new Scene(light, teapot, shared_ptr<BoundingVolume>(new BoundingVolume(teapot))));
 
-	shared_ptr<RayCaster> rayCaster(new RayCaster(geometry, cornelBVH, false));
+	//shared_ptr<RayCaster> rayCaster(new RayCaster(geometry, cornelBVH, false));
 
 	#pragma omp parallel
 	{
@@ -59,9 +60,8 @@ int main(int argc, char *argv[]) {
 
       return EXIT_SUCCESS;
     } else if (mode == "ray") {
-
       shared_ptr<LightingEngine> engine(new StandardLighting(scene_low_quality));
-      RayTracer screen(512, 512, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), rayCaster, false, false);
+      RayTracer screen(512, 512, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), false, false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "rast") {
@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
 			sampleCount = atoi(samples.c_str());
 		}
 		shared_ptr<LightingEngine> engine(new ConvergentGlobalIllumination(scene, sampleCount, 1024, 1024));
-		RayTracer screen(500, 500, engine, softLight, geometry, shared_ptr<BoundingVolume>(cornelBVH), rayCaster, false, true);
+		RayTracer screen(500, 500, engine, softLight, geometry, shared_ptr<BoundingVolume>(cornelBVH), false, true);
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
 	}
@@ -114,6 +114,14 @@ int main(int argc, char *argv[]) {
 		RayTracerCL screen(1024, 1024, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), vec3(277.5f, 277.5f, -480.64), false);
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
+	}
+	else if (mode == "wavefront") {
+		light->power *= 10;
+		shared_ptr<LightingEngine> engine(new FlatLighting(scene));
+		WaveFrontRenderer screen(500, 500, engine, softLight, geometry, shared_ptr<BoundingVolume>(cornelBVH), false, true);
+		screen.run();
+		screen.saveBMP("screenshot.bmp");
+
 	}
 #endif
 	else {
