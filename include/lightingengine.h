@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <limits>
 #include <omp.h>
 
@@ -11,6 +12,8 @@
 #include "sdlscreen.h"
 #include "spherelight.h"
 #include "testmodel.h"
+#include "cube.h"
+
 
 using glm::ivec2;
 using std::numeric_limits;

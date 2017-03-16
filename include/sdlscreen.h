@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <iostream>
 
+
 using glm::vec3;
 using std::cout;
 using std::endl;

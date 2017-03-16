@@ -1,10 +1,11 @@
 #pragma once
 // Defines a simple test model: The Cornel Box
-
 #include "lodepng.h"
 #include "triangle.h"
 #include "scene.h"
+#include "bvh.h"
+
 
 const shared_ptr<const vector<Triangle>> loadTestModel();
 
-const shared_ptr<BoundingVolume> loadTestModelBVH();
+const shared_ptr<BoundingVolume> loadTestModelBVH(); 

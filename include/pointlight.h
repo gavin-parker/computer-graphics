@@ -5,7 +5,7 @@ public:
 
   PointLight(vec3 position, vec3 color, float power);
 
-  void update(float dt) override;
+  bool update(float dt) override;
 
   void calculateRays(vector<Ray> &rays, vec3 target) const override;
 

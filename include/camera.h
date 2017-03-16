@@ -11,23 +11,26 @@
 
 using glm::vec3;
 using glm::vec2;
+using glm::vec4;
 
 class Camera {
 private:
-  float yaw;
   const float velocity = 200.0f;
   const float yawVeclocity = 2.0f;
 
 public:
 	vec3 position;
+	float yaw;
 	mat3 rotation;
 	const float viewOffset;
 	bool moved = false;
   Camera(vec3 position, float yaw, float viewAngle);
 
-  void update(float dt);
+  bool update(float dt);
 
   void calculateRay(Ray &ray, float x, float y);
 
   vec3 projectVertex(Vertex v);
+
+  vec4 clipSpace(Vertex v);
 };

@@ -1,10 +1,5 @@
 #pragma once
 #include "light.h"
-#ifndef unix
-#define RAND float(rand()) / RAND_MAX
-#else
-#define RAND drand48()
-#endif
 
 class SphereLight : public Light {
 private:
@@ -14,7 +9,7 @@ public:
 
 	SphereLight(vec3 position, vec3 color, float power, float radius, int res);
 
-	void update(float dt) override;
+	bool update(float dt) override;
 
 	void calculateRays(vector<Ray> &rays, vec3 target) const override;
 

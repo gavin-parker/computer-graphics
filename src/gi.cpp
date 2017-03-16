@@ -11,9 +11,7 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
 
   vector<Ray> rays(light->rayCount);
   light->calculateRays(rays, ray.collisionLocation);
-#ifdef unix
-#pragma omp simd
-#endif
+
   for (int i = 0; i < light->rayCount; i++) {
 	  Ray directLightRay = rays[i];
 
@@ -33,31 +31,29 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
   vec3 normalY;
 
   if (abs(normal.x) > abs(normal.y)) {
-	  normalX = vec3(normal.z, 0, -normal.x) / sqrtf(normal.x*normal.x + normal.z*normal.z);
+	  normalX = vec3(normal.z, 0, -normal.x) / sqrtf(normal.x*normal.x + normal.z*normal.z); 
   }
   else {
 	  normalX = vec3(0, -normal.z, normal.y) / sqrtf(normal.z*normal.z + normal.y*normal.y);
   }
-  normalY = glm::cross(normalX, normal);
+  normalY = glm::cross(normalX, normal); 
 
 
   mat3 basis(normalX, normalY, normal);
-  if (bounces >= 1) {
-#ifdef unix
-#pragma omp simd
-#endif
-  for (int i = 0; i < sampleCount; i++) {
+  if (bounces >= 1) { 
+
+  for (int i = 0; i < sampleCount; i++) { 
 
     // generate random direction
-	  float r1 = RAND;
-	  float r2 = RAND;
-	  float sinTheta = sqrtf(1 - r1*r1);
+	  float r1 = RAND(); 
+	  float r2 = RAND();
+	  float sinTheta = sqrtf(1 - r1*r1); 
 	  float phi = 2 * M_PI * r2;
-	  float x = sinTheta * cosf(phi);
+	  float x = sinTheta * cosf(phi); 
 	  float z = sinTheta * sinf(phi);
 	  vec3 sample(x, r1, z);
 
-	  vec3 direction(sample.x * normalX.x + sample.y * normal.x + sample.z * normalY.x,
+	  vec3 direction(sample.x * normalX.x + sample.y * normal.x + sample.z * normalY.x, 
 		  sample.x * normalX.y + sample.y * normal.y + sample.z * normalY.y,
 		  sample.x * normalX.z + sample.y * normal.z + sample.z * normalY.z);
 

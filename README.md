@@ -11,7 +11,13 @@ Features:
 <li>Global Illumination via Path Tracing</li>
 <li>Realtime rendering with OpenCL</li>
 <li>Acceleration with BVH</li>
+<li>.obj file loading</li>
+<li>Reflective Materials</li>
 </ul>
 <h2>Rasterizer</h2>
 <li>Phong & Diffuse Shading</li>
 <li>Per pixel / per vertex lighting</li>
+<li>Texture Mapping</li>
+<li>(Naff) Shadow Mapping</li>
+<li>.obj file loading</li>
+

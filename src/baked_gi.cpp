@@ -9,7 +9,7 @@ BakedGI::BakedGI(shared_ptr<Scene> scene, int sampleCount, int resolution) : Lig
 
 void BakedGI::constructImage() {
 	cout << "Baking lighting...";
-	for (int i = 0; i < triangles->size(); i++) {
+	for (size_t i = 0; i < triangles->size(); i++) {
 		image[i] = vector<vec3>(resolution*resolution);
 		const Triangle &triangle = (*triangles)[i];
 #pragma omp parallel for
@@ -67,8 +67,8 @@ vec3 BakedGI::trace(Ray ray, int bounces) {
 	for (int i = 0; i < sampleCount; i++) {
 
 		// generate random direction
-		float r1 = RAND;
-		float r2 = RAND;
+		float r1 = RAND();
+		float r2 = RAND();
 		float sinTheta = sqrtf(1 - r1*r1);
 		float phi = 2 * M_PI * r2;
 		float x = sinTheta * cosf(phi);
