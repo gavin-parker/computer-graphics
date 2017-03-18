@@ -6,7 +6,7 @@ WaveFrontRenderer::WaveFrontRenderer(int width, int height, shared_ptr<LightingE
 	bool fullscreen, bool antialias)
 	: SdlScreen(width, height, fullscreen), triangles(triangles),
 	camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(light),
-	lighting(lighting), boundingVolume(boundingVolume), rayCaster(new RayCaster(triangles, boundingVolume, true)), antialias(antialias), rayIndices(vector<int>(width*height * 4 * 4)) {}
+	lighting(lighting), boundingVolume(boundingVolume), rayCaster(new RayCaster(triangles, boundingVolume, true)), antialias(antialias), rayIndices(vector<int>(width*height * 4 * 4)), rays(vector<Ray>()) {}
 
 void WaveFrontRenderer::update(float dt) {
 	light->update(dt);
@@ -20,7 +20,7 @@ void WaveFrontRenderer::draw(int width, int height) {
 	margin_y--;
 	margin_x--;
 	rayCaster->flushBuffer();
-//#pragma omp parallel for
+#pragma omp parallel for
 	for (int y = 0; y < margin_y; ++y) {
 		for (int x = 0; x < margin_x; ++x) {
 			int pixelIndex = y*width + x;
@@ -52,7 +52,7 @@ void WaveFrontRenderer::draw(int width, int height) {
 	cout << "firing initial rays \n";
 	rayCaster->castRays(true);
 	cout << "rays collided \n";
-//#pragma omp parallel for
+#pragma omp parallel for
 	for (int y = 0; y < margin_y; ++y) {
 		for (int x = 0; x < margin_x; ++x) {
 			int pixelIndex = y*width + x;
@@ -66,6 +66,7 @@ void WaveFrontRenderer::draw(int width, int height) {
 						vec3 spec(0, 0, 0);
 						vec3 lightColour = cameraRay.collision->colour;//lighting->calculateLight(cameraRay, glm::ivec2(x, y));
 						average += lightColour;
+						rays.push_back(cameraRay);
 					}
 					else {
 						average = vec3(0, 1, 0);
@@ -84,3 +85,20 @@ void WaveFrontRenderer::draw(int width, int height) {
 
 	//compute GI
 }
+
+//this will need to be done in chunks to not gobble memory
+void WaveFrontRenderer::computeIndirectLight(int chunkStart, int chunkSize, int samples, int bounces){
+	vector<int> bounceIndices(chunkSize *samples);
+
+	//iterate over
+	for (int j = 0; j < bounces; j++) {
+#pragma omp parallel for
+		for (int i = 0; i < chunkSize; i++) {
+			Ray inRay = rays[chunkStart + i];
+
+
+		}
+	}
+
+}
+
