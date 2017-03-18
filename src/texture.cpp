@@ -18,6 +18,8 @@ Texture::Texture(vec4 scale, const string &textureFile)
   }
 }
 
+vec4 Texture::getScale() const { return scale; }
+
 vec4 Texture::operator[](vec2 uv) const {
   if (hasTexture) {
     unsigned x = std::floor(uv.x * width);

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <glm/glm.hpp>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -14,6 +15,7 @@ using glm::vec4;
 using std::cout;
 using std::endl;
 using std::min;
+using std::shared_ptr;
 using std::string;
 using std::vector;
 
@@ -30,6 +32,8 @@ public:
   Texture();
 
   Texture(vec4 scale, const string &textureFile);
+
+  vec4 getScale() const;
 
   vec4 operator[](vec2 uv) const;
 };

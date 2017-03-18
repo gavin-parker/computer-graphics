@@ -19,13 +19,13 @@ private:
                            vec3(1, -1, 1) * R3()};
   float d[7][2];
   vector<BoundingVolume> subVolumes;
-  const vector<Triangle> &triangles;
+  const shared_ptr<const vector<Triangle>> triangles;
   bool ClosestIntersection(Ray &ray);
   bool anyIntersection(Ray &ray, Ray &surface);
   bool calculateIntersectionSub(Ray &ray, float num[7], float denom[7]);
 
 public:
-  BoundingVolume(const vector<Triangle> &triangles);
+  BoundingVolume(const shared_ptr<const vector<Triangle>> triangles);
   bool calculateIntersection(Ray &ray);
   void setSubVolume(BoundingVolume volume);
   bool calculateAnyIntersection(Ray &ray, Ray &surface);

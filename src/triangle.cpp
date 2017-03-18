@@ -5,7 +5,7 @@ Triangle::Triangle() : mat(Material()) {}
 Triangle(const Triangle &other) : Triangle();
 
 Triangle::Triangle(vec3 v0, vec3 v1, vec3 v2, vec2 vt0, vec2 vt1, vec2 vt2,
-                   const Material &mat)
+                   const shared_ptr<Material> mat)
     : v0(v0), v1(v1), v2(v2), e1(v1 - v0), e2(v2 - v0), vt0(vt0), vt1(vt1),
       vt2(vt2), et1(vt1 - vt0), et2(vt2 - vt0),
       vn0(calculateNormal(v0, v1, v2)), vn1(calculateNormal(v0, v1, v2)),

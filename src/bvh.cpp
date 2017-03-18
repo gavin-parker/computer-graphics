@@ -1,11 +1,12 @@
 #include "bvh.h"
 
-BoundingVolume::BoundingVolume(const vector<Triangle> &triangles)
+BoundingVolume::BoundingVolume(
+    const shared_ptr<const vector<Triangle>> triangles)
     : triangles(triangles) {
   for (int i = 0; i < 7; i++) {
     d[i][0] = numeric_limits<float>::max();
     d[i][1] = -numeric_limits<float>::max();
-    for (const Triangle &triangle : triangles) {
+    for (const Triangle &triangle : *triangles) {
       vec3 points[3] = {triangle.v0, triangle.v1, triangle.v2};
       for (int j = 0; j < 3; j++) {
         float D = normals[i].x * points[j].x + normals[i].y * points[j].y +
@@ -59,7 +60,7 @@ bool BoundingVolume::ClosestIntersection(Ray &ray) {
 
   bool anyIntersection = false;
 
-  for (const Triangle &triangle : triangles) {
+  for (const Triangle &triangle : *triangles) {
     anyIntersection |= triangle.calculateIntersection(ray);
   }
 
@@ -110,7 +111,7 @@ bool BoundingVolume::anyIntersection(Ray &ray, Ray &surface) {
   bool anyIntersection = false;
   float lightDistance = ray.length;
   ray.length = numeric_limits<float>::max();
-  for (const Triangle &triangle : triangles) {
+  for (const Triangle &triangle : *triangles) {
     anyIntersection |= triangle.calculateIntersection(ray);
     if (anyIntersection && ray.collision != surface.collision &&
         ray.length < lightDistance) {

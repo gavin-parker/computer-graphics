@@ -19,11 +19,21 @@ public:
         specularTexture(vec4(ka, 1.0f), mapKa),
         specularExponentTexture(vec4(1.0f, 1.0f, 1.0f, ns), mapNs) {}
 
+  inline vec3 ambient() const { return vec3(ambientTexture.getScale()); }
+
   inline vec3 ambient(vec2 uv) const { return vec3(ambientTexture[uv]); }
+
+  inline vec3 diffuse() const { return vec3(diffuseTexture.getScale()); }
 
   inline vec3 diffuse(vec2 uv) const { return vec3(diffuseTexture[uv]); }
 
+  inline vec3 specular() const { return vec3(specularTexture.getScale()); }
+
   inline vec3 specular(vec2 uv) const { return vec3(specularTexture[uv]); }
+
+  inline float specularExponent() const {
+    return specularExponentTexture.getScale().a;
+  }
 
   inline float specularExponent(vec2 uv) const {
     return specularExponentTexture[uv].a;

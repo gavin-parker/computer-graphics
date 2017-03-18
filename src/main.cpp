@@ -1,10 +1,10 @@
-#include <string>
-#include <ctime>
-#include <cstdlib>
 #include "rasteriser.h"
 #include "raytracer.h"
 #include "starscreen.h"
 #include "terrain_gen.h"
+#include <cstdlib>
+#include <ctime>
+#include <string>
 #ifdef useCL
 #include "raytracer_cl.h"
 #endif
@@ -15,37 +15,43 @@ FILE __iob_func[3] = {stdin, stdout, *stderr};
 }
 #endif
 
+using std::make_shared;
+
 int main(int argc, char *argv[]) {
 #ifndef unix
-	srand(static_cast <unsigned> (time(0)));
+  srand(static_cast<unsigned>(time(0)));
 #endif
   if (argc >= 2) {
     string mode(argv[1]);
 
-    PointLight light(vec3(300.0f, 400.0f, 100.0f), vec3(1.0, 1.0f, 1.0f),
-                     1000000.0f);
-    SphereLight softLight(vec3(300.0f, 400.0f, 100.0f), vec3(1.0, 1.0f, 1.0f),
-                          1000000.0f, 4.0f, 5);
+    const shared_ptr<Light> light = make_shared<PointLight>(
+                                vec3(300.0f, 400.0f, 100.0f),
+                                vec3(1.0, 1.0f, 1.0f), 1000000.0f),
+                            softLight = make_shared<SphereLight>(
+                                vec3(300.0f, 400.0f, 100.0f),
+                                vec3(1.0, 1.0f, 1.0f), 1000000.0f, 4.0f, 5);
 
-	const shared_ptr<const vector<Triangle>> geometry = loadTestModel();
-	const shared_ptr<BoundingVolume> cornelBVH = loadTestModelBVH();
+    const shared_ptr<const vector<Triangle>> geometry = loadTestModel();
+    const shared_ptr<BoundingVolume> cornelBVH = loadTestModelBVH();
 
     shared_ptr<Scene> scene(new Scene(softLight, geometry, cornelBVH));
-	shared_ptr<Scene> scene_low_quality(new Scene(light, geometry, cornelBVH));
+    shared_ptr<Scene> scene_low_quality(new Scene(light, geometry, cornelBVH));
 
-	TerrainGenerator terrainGen;
-	const shared_ptr<const vector<Triangle>> terrain = terrainGen.generateTerrain(1000,0,100, vec3(-100,0,-100));
-	shared_ptr<Scene> sceneB(new Scene(light, terrain, shared_ptr<BoundingVolume>(new BoundingVolume(terrain))));
+    TerrainGenerator terrainGen;
+    const shared_ptr<const vector<Triangle>> terrain =
+        terrainGen.generateTerrain(1000, 0, 100, vec3(-100, 0, -100));
+    shared_ptr<Scene> sceneB(
+        new Scene(light, terrain,
+                  shared_ptr<BoundingVolume>(new BoundingVolume(terrain))));
 
-
-	#pragma omp parallel
-	{
-		#pragma omp master
-		{
-			int threads = omp_get_num_threads();
-			cout << "running on " << threads << " threads";
-		}
-	}
+#pragma omp parallel
+    {
+#pragma omp master
+      {
+        int threads = omp_get_num_threads();
+        cout << "running on " << threads << " threads";
+      }
+    }
 
     if (mode == "stars") {
       StarScreen screen(500, 500, 1000, 0.5, false);
@@ -62,10 +68,10 @@ int main(int argc, char *argv[]) {
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "rast") {
-		 shared_ptr<LightingEngine> engine(new RastLighting(scene_low_quality));
-		 Rasteriser screen(500, 500, engine, scene_low_quality, false);
-		screen.run();
-		screen.saveBMP("screenshot.bmp");
+      shared_ptr<LightingEngine> engine(new RastLighting(scene_low_quality));
+      Rasteriser screen(500, 500, engine, scene_low_quality, false);
+      screen.run();
+      screen.saveBMP("screenshot.bmp");
     } else if (mode == "gi") {
       int sampleCount = 10;
       if (argc > 2) {
@@ -98,13 +104,14 @@ int main(int argc, char *argv[]) {
     }
 
 #ifdef useCL
-	else if (mode == "cl") {
-		light->power *= 10;
-		shared_ptr<LightingEngine> engine(new StandardLighting(scene));
-		RayTracerCL screen(1024, 1024, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), false);
-		screen.run();
-		screen.saveBMP("screenshot.bmp");
-	}
+    else if (mode == "cl") {
+      light->power *= 10;
+      shared_ptr<LightingEngine> engine(new StandardLighting(scene));
+      RayTracerCL screen(1024, 1024, engine, light, geometry,
+                         shared_ptr<BoundingVolume>(cornelBVH), false);
+      screen.run();
+      screen.saveBMP("screenshot.bmp");
+    }
 #endif
     else {
       cout << "Unknown mode \"" << mode << "\"" << endl;

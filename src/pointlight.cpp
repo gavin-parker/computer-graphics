@@ -6,22 +6,23 @@ PointLight::PointLight(vec3 position, vec3 color, float power)
 bool PointLight::update(float dt) {
   Uint8 *keystate = SDL_GetKeyState(0);
 
-  position += velocity * dt *
+  position += speed * dt *
               vec3(static_cast<float>(keystate[SDLK_j] - keystate[SDLK_l]),
                    static_cast<float>(keystate[SDLK_o] - keystate[SDLK_u]),
                    static_cast<float>(keystate[SDLK_i] - keystate[SDLK_k]));
-  if ((keystate[SDLK_j] - keystate[SDLK_l]) != 0 || (keystate[SDLK_o] - keystate[SDLK_u]) != 0 || (keystate[SDLK_i] - keystate[SDLK_k]) != 0) {
-	  return true;
+  if ((keystate[SDLK_j] - keystate[SDLK_l]) != 0 ||
+      (keystate[SDLK_o] - keystate[SDLK_u]) != 0 ||
+      (keystate[SDLK_i] - keystate[SDLK_k]) != 0) {
+    return true;
   }
   return false;
 }
 
 void PointLight::calculateRays(vector<Ray> &rays, glm::vec3 target) const {
-	Ray ray;
+  Ray ray;
   ray.position = position;
   ray.direction = target - position;
   rays.push_back(ray);
-
 }
 
 // Uses equation 27 on
