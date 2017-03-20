@@ -65,10 +65,6 @@ read_line(Current_Materials, New_Materials, Current_Material, Current_Material) 
 	update_material_property(Current_Materials, Current_Material, ns, Ns, New_Materials).
 
 read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
-	reflectivity(Kr),
-	update_material_property(Current_Materials, Current_Material, kr, Kr, New_Materials).
-
-read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
 	ambient_colour_map(Map_Ka),
 	update_material_property(Current_Materials, Current_Material, map_ka, Map_Ka, New_Materials).
 
@@ -85,8 +81,8 @@ read_line(Current_Materials, New_Materials, Current_Material, Current_Material) 
 	update_material_property(Current_Materials, Current_Material, map_kd, Map_Ns, New_Materials).
 
 read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
-	reflectivity_map(Map_Kr),
-	update_material_property(Current_Materials, Current_Material, map_kd, Map_Kr, New_Materials).
+	mirror,
+	update_material_property(Current_Materials, Current_Material, mirror, bool(true), New_Materials).
 
 read_line(Materials, Materials, Material, Material) -->
 	comment.
@@ -103,6 +99,7 @@ read_line(Materials, Materials, Material, Material) -->
 
 update_material_property(Current_Materials, Current_Material, Property_Name, Property_Value, New_Materials) :-
 	get_dict(Current_Material, Current_Materials, Current_Material_Values),
+	get_dict(Property_Name, Current_Material_Values, _Current_Property_Value),
 	put_dict(Property_Name, Current_Material_Values, Property_Value, New_Material_Values),
 	put_dict(Current_Material, Current_Materials, New_Material_Values, New_Materials).
 
@@ -121,17 +118,16 @@ new_material(Name) -->
 
 
 default_material(
-    mtl{ka:Ka, kd:Kd, ks:Ks, ns:Ns, kr:Kr, map_ka:Map_Ka, map_kd:Map_Kd, map_ks:Map_Ks, map_ns:Map_Ns, map_kr:Map_Kr}) :-
+    mtl{ka:Ka, kd:Kd, ks:Ks, ns:Ns, map_ka:Map_Ka, map_kd:Map_Kd, map_ks:Map_Ks, map_ns:Map_Ns, mirror:Mirror}) :-
 	white(Ka),
 	white(Kd),
 	black(Ks),
 	Ns = number(0),
-	black(Kr),
 	Map_Ka = file(""),
 	Map_Kd = file(""),
 	Map_Ks = file(""),
 	Map_Ns = file(""),
-	Map_Kr = file("").
+	Mirror = bool(false).
 
 
 black(rgb(0.0, 0.0, 0.0)).
@@ -157,11 +153,6 @@ specular_exponent(number(Exponent)) -->
 	"Ns",
 	white_number(Exponent),
 	white_eol.
-
-
-reflectivity(Colour) -->
-	k_constant("r", Colour).
-
 
 k_constant(Name, rgb(R, G, B)) -->
 	whites,
@@ -196,11 +187,6 @@ specular_exponent_map(File) -->
 	},
 	white_eol.
 
-
-reflectivity_map(File) -->
-	k_map("r", File).
-
-
 k_map(Name, file(File)) -->
 	whites,
 	"map_K",
@@ -211,4 +197,9 @@ k_map(Name, file(File)) -->
 	{
 	    atom_codes(File, File_Codes)
 	},
+	white_eol.
+
+mirror -->
+	whites,
+	"mirror",
 	white_eol.

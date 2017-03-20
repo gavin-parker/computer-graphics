@@ -34,15 +34,15 @@ vec4 Rasteriser::CohenSutherland(vec2 A, vec2 B, ivec2 bounds) {
   int clipA = computeClipping(A.x, A.y, bounds.x, bounds.y);
   int clipB = computeClipping(B.x, B.y, bounds.x, bounds.y);
   while (true) {
-    // line within screen
     if (!(clipA | clipB)) {
+      // line completely within screen
       break;
-    }
-    // line out of screen
-    else if (clipA & clipB) {
+    } else if (clipA & clipB) {
+      // line completely out of screen
       break;
     } else {
-      float x, y;
+      // line intersects border
+      float x = 0.0f, y = 0.0f;
       int clippedPoint = clipA ? clipA : clipB;
 
       if (clippedPoint & TOP) {
@@ -85,7 +85,7 @@ void Rasteriser::clip(int width, int height) {
     float xMax = (float)width / 2.0;
     float yMax = (float)height / 2.0;
 
-    vec4 lines[3];
+    // vec4 lines[3];
     for (int i = 0; i < 3; i++) {
       vec4 homA = camera.clipSpace(vertices[i]);
       vec4 homB = camera.clipSpace(vertices[(i + 1) % 3]);
@@ -209,11 +209,11 @@ void Rasteriser::drawPolygonRows(int width, int height,
           float a3 = glm::length(glm::cross(f1, f2)) / a;
           vec3 bary(a1, a2, a3);
           // if calculating per pixel...
-          Ray ray;
           vec3 realPos = pixelVert.position;
-          ray.direction = camera.position - realPos;
-          ray.collisionLocation = realPos;
-          ray.collision = &triangle;
+          Ray ray(camera.position, camera.position - realPos);
+
+          ray.updateCollision(&triangle, numeric_limits<float>::max(), bary);
+
           float depth = 0.f;
           indexedPixel lightPixel =
               light->projectVertex(pixelVert.position, depth);
@@ -225,12 +225,13 @@ void Rasteriser::drawPolygonRows(int width, int height,
             int shadowBufferIndex =
                 lightPixel.i * (128 * 128) + 128 * lightPixel.y + lightPixel.x;
             float d = shadowBuffer[shadowBufferIndex];
-            float bias = 20.f;
+            // float bias = 20.f;
             if (depth <= (d + 20.f)) {
-              lightColour = triangle.getColour(bary) * pixelVert.illumination;
+              lightColour =
+                  ray.collisionDiffuseColour() * pixelVert.illumination;
             } else {
               // lightColour = vec3(0, 0, 1);
-              lightColour = triangle.getColour(bary) * vec3(0.1, 0.1, 0.1);
+              lightColour = ray.collisionAmbientColour() * vec3(0.1, 0.1, 0.1);
             }
           }
           drawPixel(x, l_pixels[y].y, vec3(std::min(lightColour.r, 1.0f),
@@ -270,9 +271,8 @@ void Rasteriser::draw(int width, int height) {
 
     // here is where we do our vertex shading
     for (size_t i = 0; i < vertices.size(); i++) {
-      Ray ray;
-      ray.updateCollision(&triangle, uvs[i]);
-      ray.direction = camera.position - vertices[i].position;
+      Ray ray(camera.position, camera.position - vertices[i].position);
+      ray.updateCollision(&triangle, numeric_limits<float>::max(), uvs[i]);
       vec3 illumination = lighting->calculateLight(ray);
       proj[i] = VertexShader(vertices[i], width, height);
       proj[i].v.illumination = illumination;

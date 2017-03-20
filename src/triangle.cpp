@@ -19,7 +19,7 @@ Triangle::Triangle(vec3 v0, vec3 v1, vec3 v2, vec2 vt0, vec2 vt1, vec2 vt2,
       en1(vn1 - vn0), en2(vn2 - vn0), normal(calculateNormal(v0, v1, v2)),
       mat(mat) {}
 
-bool Triangle::calculateIntersection(Ray &ray) const {
+bool Triangle::calculateIntersection(UVRay &ray) const {
   if (glm::dot(normal, ray.direction) < 0) {
     vec3 b = ray.position - v0;
 
@@ -32,9 +32,7 @@ bool Triangle::calculateIntersection(Ray &ray) const {
       auto v = glm::determinant(glm::mat3(-ray.direction, e1, b)) / det_A;
 
       if (u >= 0.0f && v >= 0.0f && (u + v) < 1.0f) {
-        ray.collision = this;
-        ray.length = t;
-        ray.uv = vec2(u, v);
+        ray.updateCollision(this, t, vec2(u, v));
         return true;
       }
     }

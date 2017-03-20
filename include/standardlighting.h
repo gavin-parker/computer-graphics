@@ -7,10 +7,9 @@ private:
   vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
   const shared_ptr<BoundingVolume> boundingVolume;
 
-
 protected:
 public:
   StandardLighting(const shared_ptr<Scene> scene);
   StandardLighting();
-  virtual vec3 calculateLight(Ray ray, ivec2 pixel = ivec2(0, 0)) override;
+  virtual vec3 calculateLight(Ray &ray, ivec2 pixel = ivec2(0, 0)) override;
 };

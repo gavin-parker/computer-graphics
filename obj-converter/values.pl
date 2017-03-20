@@ -88,6 +88,11 @@ value(string(String)) -->
 	Codes,
 	"\")".
 
+value(bool(true)) -->
+	"true".
+
+value(bool(false)) -->
+	"false".
 
 value_codes(Value, Codes) :-
 	atom(Value),

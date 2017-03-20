@@ -29,11 +29,10 @@ vec4 Texture::operator[](vec2 uv) const {
                        static_cast<unsigned>(texture.size() - PNG_PIXEL_SIZE));
 
     return (1.0f / 255.0f) *
-           scaleVec(scale,
-                    vec4(static_cast<vec4::value_type>(texture[index + 0]),
-                         static_cast<vec4::value_type>(texture[index + 1]),
-                         static_cast<vec4::value_type>(texture[index + 2]),
-                         static_cast<vec4::value_type>(texture[index + 3])));
+           vec4(static_cast<vec4::value_type>(texture[index + 0]),
+                static_cast<vec4::value_type>(texture[index + 1]),
+                static_cast<vec4::value_type>(texture[index + 2]),
+                static_cast<vec4::value_type>(texture[index + 3]));
   } else {
     return scale;
   }

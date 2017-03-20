@@ -22,8 +22,8 @@ bool BoundingVolume::calculateIntersection(Ray &ray) {
   float num[7];
   float denom[7];
   for (int i = 0; i < 7; i++) {
-    num[i] = glm::dot(normals[i], ray.position);
-    denom[i] = glm::dot(normals[i], ray.direction);
+    num[i] = glm::dot(normals[i], ray.getPosition());
+    denom[i] = glm::dot(normals[i], ray.getDirection());
   }
   return calculateIntersectionSub(ray, num, denom);
 }
@@ -73,14 +73,14 @@ void BoundingVolume::setSubVolume(BoundingVolume volume) {
 
 // recursively checks for ANY intersection, backs out early
 bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface) {
-  float lightDistance = ray.length;
+  float lightDistance = ray.getLength();
   float num[7];
   float denom[7];
   float tFar = numeric_limits<float>::max();
   float tNear = -numeric_limits<float>::max();
   for (int i = 0; i < 7; i++) {
-    num[i] = glm::dot(normals[i], ray.position);
-    denom[i] = glm::dot(normals[i], ray.direction);
+    num[i] = glm::dot(normals[i], ray.getPosition());
+    denom[i] = glm::dot(normals[i], ray.getDirection());
     float tn = (d[i][0] - num[i]) / denom[i];
     float tf = (d[i][1] - num[i]) / denom[i];
     if (denom[i] < 0)
@@ -98,8 +98,8 @@ bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface) {
   // then check sub volumes if there are any
   for (BoundingVolume &volume : subVolumes) {
     anyIntersection |= volume.calculateIntersection(ray);
-    if (anyIntersection && ray.collision != surface.collision &&
-        ray.length < lightDistance) {
+    if (anyIntersection && ray.getCollision() != surface.getCollision() &&
+        ray.getLength() < lightDistance) {
       return anyIntersection;
     }
   }
@@ -109,12 +109,12 @@ bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface) {
 
 bool BoundingVolume::anyIntersection(Ray &ray, Ray &surface) {
   bool anyIntersection = false;
-  float lightDistance = ray.length;
-  ray.length = numeric_limits<float>::max();
+  float lightDistance = ray.getLength();
+  ray.extendToInfinity();
   for (const Triangle &triangle : *triangles) {
     anyIntersection |= triangle.calculateIntersection(ray);
-    if (anyIntersection && ray.collision != surface.collision &&
-        ray.length < lightDistance) {
+    if (anyIntersection && ray.getCollision() != surface.getCollision() &&
+        ray.getLength() < lightDistance) {
       return anyIntersection;
     }
   }

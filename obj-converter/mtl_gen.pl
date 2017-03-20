@@ -17,6 +17,6 @@ materials([(Name-Material)|Materials]) -->
           {
               Material = M
           },
-          comma_separated_values([string(Name), M.ka, M.kd, M.ks, M.ns, M.kr, M.map_ka, M.map_kd, M.map_ks, M.map_ks, M.map_kr]),
+          comma_separated_values([string(Name), M.ka, M.kd, M.ks, M.ns, M.map_ka, M.map_kd, M.map_ks, M.map_ks, M.mirror]),
           ");\n",
           materials(Materials).

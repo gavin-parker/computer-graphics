@@ -32,7 +32,7 @@ clean:
 	@$(RM) $(BUILDDIR)/*.o $(DEPDIR)/*.d $(BINARY) screenshot.bmp
 
 $(BUILDDIR) $(DEPDIR) $(BINDIR):
-	mkdir $@
+	mkdir -p $@
 
 # Compiling Objects
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp

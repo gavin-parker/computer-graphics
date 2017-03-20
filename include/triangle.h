@@ -33,33 +33,92 @@ public:
 
   bool calculateIntersection(Ray &ray) const;
 
+  // Position
+
   inline vec3 getPosition(vec2 uv) const { return v0 + uv.x * e1 + uv.y * e2; }
 
+  inline vec3 getPosition(vec3 bary) const {
+    return bary.x * v0 + bary.y * v1 + bary.z * v2;
+  }
+
+  // Texture coordinates
+
   inline vec2 getTexUV(vec2 uv) const { return vt0 + uv.x * et1 + uv.y * et2; }
+
+  inline vec2 getTexUV(vec3 bary) const {
+    return bary.x * vt0 + bary.y * vt1 + bary.z * vt2;
+  }
+
+  // Normals
 
   inline vec3 getNormal(vec2 uv) const {
     return normalize(vn0 + uv.x * en1 + uv.y * en2);
   }
 
+  inline vec3 getNormal(vec3 bary) const {
+    return normalize(bary.x * vn0 + bary.y * vn1 + bary.z * vn2);
+  }
+
+  // Ambient Colour
+
+  inline vec3 ambientColourNorm(vec2 uv, vec3 lightColour) const {
+    return scaleVec(lightColour, mat->ambient(uv));
+  }
+
   inline vec3 ambientColour(vec2 uv, vec3 lightColour) const {
-    return scaleVec(lightColour, mat->ambient(getTexUV(uv)));
+    return ambientColourNorm(getTexUV(uv), lightColour);
+  }
+
+  inline vec3 ambientColour(vec3 bary, vec3 lightColour) const {
+    return ambientColourNorm(getTexUV(bary), lightColour);
+  }
+
+  // Diffuse Colour
+
+  inline vec3 diffuseColourNorm(vec2 uv, vec3 lightIncidentDirection,
+                                vec3 surfaceNormal, vec3 lightColour) const {
+    return scaleVec(lightColour, dot(lightIncidentDirection, surfaceNormal) *
+                                     mat->diffuse(uv));
   }
 
   inline vec3 diffuseColour(vec2 uv, vec3 lightIncidentDirection,
                             vec3 lightColour) const {
-    return scaleVec(lightColour, dot(lightIncidentDirection, getNormal(uv)) *
-                                     mat->diffuse(getTexUV(uv)));
+    return diffuseColourNorm(getTexUV(uv), lightIncidentDirection,
+                             getNormal(uv), lightColour);
+  }
+
+  inline vec3 diffuseColour(vec3 bary, vec3 lightIncidentDirection,
+                            vec3 lightColour) const {
+    return diffuseColourNorm(getTexUV(bary), lightIncidentDirection,
+                             getNormal(bary), lightColour);
+  }
+
+  // Specular Colour
+
+  inline vec3 specularColourNorm(vec2 uv, vec3 lightIncidentDirection,
+                                 vec3 surfaceNormal, vec3 lightColour,
+                                 vec3 cameraIncidentDirection) const {
+    auto reflection = normalize(reflect(lightIncidentDirection, surfaceNormal));
+    auto specularCoefficient = glm::pow(
+        dot(cameraIncidentDirection, reflection), mat->specularExponent(uv));
+
+    return scaleVec(lightColour,
+                    specularCoefficient * mat->specular(getTexUV(uv)));
   }
 
   inline vec3 specularColour(vec2 uv, vec3 lightIncidentDirection,
                              vec3 lightColour,
                              vec3 cameraIncidentDirection) const {
-    auto reflection = normalize(reflect(lightIncidentDirection, getNormal(uv)));
-    auto specularCoefficient =
-        glm::pow(dot(cameraIncidentDirection, reflection),
-                 mat->specularExponent(getTexUV(uv)));
+    return specularColourNorm(getTexUV(uv), lightIncidentDirection,
+                              getNormal(uv), lightColour,
+                              cameraIncidentDirection);
+  }
 
-    return scaleVec(lightColour,
-                    specularCoefficient * mat->specular(getTexUV(uv)));
+  inline vec3 specularColour(vec3 bary, vec3 lightIncidentDirection,
+                             vec3 lightColour,
+                             vec3 cameraIncidentDirection) const {
+    return specularColourNorm(getTexUV(bary), lightIncidentDirection,
+                              getNormal(bary), lightColour,
+                              cameraIncidentDirection);
   }
 };

@@ -1,10 +1,5 @@
 #pragma once
 #include "ray.h"
-#include <glm/glm.hpp>
-#include <limits>
-
-using glm::vec3;
-using std::numeric_limits;
 
 inline const float R3() { return static_cast<float>(sqrt(3.0) / 3.0); }
 

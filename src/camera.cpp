@@ -22,20 +22,20 @@ bool Camera::update(float dt) {
        static_cast<float>(keystate[SDLK_e] - keystate[SDLK_q]) * upwards +
        static_cast<float>(keystate[SDLK_w] - keystate[SDLK_s]) * forwards);
 
-  if ((keystate[SDLK_a] - keystate[SDLK_d]) != 0 || (keystate[SDLK_e] - keystate[SDLK_q]) != 0 || (keystate[SDLK_w] - keystate[SDLK_s]) != 0) {
-	  return true;
+  if ((keystate[SDLK_a] - keystate[SDLK_d]) != 0 ||
+      (keystate[SDLK_e] - keystate[SDLK_q]) != 0 ||
+      (keystate[SDLK_w] - keystate[SDLK_s]) != 0) {
+    return true;
   }
   return false;
 }
 
-void Camera::calculateRay(Ray &ray, float x, float y) {
-  ray.position = position;
+Ray Camera::calculateRay(float x, float y) {
 
   vec3 cameraSpaceDirection = vec3(lerpF(viewOffset, -viewOffset, x),
                                    lerpF(viewOffset, -viewOffset, y), 1.0f);
 
-
-  ray.direction = rotation * cameraSpaceDirection;
+  return Ray(position, rotation * cameraSpaceDirection);
 }
 
 vec3 Camera::projectVertex(Vertex v) {
@@ -45,7 +45,7 @@ vec3 Camera::projectVertex(Vertex v) {
 }
 
 vec4 Camera::clipSpace(Vertex v) {
-	vec3 newPos = (v.position - position) * rotation;
+  vec3 newPos = (v.position - position) * rotation;
 
-	return vec4(newPos, newPos.z / 250.0);
+  return vec4(newPos, newPos.z / 250.0);
 }

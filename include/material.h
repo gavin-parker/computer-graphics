@@ -9,15 +9,19 @@ private:
   Texture ambientTexture, diffuseTexture, specularTexture,
       specularExponentTexture;
 
+  bool isMirrored;
+
 public:
   Material() {}
 
   Material(vec3 ka, vec3 kd, vec3 ks, vec4::value_type ns, const string &mapKa,
-           const string &mapKd, const string &mapKs, const string &mapNs)
+           const string &mapKd, const string &mapKs, const string &mapNs,
+           bool isMirrored)
       : ambientTexture(vec4(ka, 1.0f), mapKa),
         diffuseTexture(vec4(kd, 1.0f), mapKd),
         specularTexture(vec4(ka, 1.0f), mapKa),
-        specularExponentTexture(vec4(1.0f, 1.0f, 1.0f, ns), mapNs) {}
+        specularExponentTexture(vec4(1.0f, 1.0f, 1.0f, ns), mapNs),
+        isMirrored(isMirrored) {}
 
   inline vec3 ambient() const { return vec3(ambientTexture.getScale()); }
 

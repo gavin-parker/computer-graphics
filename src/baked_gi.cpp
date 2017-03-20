@@ -1,7 +1,4 @@
 #include "baked_gi.h"
-#include "gi.h"
-
-// GlobalIllumination::GlobalIllumination(){};
 
 BakedGI::BakedGI(shared_ptr<Scene> scene, int sampleCount, int resolution)
     : LightingEngine(scene->triangles, scene->light), sampleCount(sampleCount),
@@ -12,25 +9,24 @@ BakedGI::BakedGI(shared_ptr<Scene> scene, int sampleCount, int resolution)
 
 void BakedGI::constructImage() {
   cout << "Baking lighting...";
-  for (size_t i = 0; i < triangles->size(); i++) {
+  /*for (size_t i = 0; i < triangles->size(); i++) {
     image[i] = vector<vec3>(resolution * resolution);
     const Triangle &triangle = (*triangles)[i];
 #pragma omp parallel for
     for (int y = 0; y < resolution; y++) {
       for (int x = 0; x < resolution; x++) {
-        Ray ray;
-        ray.updateCollision(&triangle, static_cast<float>(x) / resolution,
-                            static_cast<float>(y) / resolution);
+        Ray ray(&triangle, vec2(static_cast<float>(x) / resolution,
+                                static_cast<float>(y) / resolution));
         triangle.calculateIntersection(ray);
         image[i][y * resolution + x] = trace(ray, total_bounces);
       }
     }
-  }
+  }*/
   cout << "Done! \n";
 }
 
-vec3 BakedGI::trace(Ray ray, int bounces) {
-  // find diffuse light at this position
+vec3 BakedGI::trace(Ray &ray, int bounces) {
+  /*// find diffuse light at this position
   float diffuse =
       glm::length(ray.collision->mat->diffuse(ray.collisionUVLocation));
   vec3 lightHere(0, 0, 0);
@@ -95,14 +91,19 @@ vec3 BakedGI::trace(Ray ray, int bounces) {
     }
   }
   indirectLight /= static_cast<float>(sampleCount);
-  return (lightHere / static_cast<float>(M_PI) + 2.f * indirectLight) * diffuse;
+  return (lightHere / static_cast<float>(M_PI) + 2.f * indirectLight) *
+  diffuse;*/
+
+  return vec3();
 }
 // really sorry about this I'm tired - here I use the given pixels x value as
 // the triangle index.... yeah
-vec3 BakedGI::calculateLight(Ray ray, ivec2 pixel) {
-  int index = pixel.x;
+vec3 BakedGI::calculateLight(Ray &ray, ivec2 pixel) {
+  /*int index = pixel.x;
   vec3 collisionLocation = ray.collisionLocation;
   int x = collisionLocation.x * resolution;
   int y = collisionLocation.y * resolution;
-  return image[index][y * resolution + x];
+  return image[index][y * resolution + x];*/
+
+  return vec3();
 }

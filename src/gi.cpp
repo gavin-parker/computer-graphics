@@ -6,30 +6,28 @@ GlobalIllumination::GlobalIllumination(shared_ptr<Scene> scene, int sampleCount)
     : LightingEngine(scene->triangles, scene->light), sampleCount(sampleCount),
       boundingVolume(scene->volume){};
 
-vec3 GlobalIllumination::trace(Ray ray, int bounces) {
+vec3 GlobalIllumination::trace(Ray &ray, int bounces) {
   // find diffuse light at this position
-  float diffuse =
-      glm::length(ray.collision->mat->diffuse(ray.collisionUVLocation));
+  vec3 diffuse = ray.collisionDiffuseColour();
   vec3 lightHere(0, 0, 0);
 
   vector<Ray> rays(light->rayCount);
-  light->calculateRays(rays, ray.collisionLocation);
+  light->calculateRays(rays, ray.collisionLocation());
 
   for (int i = 0; i < light->rayCount; i++) {
-    Ray directLightRay = rays[i];
+    Ray &directLightRay = rays[i];
 
     if (!boundingVolume->calculateAnyIntersection(directLightRay, ray)) {
       lightHere += vec3(0, 0, 0);
-    } else if (directLightRay.collision == ray.collision) {
-      lightHere = light->directLight(ray) *
-                  ray.collision->mat->diffuse(ray.collisionUVLocation);
+    } else if (directLightRay.getCollision() == ray.getCollision()) {
+      lightHere = light->directLight(ray) * ray.collisionDiffuseColour();
     }
   }
   lightHere /= rays.size();
   vec3 indirectLight(0, 0, 0);
 
   // create orthogonal basis on plane
-  vec3 normal = ray.collision->normal;
+  vec3 normal = ray.collisionNormal();
   vec3 normalX;
   vec3 normalY;
 
@@ -61,10 +59,7 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
           sample.x * normalX.y + sample.y * normal.y + sample.z * normalY.y,
           sample.x * normalX.z + sample.y * normal.z + sample.z * normalY.z);
 
-      Ray bounce;
-      bounce.position = ray.collisionLocation;
-      bounce.direction = glm::normalize(direction);
-      bounce.length = std::numeric_limits<float>::max();
+      Ray bounce(ray.collisionLocation(), glm::normalize(direction));
       // return this + new collision point
       if (boundingVolume->calculateIntersection(bounce)) {
         indirectLight += r1 * trace(bounce, bounces - 1);
@@ -80,7 +75,6 @@ vec3 GlobalIllumination::trace(Ray ray, int bounces) {
   return (lightHere / static_cast<float>(M_PI) + 2.f * indirectLight) * diffuse;
 }
 
-vec3 GlobalIllumination::calculateLight(Ray ray, ivec2 pixel) {
-  return trace(ray, total_bounces) *
-         ray.collision->mat->diffuse(ray.collisionUVLocation);
+vec3 GlobalIllumination::calculateLight(Ray &ray, ivec2 pixel) {
+  return trace(ray, total_bounces) * ray.collisionDiffuseColour();
 }
