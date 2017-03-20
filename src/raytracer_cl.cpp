@@ -159,6 +159,8 @@ void RayTracerCL::draw(int width, int height) {
 	if (refresh) {
 		refresh = false;
 	}
+	cout << "Samples: " << frameCounter << "\n";
 	frameCounter++;
+
 }
 #endif 

@@ -4,7 +4,6 @@
 #include "rasteriser.h"
 #include "raytracer.h"
 #include "starscreen.h"
-#include "wavefront.h"
 #include "terrain_gen.h"
 #include "obj_reader.h"
 #ifdef useCL
@@ -114,14 +113,6 @@ int main(int argc, char *argv[]) {
 		RayTracerCL screen(1024, 1024, engine, light, geometry, shared_ptr<BoundingVolume>(cornelBVH), vec3(277.5f, 277.5f, -480.64), false);
 		screen.run();
 		screen.saveBMP("screenshot.bmp");
-	}
-	else if (mode == "wavefront") {
-		light->power *= 10;
-		shared_ptr<LightingEngine> engine(new FlatLighting(scene));
-		WaveFrontRenderer screen(500, 500, engine, softLight, geometry, shared_ptr<BoundingVolume>(cornelBVH), false, true);
-		screen.run();
-		screen.saveBMP("screenshot.bmp");
-
 	}
 #endif
 	else {

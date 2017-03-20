@@ -1,5 +1,5 @@
 #define TRIANGLE_COUNT 0
-#define sampleCount 2
+#define bounceCount 50
 #define V0(i) triangles[i]
 #define V1(i) triangles[TRIANGLE_COUNT + i]
 #define V2(i) triangles[(TRIANGLE_COUNT*2) + i]
@@ -151,83 +151,46 @@ kernel void pathTrace(global const float3* triangles, float3 lightLoc, global Ra
 	bool debug = false;
 	Ray cameraRay = points[(y*width + x)];
 	float3 originalColor = COLOR(cameraRay.collision);
-	float3 color = (float3) ( 0, 0, 0 );
 	//DIRECT LIGHT
-
-	Ray lightRay = castRayLocal(lightLoc, cameraRay.collisionLocation - lightLoc, triangles);
-	
-
-	float3 n = NORM(cameraRay.collision);
-	//lightColour = directLight(lightRay, lightLoc, n)*diffuse + spec * specularity;
-	color = (lightRay.collision == cameraRay.collision) ? directLight(lightRay, lightLoc, n) : (float3){0,0,0};	
-
-	//generates and calculates all the ray intersections needed
-	Ray layer1[sampleCount];
+	//generates and calculates all the ray intersections needed. Puts the bounce angle in the length property
+	Ray bounces[bounceCount];
 	uint seed = rands[(y*width + x)];
 	float r1 = (float)seed / UINT_MAX;
+	Ray ray = cameraRay;
 	#pragma unroll
-	for(int i=0; i < sampleCount; i++){
+	for(int i=0;i < bounceCount; i++){
 		seed = xorshift32(seed);
 		float r2 = (float)seed / UINT_MAX;
-		float3 direction = norm(randomDirection(r1, r2, n));
-		layer1[i] = castRayLocal(cameraRay.collisionLocation, direction, triangles);
-		layer1[i].length = r1;
-
+		float3 direction = norm(randomDirection(r1, r2, NORM(ray.collision)));
+		bounces[i] = castRayLocal(ray.collisionLocation, direction, triangles);
+		bounces[i].length = r1;
 		seed = xorshift32(seed);
 		r1 = (float)seed / UINT_MAX;
-
+		ray = bounces[i];
 	}
-	Ray layer2[(sampleCount*sampleCount)];
-	#pragma unroll
-	for(int i=0; i < sampleCount; i++){
-		#pragma unroll
-		for(int j=0; j < sampleCount; j++){
-			seed = xorshift32(seed);
-			float r2 = (float)seed / UINT_MAX;
-			float3 direction = norm(randomDirection(r1, r2, NORM(layer1[i].collision)));
-			layer2[i*sampleCount+j] = castRayLocal(layer1[i].collisionLocation, direction, triangles);
-			layer2[i*sampleCount+j].length = r1;
-			seed = xorshift32(seed);
-			r1 = (float)seed / UINT_MAX;
 
-		}
-	}
+	//calculate the direct light for the last bounce. 
+	Ray bounceLightRay = castRayLocal(lightLoc, bounces[bounceCount-1].collisionLocation - lightLoc, triangles);
+	float3 directLightHere;
+    float3 bounce_n = NORM(bounces[bounceCount-1].collision);
+    directLightHere = directLight(bounces[bounceCount-1], lightLoc, bounce_n);
+    directLightHere = (bounceLightRay.collision == bounces[bounceCount-1].collision) ? directLightHere : (float3){0,0,0};
+	directLightHere = (bounces[bounceCount-1].collision > -1) ? directLightHere*(COLOR(bounces[bounceCount-1].collision)) : (float3){0.7,0.7,0.7 };
+	float3 bounceLight = directLightHere / (float)M_PI;
+
+	//calculate the direct & indirect light for each bounce and accumulate
 	#pragma unroll
-	for(int i=0; i < (sampleCount*sampleCount); i++){
-		Ray lightRay = castRayLocal(lightLoc, layer2[i].collisionLocation - lightLoc, triangles);
+	for(int i=bounceCount-2; i >= 0; i--){
+		Ray bounceLightRay = castRayLocal(lightLoc, bounces[i].collisionLocation - lightLoc, triangles);
 		float3 directLightHere;
-        float3 n = NORM(layer2[i].collision);
-        directLightHere = directLight(layer2[i], lightLoc, n);
-        directLightHere = (lightRay.collision == layer2[i].collision) ? directLightHere : (float3){0,0,0};
-		directLightHere = (layer2[i].collision > -1) ? directLightHere*(COLOR(layer2[i].collision)) : (float3){0.2,0.2,0.2 };
-		layer2[i].origin = (directLightHere/(float)M_PI);
+        float3 n = NORM(bounces[i].collision);
+		float r1 = bounces[bounceCount+1].length;
+        directLightHere = directLight(bounces[i], lightLoc, n);
+        directLightHere = (bounceLightRay.collision == bounces[i].collision) ? directLightHere : (float3){0,0,0};
+		directLightHere = (bounces[i].collision > -1) ? directLightHere*(COLOR(bounces[i].collision)) : (float3){0.7,0.7,0.7 };
+		bounceLight = (directLightHere / (float)M_PI + 2.f * r1*bounceLight);
 	}
-	#pragma unroll
-	for(int i=0; i < sampleCount; i++){
-		Ray lightRay = castRayLocal(lightLoc, layer1[i].collisionLocation - lightLoc, triangles);
-		float3 directLightHere;
-        float3 n = NORM(layer1[i].collision);
-        directLightHere = directLight(layer1[i], lightLoc, n);
-        directLightHere = (lightRay.collision == layer1[i].collision) ? directLightHere : (float3){0,0,0};
-		directLightHere = (layer1[i].collision > -1) ? directLightHere*(COLOR(layer1[i].collision)) : (float3){0.2,0.2,0.2 };
-		float3 indirectLight = (float3){0,0,0};
-        #pragma unroll
-		for(int j=0; j < sampleCount; j++){
-			float3 sampleLight = (layer2[i*sampleCount+j].length)*layer2[i*sampleCount+j].origin;
-			indirectLight += sampleLight;
-		}
-		indirectLight /= (float)sampleCount;
-		layer1[i].origin = (directLightHere / (float)M_PI + 2.f * indirectLight);
-	}
-
-	float3 indirectLight = (float3){0,0,0};
-	#pragma unroll
-	for(int j=0; j < sampleCount; j++){
-		float3 sampleLight = (layer1[j].length)*layer1[j].origin;
-		indirectLight += sampleLight;
-	}
-	indirectLight /= (float)sampleCount;
-	float3 finalLight = (color / (float)M_PI + 2.f * indirectLight)*0.75f;
+	float3 finalLight = bounceLight;
 	finalLight *= originalColor;
 	finalLight = debug ? (float3){0,1,0 } : finalLight;
 	finalLight = (cameraRay.collision > -1) ? finalLight : (float3){0,0,0};
