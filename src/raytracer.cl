@@ -1,5 +1,5 @@
 #define TRIANGLE_COUNT 0
-#define bounceCount 50
+#define bounceCount 10
 #define V0(i) triangles[i]
 #define V1(i) triangles[TRIANGLE_COUNT + i]
 #define V2(i) triangles[(TRIANGLE_COUNT*2) + i]
@@ -80,8 +80,7 @@ inline Ray castRayLocal(float3 origin, float3 direction, const global float3* tr
 	ray.length = FLT_MAX;
 	ray.collision = -1;
 	ray.collisionLocation = (float3){0,0,0};
-    //barrier(CLK_LOCAL_MEM_FENCE);
-	barrier(CLK_LOCAL_MEM_FENCE);	
+    barrier(CLK_LOCAL_MEM_FENCE);
 	for (int i = 0; i < TRIANGLE_COUNT; i++) {
 		bool intersected =  (dot(ray.direction, NORM(i)) < 0) ? true : false;
 		float3 v0 = V0(i);
@@ -149,15 +148,20 @@ kernel void pathTrace(global const float3* triangles, float3 lightLoc, global Ra
 	int x = get_global_id(0);
 	int y = get_global_id(1);
 	bool debug = false;
+	float3 diffuse =  (float3){0.7, 0.7, 0.7 };
 	Ray cameraRay = points[(y*width + x)];
-	float3 originalColor = COLOR(cameraRay.collision);
 	//DIRECT LIGHT
 	//generates and calculates all the ray intersections needed. Puts the bounce angle in the length property
+	float3 originalLight;
+	Ray lightRay = castRayLocal(lightLoc, cameraRay.collisionLocation - lightLoc, triangles);
+    originalLight = directLight(cameraRay, lightLoc, NORM(cameraRay.collision));
+    originalLight = (lightRay.collision == cameraRay.collision) ? originalLight : (float3){0,0,0};
+	originalLight = (cameraRay.collision > -1) ? originalLight*(COLOR(cameraRay.collision)) : (float3){0.2,0.2,0.2 };
+
 	Ray bounces[bounceCount];
 	uint seed = rands[(y*width + x)];
 	float r1 = (float)seed / UINT_MAX;
 	Ray ray = cameraRay;
-	#pragma unroll
 	for(int i=0;i < bounceCount; i++){
 		seed = xorshift32(seed);
 		float r2 = (float)seed / UINT_MAX;
@@ -175,11 +179,10 @@ kernel void pathTrace(global const float3* triangles, float3 lightLoc, global Ra
     float3 bounce_n = NORM(bounces[bounceCount-1].collision);
     directLightHere = directLight(bounces[bounceCount-1], lightLoc, bounce_n);
     directLightHere = (bounceLightRay.collision == bounces[bounceCount-1].collision) ? directLightHere : (float3){0,0,0};
-	directLightHere = (bounces[bounceCount-1].collision > -1) ? directLightHere*(COLOR(bounces[bounceCount-1].collision)) : (float3){0.7,0.7,0.7 };
+	directLightHere = (bounces[bounceCount-1].collision > -1) ? directLightHere*(COLOR(bounces[bounceCount-1].collision)) : (float3){0.2,0.2,0.2 };
 	float3 bounceLight = directLightHere / (float)M_PI;
 
 	//calculate the direct & indirect light for each bounce and accumulate
-	#pragma unroll
 	for(int i=bounceCount-2; i >= 0; i--){
 		Ray bounceLightRay = castRayLocal(lightLoc, bounces[i].collisionLocation - lightLoc, triangles);
 		float3 directLightHere;
@@ -187,11 +190,11 @@ kernel void pathTrace(global const float3* triangles, float3 lightLoc, global Ra
 		float r1 = bounces[bounceCount+1].length;
         directLightHere = directLight(bounces[i], lightLoc, n);
         directLightHere = (bounceLightRay.collision == bounces[i].collision) ? directLightHere : (float3){0,0,0};
-		directLightHere = (bounces[i].collision > -1) ? directLightHere*(COLOR(bounces[i].collision)) : (float3){0.7,0.7,0.7 };
-		bounceLight = (directLightHere / (float)M_PI + 2.f * r1*bounceLight);
+		directLightHere = (bounces[i].collision > -1) ? directLightHere*(COLOR(bounces[i].collision)) : (float3){0.2,0.2,0.2 };
+		bounceLight = (directLightHere / (float)M_PI + 2.f * r1*bounceLight)*diffuse;
 	}
-	float3 finalLight = bounceLight;
-	finalLight *= originalColor;
+
+	float3 finalLight = (originalLight / (float)M_PI + 2.f * bounceLight)*diffuse*COLOR(cameraRay.collision);
 	finalLight = debug ? (float3){0,1,0 } : finalLight;
 	finalLight = (cameraRay.collision > -1) ? finalLight : (float3){0,0,0};
 	image[(y*width + x)] = (float3) { min(finalLight.x, 1.0f), min(finalLight.y, 1.0f), min(finalLight.z, 1.0f) };
