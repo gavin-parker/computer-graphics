@@ -41,36 +41,52 @@ read_lines(Current_Materials, Final_Materials, Current_Material, Final_Material)
 	read_lines(New_Materials, Final_Materials, New_Material, Final_Material).
 
 
-read_line(Current_Materials, New_Materials, _, New_Material) -->
+read_line(Current_Materials, New_Materials, _, Name) -->
 	new_material(Name),
 	{
 	    default_material(New_Material),
 	    put_dict(Name, Current_Materials, New_Material, New_Materials)
 	}.
 
-read_line(Materials, Materials, mtl(_Ka, Kd, Ks, Ns, Map_Ka, Map_Kd, Map_Ks, Map_Ns), mtl(Ka, Kd, Ks, Ns, Map_Ka, Map_Kd, Map_Ks, Map_Ns)) -->
-	ambient_colour(Ka).
+read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
+	ambient_colour(Ka),
+	update_material_property(Current_Materials, Current_Material, ka, Ka, New_Materials).
 
-read_line(Materials, Materials, mtl(Ka, _Kd, Ks, Ns, Map_Ka, Map_Kd, Map_Ks, Map_Ns), mtl(Ka, Kd, Ks, Ns, Map_Ka, Map_Kd, Map_Ks, Map_Ns)) -->
-	diffuse_colour(Kd).
+read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
+	diffuse_colour(Kd),
+	update_material_property(Current_Materials, Current_Material, kd, Kd, New_Materials).
 
-read_line(Materials, Materials, mtl(Ka, Kd, _Ks, Ns, Map_Ka, Map_Kd, Map_Ks, Map_Ns), mtl(Ka, Kd, Ks, Ns, Map_Ka, Map_Kd, Map_Ks, Map_Ns)) -->
-	specular_colour(Ks).
+read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
+	specular_colour(Ks),
+	update_material_property(Current_Materials, Current_Material, ks, Ks, New_Materials).
 
-read_line(Materials, Materials, mtl(Ka, Kd, Ks, _Ns, Map_Ka, Map_Kd, Map_Ks, Map_Ns), mtl(Ka, Kd, Ks, Ns, Map_Ka, Map_Kd, Map_Ks, Map_Ns)) -->
-	specular_exponent(Ns).
+read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
+	specular_exponent(Ns),
+	update_material_property(Current_Materials, Current_Material, ns, Ns, New_Materials).
 
-read_line(Materials, Materials, mtl(Ka, Kd, Ks, Ns, _Map_Ka, Map_Kd, Map_Ks, Map_Ns), mtl(Ka, Kd, Ks, Ns, Map_Ka, Map_Kd, Map_Ks, Map_Ns)) -->
-	ambient_colour_map(Map_Ka).
+read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
+	reflectivity(Kr),
+	update_material_property(Current_Materials, Current_Material, kr, Kr, New_Materials).
 
-read_line(Materials, Materials, mtl(Ka, Kd, Ks, Ns, Map_Ka, _Map_Kd, Map_Ks, Map_Ns), mtl(Ka, Kd, Ks, Ns, Map_Ka, Map_Kd, Map_Ks, Map_Ns)) -->
-	diffuse_colour_map(Map_Kd).
+read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
+	ambient_colour_map(Map_Ka),
+	update_material_property(Current_Materials, Current_Material, map_ka, Map_Ka, New_Materials).
 
-read_line(Materials, Materials, mtl(Ka, Kd, Ks, Ns, Map_Ka, Map_Kd, _Map_Ks, Map_Ns), mtl(Ka, Kd, Ks, Ns, Map_Ka, Map_Kd, Map_Ks, Map_Ns)) -->
-	specular_colour_map(Map_Ks).
+read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
+	diffuse_colour_map(Map_Kd),
+	update_material_property(Current_Materials, Current_Material, map_kd, Map_Kd, New_Materials).
 
-read_line(Materials, Materials, mtl(Ka, Kd, Ks, Ns, Map_Ka, Map_Kd, Map_Ks, _Map_Ns), mtl(Ka, Kd, Ks, Ns, Map_Ka, Map_Kd, Map_Ks, Map_Ns)) -->
-	specular_exponent_map(Map_Ns).
+read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
+	specular_colour_map(Map_Ks),
+	update_material_property(Current_Materials, Current_Material, map_kd, Map_Ks, New_Materials).
+
+read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
+	specular_exponent_map(Map_Ns),
+	update_material_property(Current_Materials, Current_Material, map_kd, Map_Ns, New_Materials).
+
+read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
+	reflectivity_map(Map_Kr),
+	update_material_property(Current_Materials, Current_Material, map_kd, Map_Kr, New_Materials).
 
 read_line(Materials, Materials, Material, Material) -->
 	comment.
@@ -82,10 +98,16 @@ read_line(Materials, Materials, Material, Material) -->
 	string_without("\r\n", Line_Codes),
 	{
 	    string_codes(Line, Line_Codes),
-	    format("Unknown line ~w", [Line]),
-	    fail
+	    format("Unknown line ~w", [Line])
 	}.
 
+update_material_property(Current_Materials, Current_Material, Property_Name, Property_Value, New_Materials) :-
+	get_dict(Current_Material, Current_Materials, Current_Material_Values),
+	put_dict(Property_Name, Current_Material_Values, Property_Value, New_Material_Values),
+	put_dict(Current_Material, Current_Materials, New_Material_Values, New_Materials).
+
+update_material_property(Current_Materials, Current_Material, Property_Name, Property_Value, New_Materials, Codes, Codes) :-
+	update_material_property(Current_Materials, Current_Material, Property_Name, Property_Value, New_Materials).
 
 new_material(Name) -->
 	"newmtl",
@@ -98,15 +120,18 @@ new_material(Name) -->
 	white_eol.
 
 
-default_material(mtl(Ka, Kd, Ks, Ns, Map_Ka, Map_Kd, Map_Ks, Map_Ns)) :-
+default_material(
+    mtl{ka:Ka, kd:Kd, ks:Ks, ns:Ns, kr:Kr, map_ka:Map_Ka, map_kd:Map_Kd, map_ks:Map_Ks, map_ns:Map_Ns, map_kr:Map_Kr}) :-
 	white(Ka),
 	white(Kd),
 	black(Ks),
 	Ns = number(0),
+	black(Kr),
 	Map_Ka = file(""),
 	Map_Kd = file(""),
 	Map_Ks = file(""),
-	Map_Ns = file("").
+	Map_Ns = file(""),
+	Map_Kr = file("").
 
 
 black(rgb(0.0, 0.0, 0.0)).
@@ -132,6 +157,10 @@ specular_exponent(number(Exponent)) -->
 	"Ns",
 	white_number(Exponent),
 	white_eol.
+
+
+reflectivity(Colour) -->
+	k_constant("r", Colour).
 
 
 k_constant(Name, rgb(R, G, B)) -->
@@ -166,6 +195,10 @@ specular_exponent_map(File) -->
 	    atom_codes(File, File_Codes)
 	},
 	white_eol.
+
+
+reflectivity_map(File) -->
+	k_map("r", File).
 
 
 k_map(Name, file(File)) -->

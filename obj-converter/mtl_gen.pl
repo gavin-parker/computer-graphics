@@ -15,8 +15,8 @@ materials([]) -->
 materials([(Name-Material)|Materials]) -->
           "AddMaterial(",
           {
-              compound_name_arguments(Material, _, Material_Values)
+              Material = M
           },
-          comma_separated_values([string(Name)|Material_Values]),
+          comma_separated_values([string(Name), M.ka, M.kd, M.ks, M.ns, M.kr, M.map_ka, M.map_kd, M.map_ks, M.map_ks, M.map_kr]),
           ");\n",
           materials(Materials).

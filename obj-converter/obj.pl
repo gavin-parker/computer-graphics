@@ -105,8 +105,7 @@ read_line(State, State) -->
 	string_without("\r\n", Line_Codes),
 	{
 	    string_codes(Line, Line_Codes),
-	    format("Unknown line ~w", [Line]),
-	    fail
+	    format("Unknown line ~w", [Line])
 	}.
 
 
