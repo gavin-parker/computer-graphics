@@ -11,12 +11,9 @@ vec3 GlobalIllumination::trace(Ray &ray, int bounces) {
   vec3 diffuse = ray.collisionDiffuseColour();
   vec3 lightHere(0, 0, 0);
 
-  vector<Ray> rays(light->rayCount);
-  light->calculateRays(rays, ray.collisionLocation());
+  vector<Ray> rays = light->calculateRays(ray.collisionLocation());
 
-  for (int i = 0; i < light->rayCount; i++) {
-    Ray &directLightRay = rays[i];
-
+  for (Ray &directLightRay : rays) {
     if (!boundingVolume->calculateAnyIntersection(directLightRay, ray)) {
       lightHere += vec3(0, 0, 0);
     } else if (directLightRay.getCollision() == ray.getCollision()) {

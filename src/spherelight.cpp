@@ -20,7 +20,9 @@ bool SphereLight::update(float dt) {
   return false;
 }
 
-void SphereLight::calculateRays(vector<Ray> &rays, glm::vec3 target) const {
+vector<Ray> SphereLight::calculateRays(vec3 target) const {
+  vector<Ray> rays;
+  rays.reserve(rayCount);
   for (int i = 0; i < rayCount; i++) {
     // pick a random point on the sphere maybe?
     float theta = RAND() * 2 * M_PI;
@@ -28,20 +30,21 @@ void SphereLight::calculateRays(vector<Ray> &rays, glm::vec3 target) const {
     vec3 point(radius * cos(theta) * sin(phi), radius * sin(theta) * sin(phi),
                radius * cos(phi));
     point += position;
-    rays[i] = Ray(point, target - point);
+    rays.emplace_back(point, target - point);
   }
+  return rays;
 }
 
 // Uses equation 27 on
 // https://www.cs.bris.ac.uk/Teaching/Resources/COMS30115/Assignment/2017-COMS30115-1.pdf
 // To calculate power of light at an intersection
 vec3 SphereLight::directLight(const Ray &ray) const {
-  vec3 offset = position - ray.collisionLocation;
+  vec3 offset = position - ray.collisionLocation();
 
   vec3 light_direction = glm::normalize(offset);
   float radius = glm::length(offset);
 
-  return (std::max(glm::dot(light_direction, ray.collision->normal), 0.0f) *
+  return (std::max(glm::dot(light_direction, ray.collisionNormal()), 0.0f) *
           power / (4.0f * (static_cast<float>(M_PI)) * radius * radius)) *
          color;
 }

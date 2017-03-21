@@ -7,7 +7,7 @@ public:
 
   bool update(float dt) override;
 
-  void calculateRays(vector<Ray> &rays, vec3 target) const override;
+  vector<Ray> calculateRays(vec3 target) const override;
 
   vec3 directLight(const Ray &ray) const override;
 

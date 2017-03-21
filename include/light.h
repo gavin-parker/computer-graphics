@@ -55,7 +55,7 @@ public:
 
   virtual bool update(float dt) = 0;
 
-  virtual void calculateRays(vector<Ray> &rays, vec3 target) const = 0;
+  virtual vector<Ray> calculateRays(vec3 target) const = 0;
 
   virtual vec3 directLight(const Ray &ray) const = 0;
 

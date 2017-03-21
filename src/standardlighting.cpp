@@ -2,36 +2,35 @@
 
 // GlobalIllumination::GlobalIllumination(){};
 
-StandardLighting::StandardLighting(const shared_ptr<Scene> scene) : LightingEngine(scene->triangles, scene->light), boundingVolume(scene->volume){};
+StandardLighting::StandardLighting(const shared_ptr<Scene> scene)
+    : LightingEngine(scene->triangles, scene->light),
+      boundingVolume(scene->volume){};
 
-vec3 StandardLighting::calculateLight(Ray ray, ivec2 pixel) {
-  Ray lightRay;
-  vector<Ray> rays(light->rayCount);
-   
-  light->calculateRays(rays, ray.collisionLocation);
+vec3 StandardLighting::calculateLight(Ray &ray, ivec2 pixel) {
+  vector<Ray> rays = light->calculateRays(ray.collisionLocation);
   // ClosestIntersection(lightRay);
 
   shared_ptr<const Material> mat = ray.collision->mat;
 
   vec3 lightColour(0, 0, 0);
 
-  //calculate average light at a point -- works with multiple light rays
+  // calculate average light at a point -- works with multiple light rays
   for (int i = 0; (size_t)i < rays.size(); i++) {
-	  lightRay = rays[i];
+    lightRay = rays[i];
 
-	  if (boundingVolume->calculateAnyIntersection(lightRay, ray) && lightRay.collision == ray.collision) {
+    if (boundingVolume->calculateAnyIntersection(lightRay, ray) &&
+        lightRay.collision == ray.collision) {
 
-		  vec3 n = lightRay.collision->normal;
-		  vec3 v = glm::normalize(ray.direction);
-		  vec3 l = glm::normalize(lightRay.direction);
-		  vec3 spec = mat->phong(v, l, n);
+      vec3 n = lightRay.collision->normal;
+      vec3 v = glm::normalize(ray.direction);
+      vec3 l = glm::normalize(lightRay.direction);
+      vec3 spec = mat->phong(v, l, n);
 
-		  lightColour +=
-			  light->directLight(ray) * mat->diffuse + spec * mat->specularity;
-	  }
-	  else {
-		  lightColour += ambientLight * mat->diffuse;
-	  }
+      lightColour +=
+          light->directLight(ray) * mat->diffuse + spec * mat->specularity;
+    } else {
+      lightColour += ambientLight * mat->diffuse;
+    }
   }
   lightColour /= rays.size();
   return ray.collision->getPixelColour(ray.collisionUVLocation) * lightColour;

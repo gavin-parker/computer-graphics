@@ -31,7 +31,7 @@ vec3 BakedGI::trace(Ray &ray, int bounces) {
       glm::length(ray.collision->mat->diffuse(ray.collisionUVLocation));
   vec3 lightHere(0, 0, 0);
 
-  vector<Ray> rays(light->rayCount);
+  vector<Ray> rays;
 
   light->calculateRays(rays, ray.collisionLocation);
   Ray directLightRay = rays[0];

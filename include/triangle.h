@@ -95,30 +95,39 @@ public:
 
   // Specular Colour
 
-  inline vec3 specularColourNorm(vec2 uv, vec3 lightIncidentDirection,
+  inline vec3 specularColourNorm(vec3 specular, float specularExponent,
+                                 vec3 lightIncidentDirection,
                                  vec3 surfaceNormal, vec3 lightColour,
                                  vec3 cameraIncidentDirection) const {
     auto reflection = normalize(reflect(lightIncidentDirection, surfaceNormal));
-    auto specularCoefficient = glm::pow(
-        dot(cameraIncidentDirection, reflection), mat->specularExponent(uv));
+    auto specularCoefficient =
+        glm::pow(dot(cameraIncidentDirection, reflection), specularExponent);
 
-    return scaleVec(lightColour,
-                    specularCoefficient * mat->specular(getTexUV(uv)));
+    return scaleVec(lightColour, specularCoefficient * specular);
+  }
+
+  inline vec3 specularColour(vec3 lightIncidentDirection, vec3 lightColour,
+                             vec3 cameraIncidentDirection) const {
+    return specularColourNorm(mat->specular(), mat->specularExponent(),
+                              lightIncidentDirection, normal, lightColour,
+                              cameraIncidentDirection);
   }
 
   inline vec3 specularColour(vec2 uv, vec3 lightIncidentDirection,
                              vec3 lightColour,
                              vec3 cameraIncidentDirection) const {
-    return specularColourNorm(getTexUV(uv), lightIncidentDirection,
-                              getNormal(uv), lightColour,
-                              cameraIncidentDirection);
+    return specularColourNorm(mat->specular(getTexUV(uv)),
+                              mat->specularExponent(getTexUV(uv)),
+                              lightIncidentDirection, getNormal(uv),
+                              lightColour, cameraIncidentDirection);
   }
 
   inline vec3 specularColour(vec3 bary, vec3 lightIncidentDirection,
                              vec3 lightColour,
                              vec3 cameraIncidentDirection) const {
-    return specularColourNorm(getTexUV(bary), lightIncidentDirection,
-                              getNormal(bary), lightColour,
-                              cameraIncidentDirection);
+    return specularColourNorm(mat->specular(getTexUV(bary)),
+                              mat->specularExponent(getTexUV(bary)),
+                              lightIncidentDirection, getNormal(bary),
+                              lightColour, cameraIncidentDirection);
   }
 };

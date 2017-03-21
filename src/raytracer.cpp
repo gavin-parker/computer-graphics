@@ -35,13 +35,11 @@ void RayTracer::draw(int width, int height) {
         for (float j = 0; j < 1; j += step) {
           float super_x = static_cast<float>(x) + i;
           float super_y = static_cast<float>(y) + j;
-          Ray cameraRay;
+          Ray cameraRay =
+              camera.calculateRay(super_x / width, super_y / height);
 
-          camera.calculateRay(cameraRay, super_x / width, super_y / height);
-
-          cameraRay.length = numeric_limits<float>::max();
           if (boundingVolume->calculateIntersection(cameraRay)) {
-            shared_ptr<const Material> mat = cameraRay.collision->mat;
+            // shared_ptr<const Material> mat = cameraRay.collision->mat;
 
             vec3 spec(0, 0, 0);
 

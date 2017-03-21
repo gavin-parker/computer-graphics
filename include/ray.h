@@ -130,4 +130,17 @@ public:
       return collision->mat->diffuse();
     }
   }
+
+  vec3 collisionSpecularColour(vec3 lightDirection, vec3 lightColour) const {
+    switch (coordinate) {
+    case Coordinate::UV:
+      return collision->specularColour(uv, lightDirection, lightColour,
+                                       direction);
+    case Coordinate::BARY:
+      return collision->specularColour(uv, lightDirection, lightColour,
+                                       direction);
+    default:
+      return collision->specularColour(lightDirection, lightColour, direction);
+    }
+  }
 };

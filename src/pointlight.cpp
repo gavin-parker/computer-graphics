@@ -18,8 +18,10 @@ bool PointLight::update(float dt) {
   return false;
 }
 
-void PointLight::calculateRays(vector<Ray> &rays, glm::vec3 target) const {
+vector<Ray> PointLight::calculateRays(vec3 target) const {
+  vector<Ray> rays;
   rays.emplace_back(position, target - position);
+  return rays;
 }
 
 // Uses equation 27 on
