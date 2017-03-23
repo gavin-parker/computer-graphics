@@ -3,6 +3,8 @@ COMS30115
 <h1>SDL Raytracer and Rasterizer</h1>
 <h2>Raytracer</h2>
 <img src="https://s12.postimg.org/62s50mqlp/screenshot.jpg"/>
+<h3>Color bleeding</h3>
+<img src="https://s10.postimg.org/vy9xfviqx/color_bleeding.png"/>
 Features:
 <ul>
 <li>Texture Mapping</li>
