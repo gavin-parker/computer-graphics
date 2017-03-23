@@ -82,24 +82,24 @@ shared_ptr<vector<Triangle>> loadTestModel() {
   H = vec3(82, 165, 225);
 
   // FRONT
-  triangles->push_back(Triangle(E, B, A, tl, br, bl, white, pink));
-  triangles->push_back(Triangle(E, F, B, tl, tr, br, white, pink));
+  triangles->push_back(Triangle(E, B, A, tl, br, bl, white, pink, false, true));
+  triangles->push_back(Triangle(E, F, B, tl, tr, br, white, pink, false, true));
 
   // RIGHT
-  triangles->push_back(Triangle(F, D, B, tl, br, bl, white, pink));
-  triangles->push_back(Triangle(F, H, D, tl, tr, br, white, pink));
+  triangles->push_back(Triangle(F, D, B, tl, br, bl, white, pink, false, true));
+  triangles->push_back(Triangle(F, H, D, tl, tr, br, white, pink, false, true));
 
   // BACK
-  triangles->push_back(Triangle(H, C, D, tl, br, bl, white, pink));
-  triangles->push_back(Triangle(H, G, C, tl, tr, br, white, pink));
+  triangles->push_back(Triangle(H, C, D, tl, br, bl, white, pink, false, true));
+  triangles->push_back(Triangle(H, G, C, tl, tr, br, white, pink, false, true));
 
   // LEFT
-  triangles->push_back(Triangle(G, E, C, tl, tr, bl, white, pink));
-  triangles->push_back(Triangle(E, A, C, tr, br, bl, white, pink));
+  triangles->push_back(Triangle(G, E, C, tl, tr, bl, white, pink, false, true));
+  triangles->push_back(Triangle(E, A, C, tr, br, bl, white, pink, false, true));
 
   // TOP
-  triangles->push_back(Triangle(G, F, E, tl, br, bl, white, pink));
-  triangles->push_back(Triangle(G, H, F, tl, tr, br, white, pink));
+  triangles->push_back(Triangle(G, F, E, tl, br, bl, white, pink, false, true));
+  triangles->push_back(Triangle(G, H, F, tl, tr, br, white, pink, false, true));
 
   // ---------------------------------------------------------------------------
   // Tall block

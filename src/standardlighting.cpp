@@ -15,7 +15,7 @@ vec3 StandardLighting::calculateLight(Ray ray, ivec2 pixel) {
 
   vec3 lightColour(0, 0, 0);
 
-  //calculate average light at a point -- works with multiple light rays
+  //calculate average light at a point -- works with multiple li ght rays
   for (int i = 0; (size_t)i < rays.size(); i++) {
 	  lightRay = rays[i];
 

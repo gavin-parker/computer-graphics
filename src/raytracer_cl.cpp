@@ -21,11 +21,14 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 		cout << "error creating kernel: " << err << "\n";
 		exit(1); 
 	}
+
 	castRays.setArg(0, triangleBuffer);
 	castRays.setArg(2, pointBuffer);
 	castRays.setArg(4, static_cast<int>(triangles->size()));
 	castRays.setArg(5, (cl_int)width);
 	castRays.setArg(6, (cl_int)height);
+	castRays.setArg(7, iCantBelieveItsNotBuffer);
+
 	shader = cl::Kernel(gpu.program, "pathTrace", &err);
 	if (err != 0) {
 		cout << "error creating kernel: " << err << "\n";
@@ -38,7 +41,7 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 	shader.setArg(5, (cl_int)width);
 	shader.setArg(6, (cl_int)height);
 	shader.setArg(7, randBuffer); 
-
+	shader.setArg(8, iCantBelieveItsNotBuffer);
 
 #pragma omp parallel for 
 	for (int y = 0; y < height; ++y) {
@@ -57,6 +60,7 @@ RayTracerCL::RayTracerCL(int width, int height, shared_ptr<LightingEngine> light
 
 void RayTracerCL::create_global_memory(int width, int height) {
 	cl_triangles = (cl_float3*)malloc(triangles->size() * sizeof(cl_float3)*5);
+	cl_uchar* properties = (cl_uchar*)malloc(triangles->size() * sizeof(cl_uchar));
 	vector<Triangle> tris = *triangles;
 	for (int i = 0; i < triangles->size(); i++) {
 		cl_float3 v0 = { tris[i].v0.x, tris[i].v0.y, tris[i].v0.z };
@@ -69,6 +73,11 @@ void RayTracerCL::create_global_memory(int width, int height) {
 		cl_triangles[triangles->size()*2 + i] = v2;
 		cl_triangles[triangles->size()*3 + i] = c;
 		cl_triangles[triangles->size()*4 + i] = normal;
+		cl_uchar props = 0;
+		if (tris[i].reflective) {
+			props = 1;
+		}
+		properties[i] = props;
 	}
 	image = (cl_float3*)malloc(width*height * sizeof(cl_float3));
 	rands = (cl_uint*)malloc(width*height * sizeof(cl_float));
@@ -77,6 +86,11 @@ void RayTracerCL::create_global_memory(int width, int height) {
 	pointBuffer = cl::Buffer(gpu.context, CL_MEM_READ_WRITE, sizeof(RayStruct)* width*height);
 	cameraBuffer = cl::Buffer(gpu.context, CL_MEM_READ_ONLY, sizeof(cl_float)*(4+9));
 	randBuffer = cl::Buffer(gpu.context, CL_MEM_READ_ONLY, sizeof(cl_uint)* width*height);
+	iCantBelieveItsNotBuffer = cl::Buffer(gpu.context, CL_MEM_READ_ONLY, sizeof(cl_uchar)* triangles->size());
+	int err = gpu.queue.enqueueWriteBuffer(iCantBelieveItsNotBuffer, CL_TRUE, 0, sizeof(cl_uchar)* triangles->size(), properties);
+	if (err != 0) {
+		cout << "error enqueueing property buffer " << err << "\n";
+	}
 }
 
 void RayTracerCL::update(float dt) {

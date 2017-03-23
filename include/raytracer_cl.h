@@ -46,7 +46,7 @@ private:
 	void create_global_memory(int width, int height);
 	vector<vec3> averageImage;
 	bool refresh = false;
-	int frameCounter = 1;
+	int frameCounter = 1; 
 	Accelerator gpu;
 	cl_float3* cl_triangles;
 	cl::Buffer triangleBuffer;
@@ -55,6 +55,7 @@ private:
 	cl::Buffer cameraBuffer;
 	cl::Buffer pointBuffer;
 	cl::Buffer randBuffer;
+	cl::Buffer iCantBelieveItsNotBuffer;
 	cl::Kernel castRays;
 	cl::Kernel shader;
 	std::string sourceCode;
