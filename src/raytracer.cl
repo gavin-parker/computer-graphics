@@ -28,37 +28,37 @@ typedef struct Basis{
 	float3 z;
  } Basis;
 
-inline float lerpF(float a, float b, float t) { return a + (b - a) * t; }
+float lerpF(float a, float b, float t) { return a + (b - a) * t; }
 
-inline float dot_product(float3 a, float3 b) {
+float dot_product(float3 a, float3 b) {
 	return a.x*b.x + a.y*b.y + a.y*b.y;
 }
 
-inline float det(float3 mat[3]) {
+float det(float3 mat[3]) {
 	return mat[0].x*(mat[1].y*mat[2].z - mat[1].z*mat[2].y) - mat[0].y*(mat[1].x*mat[2].z - mat[1].z*mat[2].x) + mat[0].z*(mat[1].x*mat[2].y - mat[1].y*mat[2].x);
 }
-inline float3 norm(float3 vec) {
+float3 norm(float3 vec) {
 	float len = native_rsqrt(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
 	return (float3) { vec.x*len, vec.y*len, vec.z*len };
 }
-inline float len(float3 vec) {
+float len(float3 vec) {
 	return native_sqrt(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
 }
-inline float3 phong(float3 v, float3 l, float3 n) {
+float3 phong(float3 v, float3 l, float3 n) {
 	float3 r = l - 2.f* dot((dot(n, l)), n);
 	float3 spec = dot(v, r);
 	float power = len(spec);
 	return (float3) { power, power, power };
 }
 
-inline float3 directLight(Ray ray, float3 lightPos, float3 normal) {
+float3 directLight(Ray ray, float3 lightPos, float3 normal) {
 	float3 offset = lightPos - ray.collisionLocation;
 	float3 direction = norm(offset);
 	float radius = len(offset);
 	float3 color = { 0.75f, 0.75f, 0.75f };
 	return (max(dot(direction, normal), 0.0f) * 5000000.f / (4.0f * (float)M_PI * radius * radius)) * color;
 }
-inline float randomNumberGenerator(float seed){
+float randomNumberGenerator(float seed){
 	//return seed;
 	return fmod(seed*10,1);
 }
@@ -72,7 +72,7 @@ uint xorshift32(uint seed)
 }
 
 
-inline Ray castRayLocal(float3 origin, float3 direction, const global float3* triangles, int TRIANGLE_COUNT){
+Ray castRayLocal(float3 origin, float3 direction, const global float3* triangles, int TRIANGLE_COUNT){
 	Ray ray;
 	ray.origin = origin;
 	ray.direction = direction;
@@ -80,34 +80,34 @@ inline Ray castRayLocal(float3 origin, float3 direction, const global float3* tr
 	ray.collision = -1;
 	ray.collisionLocation = (float3){0,0,0};
     //barrier(CLK_LOCAL_MEM_FENCE);
-	barrier(CLK_LOCAL_MEM_FENCE);	
+	barrier(CLK_LOCAL_MEM_FENCE);
 	#pragma unroll
 	for (int i = 0; i < TRIANGLE_COUNT; i++) {
 		bool intersected =  (dot(ray.direction, NORM(i)) < 0) ? true : false;
 		float3 v0 = V0(i);
-		float3 b = origin - v0; 
-		float3 e1 = V1(i) - v0; 
-		float3 e2 = V2(i) - v0; 
- 
-		float3 A[3] = { -direction, e1, e2 }; 
-		float det_A = native_recip(det(A)); 
-		float3 B[3] = { b, e1, e2 }; 
-		float t = det(B) * det_A; 
+		float3 b = origin - v0;
+		float3 e1 = V1(i) - v0;
+		float3 e2 = V2(i) - v0;
+
+		float3 A[3] = { -direction, e1, e2 };
+		float det_A = native_recip(det(A));
+		float3 B[3] = { b, e1, e2 };
+		float t = det(B) * det_A;
 		intersected = (t >= 0 && t < ray.length) ? intersected : false;
-		float3 U[3] = { -ray.direction, b, e2 }; 
-        float3 V[3] = { -ray.direction, e1, b }; 
-        float u = det(U) * det_A; 
-        float v = det(V) * det_A; 
+		float3 U[3] = { -ray.direction, b, e2 };
+        float3 V[3] = { -ray.direction, e1, b };
+        float u = det(U) * det_A;
+        float v = det(V) * det_A;
 		intersected = (u >= 0 && v >= 0 && (u + v) <= 1) ? intersected : false;
-		ray.length = intersected ? t : ray.length; 
-		ray.collision = intersected ? i : ray.collision; 
-		ray.collisionLocation = intersected ? v0 + u * e1 + v * e2 : ray.collisionLocation; 
+		ray.length = intersected ? t : ray.length;
+		ray.collision = intersected ? i : ray.collision;
+		ray.collisionLocation = intersected ? v0 + u * e1 + v * e2 : ray.collisionLocation;
 
 	}
 		return ray;
 }
 
- inline float3 randomDirection(float r1, float r2, float3 normal){
+ float3 randomDirection(float r1, float r2, float3 normal){
 	float3 normalX;
 	float3 normalY;
 	bool mask = (fabs(normal.x) > fabs(normal.y)) ? true : false;
@@ -135,11 +135,11 @@ kernel void pathTrace(global const float3* triangles, float3 lightLoc, global Ra
 	//DIRECT LIGHT
 
 	Ray lightRay = castRayLocal(lightLoc, cameraRay.collisionLocation - lightLoc, triangles, TRIANGLE_COUNT);
-	
+
 
 	float3 n = NORM(cameraRay.collision);
 	//lightColour = directLight(lightRay, lightLoc, n)*diffuse + spec * specularity;
-	color = (lightRay.collision == cameraRay.collision) ? directLight(lightRay, lightLoc, n) : (float3){0,0,0};	
+	color = (lightRay.collision == cameraRay.collision) ? directLight(lightRay, lightLoc, n) : (float3){0,0,0};
 
 	//generates and calculates all the ray intersections needed
 	Ray layer1[sampleCount];

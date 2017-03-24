@@ -53,10 +53,10 @@ public:
   vector<Triangle> allTriangles() {
     vector<Triangle> triangles;
 
-    /*for (const auto &group : groups) {
+    for (const auto &group : groups) {
       triangles.insert(triangles.end(), group.second->begin(),
                        group.second->end());
-    }*/
+    }
 
     return triangles;
   }

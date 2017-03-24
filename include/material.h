@@ -12,34 +12,27 @@ private:
   bool isMirrored;
 
 public:
-  Material() {}
+  Material();
+
+  Material(vec3 ka, vec3 kd, vec3 ks, vec4::value_type ns, bool isMirrored);
 
   Material(vec3 ka, vec3 kd, vec3 ks, vec4::value_type ns, const string &mapKa,
            const string &mapKd, const string &mapKs, const string &mapNs,
-           bool isMirrored)
-      : ambientTexture(vec4(ka, 1.0f), mapKa),
-        diffuseTexture(vec4(kd, 1.0f), mapKd),
-        specularTexture(vec4(ka, 1.0f), mapKa),
-        specularExponentTexture(vec4(1.0f, 1.0f, 1.0f, ns), mapNs),
-        isMirrored(isMirrored) {}
+           bool isMirrored);
 
-  inline vec3 ambient() const { return vec3(ambientTexture.getScale()); }
+  vec3 ambient() const;
 
-  inline vec3 ambient(vec2 uv) const { return vec3(ambientTexture[uv]); }
+  vec3 ambient(vec2 uv) const;
 
-  inline vec3 diffuse() const { return vec3(diffuseTexture.getScale()); }
+  vec3 diffuse() const;
 
-  inline vec3 diffuse(vec2 uv) const { return vec3(diffuseTexture[uv]); }
+  vec3 diffuse(vec2 uv) const;
 
-  inline vec3 specular() const { return vec3(specularTexture.getScale()); }
+  vec3 specular() const;
 
-  inline vec3 specular(vec2 uv) const { return vec3(specularTexture[uv]); }
+  vec3 specular(vec2 uv) const;
 
-  inline float specularExponent() const {
-    return specularExponentTexture.getScale().a;
-  }
+  float specularExponent() const;
 
-  inline float specularExponent(vec2 uv) const {
-    return specularExponentTexture[uv].a;
-  }
+  float specularExponent(vec2 uv) const;
 };

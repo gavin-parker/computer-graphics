@@ -1,9 +1,9 @@
 #include "baked_gi.h"
 
-BakedGI::BakedGI(shared_ptr<Scene> scene, int sampleCount, int resolution)
-    : LightingEngine(scene->triangles, scene->light), sampleCount(sampleCount),
-      boundingVolume(scene->volume),
-      image(vector<vector<vec3>>(triangles->size())), resolution(resolution) {
+BakedGI::BakedGI(const Scene &scene, int sampleCount, int resolution)
+    : LightingEngine(scene.triangles, scene.light), sampleCount(sampleCount),
+      boundingVolume(scene.volume),
+      image(vector<vector<vec3>>(triangles.size())), resolution(resolution) {
   constructImage();
 };
 

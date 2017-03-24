@@ -1,4 +1,7 @@
+#pragma once
+
 #include "light.h"
+
 class PointLight : public Light {
 public:
   const float speed = 10.0f;

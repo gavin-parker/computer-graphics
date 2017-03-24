@@ -1,18 +1,16 @@
 #include "rasteriser.h"
 
-Rasteriser::Rasteriser(int width, int height,
-                       shared_ptr<LightingEngine> lighting,
-                       shared_ptr<Scene> scene, bool fullscreen)
+Rasteriser::Rasteriser(int width, int height, LightingEngine &lighting,
+                       Scene &scene, bool fullscreen)
     : SdlScreen(width, height, fullscreen), depthBuffer(width * height),
-      shadowBuffer(6 * 128 * 128), triangles(scene->triangles),
-      clipped_triangles(vector<Triangle>()),
-      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene->light),
-      lighting(lighting), leftBuffer(triangles->size()),
-      rightBuffer(triangles->size()) {}
+      shadowBuffer(6 * 128 * 128), triangles(scene.triangles),
+      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene.light),
+      lighting(lighting), leftBuffer(triangles.size()),
+      rightBuffer(triangles.size()) {}
 
 void Rasteriser::update(float dt) {
   camera.update(dt);
-  light->update(dt);
+  light.update(dt);
 }
 
 int Rasteriser::computeClipping(float x, float y, int xMax, int yMax) {
@@ -73,8 +71,8 @@ vec4 Rasteriser::CohenSutherland(vec2 A, vec2 B, ivec2 bounds) {
 }
 
 void Rasteriser::clip(int width, int height) {
-  for (size_t t = 0; t < triangles->size(); t++) {
-    const Triangle &triangle = (*triangles)[t];
+  for (size_t t = 0; t < triangles.size(); t++) {
+    const Triangle &triangle = triangles[t];
     vector<Vertex> vertices = {Vertex(triangle.v0, triangle.normal, vec2(1, 1),
                                       triangle.mat->diffuse()),
                                Vertex(triangle.v1, triangle.normal, vec2(1, 1),
@@ -124,7 +122,7 @@ void Rasteriser::shadowPass(int width, int height, vector<Pixel> &leftPixels,
                                r_pixels[y].depth, pixelDepth,
                                deLerpF(l_pixels[y].x, r_pixels[y].x, x));
       float depth = 0;
-      indexedPixel lightPixel = light->projectVertex(pixelVert.position, depth);
+      indexedPixel lightPixel = light.projectVertex(pixelVert.position, depth);
       if (lightPixel.x > -1) {
         int shadowBufferIndex =
             lightPixel.i * (128 * 128) + 128 * lightPixel.y + lightPixel.x;
@@ -216,11 +214,11 @@ void Rasteriser::drawPolygonRows(int width, int height,
 
           float depth = 0.f;
           indexedPixel lightPixel =
-              light->projectVertex(pixelVert.position, depth);
+              light.projectVertex(pixelVert.position, depth);
           vec3 lightColour =
               vec3(0, 1, 0); // triangle.colour*vec3(0.2,0.2,0.2);
 
-          pixelVert.illumination = light->directLight(ray);
+          pixelVert.illumination = light.directLight(ray);
           if (lightPixel.x > -1) {
             int shadowBufferIndex =
                 lightPixel.i * (128 * 128) + 128 * lightPixel.y + lightPixel.x;
@@ -273,7 +271,7 @@ void Rasteriser::draw(int width, int height) {
     for (size_t i = 0; i < vertices.size(); i++) {
       Ray ray(camera.position, camera.position - vertices[i].position);
       ray.updateCollision(&triangle, numeric_limits<float>::max(), uvs[i]);
-      vec3 illumination = lighting->calculateLight(ray);
+      vec3 illumination = lighting.calculateLight(ray);
       proj[i] = VertexShader(vertices[i], width, height);
       proj[i].v.illumination = illumination;
     }

@@ -33,114 +33,38 @@ private:
   Triangle const *collision;
 
 public:
-  Ray() : Ray(vec3(), vec3()){};
+  Ray();
 
   Ray(vec3 initPosition, vec3 initDirection,
-      float initLength = numeric_limits<float>::max())
-      : position(initPosition), direction(initDirection), length(initLength),
-        coordinate(Coordinate::None), collision(nullptr) {}
+      float initLength = numeric_limits<float>::max());
 
-  Ray(const Ray &other)
-      : position(other.position), direction(other.direction),
-        length(other.length), coordinate(other.coordinate) {
-    switch (coordinate) {
-    case Coordinate::UV:
-      uv = other.uv;
-      break;
-    case Coordinate::BARY:
-      bary = other.bary;
-      break;
-    default:
-      break;
-    }
-  }
+  Ray(const Ray &other);
 
-  vec3 getPosition() const { return position; }
+  vec3 getPosition() const;
 
-  vec3 getDirection() const { return direction; }
+  vec3 getDirection() const;
 
-  float getLength() const { return length; }
+  float getLength() const;
 
-  void extendToInfinity() { length = numeric_limits<float>::max(); }
+  void extendToInfinity();
 
-  Triangle const *getCollision() const { return collision; }
+  Triangle const *getCollision() const;
 
-  void updateCollision(Triangle const *newCollision, float newLength) {
-    collision = newCollision;
-    length = newLength;
-    coordinate = Coordinate::None;
-  }
+  void updateCollision(Triangle const *newCollision, float newLength);
 
   void updateCollision(Triangle const *newCollision, float newLength,
-                       vec2 newUV) {
-    collision = newCollision;
-    length = newLength;
-    coordinate = Coordinate::UV;
-    uv = newUV;
-  }
+                       vec2 newUV);
 
   void updateCollision(Triangle const *newCollision, float newLength,
-                       vec3 newBary) {
-    collision = newCollision;
-    length = newLength;
-    coordinate = Coordinate::BARY;
-    bary = newBary;
-  }
+                       vec3 newBary);
 
-  vec3 collisionLocation() const {
-    switch (coordinate) {
-    case Coordinate::UV:
-      return collision->getPosition(uv);
-    case Coordinate::BARY:
-      return collision->getPosition(bary);
-    default:
-      return position + length * direction;
-    }
-  }
+  vec3 collisionLocation() const;
 
-  vec3 collisionNormal() const {
-    switch (coordinate) {
-    case Coordinate::UV:
-      return collision->getNormal(uv);
-    case Coordinate::BARY:
-      return collision->getNormal(bary);
-    default:
-      return collision->normal;
-    }
-  }
+  vec3 collisionNormal() const;
 
-  vec3 collisionAmbientColour() const {
-    switch (coordinate) {
-    case Coordinate::UV:
-      return collision->mat->ambient(collision->getTexUV(uv));
-    case Coordinate::BARY:
-      return collision->mat->ambient(collision->getTexUV(bary));
-    default:
-      return collision->mat->ambient();
-    }
-  }
+  vec3 collisionAmbientColour() const;
 
-  vec3 collisionDiffuseColour() const {
-    switch (coordinate) {
-    case Coordinate::UV:
-      return collision->mat->diffuse(collision->getTexUV(uv));
-    case Coordinate::BARY:
-      return collision->mat->diffuse(collision->getTexUV(bary));
-    default:
-      return collision->mat->diffuse();
-    }
-  }
+  vec3 collisionDiffuseColour() const;
 
-  vec3 collisionSpecularColour(vec3 lightDirection, vec3 lightColour) const {
-    switch (coordinate) {
-    case Coordinate::UV:
-      return collision->specularColour(uv, lightDirection, lightColour,
-                                       direction);
-    case Coordinate::BARY:
-      return collision->specularColour(uv, lightDirection, lightColour,
-                                       direction);
-    default:
-      return collision->specularColour(lightDirection, lightColour, direction);
-    }
-  }
+  vec3 collisionSpecularColour(vec3 lightDirection, vec3 lightColour) const;
 };

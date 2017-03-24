@@ -1,17 +1,16 @@
 #include "raytracer.h"
 
-RayTracer::RayTracer(int width, int height, shared_ptr<LightingEngine> lighting,
-                     shared_ptr<Light> light,
-                     const shared_ptr<const vector<Triangle>> triangles,
-                     const shared_ptr<BoundingVolume> boundingVolume,
-                     bool fullscreen, bool antialias)
-    : SdlScreen(width, height, fullscreen), triangles(triangles),
-      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(light),
-      lighting(lighting), boundingVolume(boundingVolume), antialias(antialias) {
-}
+RayTracer::RayTracer(int width, int height, LightingEngine &lighting,
+                     Light &light, const vector<Triangle> &triangles,
+                     const BoundingVolume &boundingVolume, bool fullscreen,
+                     bool antialias)
+    : SdlScreen(width, height, fullscreen),
+      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), lighting(lighting),
+      light(light), triangles(triangles), boundingVolume(boundingVolume),
+      antialias(antialias) {}
 
 void RayTracer::update(float dt) {
-  light->update(dt);
+  light.update(dt);
   camera.update(dt);
 }
 
@@ -38,13 +37,13 @@ void RayTracer::draw(int width, int height) {
           Ray cameraRay =
               camera.calculateRay(super_x / width, super_y / height);
 
-          if (boundingVolume->calculateIntersection(cameraRay)) {
+          if (boundingVolume.calculateIntersection(cameraRay)) {
             // shared_ptr<const Material> mat = cameraRay.collision->mat;
 
             vec3 spec(0, 0, 0);
 
             vec3 lightColour =
-                lighting->calculateLight(cameraRay, glm::ivec2(x, y));
+                lighting.calculateLight(cameraRay, glm::ivec2(x, y));
 
             average += lightColour;
           }
@@ -66,7 +65,7 @@ void RayTracer::draw(int width, int height) {
       }
     }
   }
-  lighting->countedSamples++;
+  lighting.countedSamples++;
   rows_completed = 0;
   counter_last = 0;
 }

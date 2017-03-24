@@ -1,11 +1,11 @@
 #pragma once
+
 #define _USE_MATH_DEFINES
-#include <cmath>
 #include <SDL.h>
+#include <cmath>
 #include <glm/glm.hpp>
 #include <iomanip>
 #include <iostream>
-
 
 using glm::vec3;
 using std::cout;

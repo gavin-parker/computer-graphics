@@ -10,18 +10,22 @@
 #include "scene.h"
 #include "sdlscreen.h"
 #include "spherelight.h"
-#include "testmodel.h"
 
 using glm::ivec2;
 
 class LightingEngine {
 public:
-  virtual vec3 calculateLight(Ray &ray, ivec2 pixel = ivec2(0, 0)) = 0;
+  const vector<Triangle> &triangles;
+  const Light &light;
 
-  shared_ptr<const vector<Triangle>> triangles;
-  shared_ptr<const Light> light;
   int countedSamples = 1;
-  LightingEngine(const shared_ptr<const vector<Triangle>> triangles,
-                 shared_ptr<Light> light)
+
+  LightingEngine() = delete;
+
+  LightingEngine(const LightingEngine &other) = delete;
+
+  LightingEngine(const vector<Triangle> &triangles, const Light &light)
       : triangles(triangles), light(light){};
+
+  virtual vec3 calculateLight(Ray &ray, ivec2 pixel = ivec2(0, 0)) = 0;
 };

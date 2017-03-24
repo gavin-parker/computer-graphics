@@ -2,22 +2,22 @@
 
 // GlobalIllumination::GlobalIllumination(){};
 
-GlobalIllumination::GlobalIllumination(shared_ptr<Scene> scene, int sampleCount)
-    : LightingEngine(scene->triangles, scene->light), sampleCount(sampleCount),
-      boundingVolume(scene->volume){};
+GlobalIllumination::GlobalIllumination(const Scene &scene, int sampleCount)
+    : LightingEngine(scene.triangles, scene.light), sampleCount(sampleCount),
+      boundingVolume(scene.volume){};
 
 vec3 GlobalIllumination::trace(Ray &ray, int bounces) {
   // find diffuse light at this position
   vec3 diffuse = ray.collisionDiffuseColour();
   vec3 lightHere(0, 0, 0);
 
-  vector<Ray> rays = light->calculateRays(ray.collisionLocation());
+  vector<Ray> rays = light.calculateRays(ray.collisionLocation());
 
   for (Ray &directLightRay : rays) {
-    if (!boundingVolume->calculateAnyIntersection(directLightRay, ray)) {
+    if (!boundingVolume.calculateAnyIntersection(directLightRay, ray)) {
       lightHere += vec3(0, 0, 0);
     } else if (directLightRay.getCollision() == ray.getCollision()) {
-      lightHere = light->directLight(ray) * ray.collisionDiffuseColour();
+      lightHere = light.directLight(ray) * ray.collisionDiffuseColour();
     }
   }
   lightHere /= rays.size();
@@ -58,7 +58,7 @@ vec3 GlobalIllumination::trace(Ray &ray, int bounces) {
 
       Ray bounce(ray.collisionLocation(), glm::normalize(direction));
       // return this + new collision point
-      if (boundingVolume->calculateIntersection(bounce)) {
+      if (boundingVolume.calculateIntersection(bounce)) {
         indirectLight += r1 * trace(bounce, bounces - 1);
       } else {
         indirectLight +=

@@ -18,7 +18,7 @@ BoundingVolume::BoundingVolume(
   }
 }
 
-bool BoundingVolume::calculateIntersection(Ray &ray) {
+bool BoundingVolume::calculateIntersection(Ray &ray) const {
   float num[7];
   float denom[7];
   for (int i = 0; i < 7; i++) {
@@ -30,7 +30,7 @@ bool BoundingVolume::calculateIntersection(Ray &ray) {
 
 // ray must have max length before initial call
 bool BoundingVolume::calculateIntersectionSub(Ray &ray, float num[7],
-                                              float denom[7]) {
+                                              float denom[7]) const {
   float tFar = numeric_limits<float>::max();
   float tNear = -numeric_limits<float>::max();
   for (int i = 0; i < 7; i++) {
@@ -56,7 +56,7 @@ bool BoundingVolume::calculateIntersectionSub(Ray &ray, float num[7],
   return anyIntersection;
 }
 
-bool BoundingVolume::ClosestIntersection(Ray &ray) {
+bool BoundingVolume::ClosestIntersection(Ray &ray) const {
 
   bool anyIntersection = false;
 
@@ -72,7 +72,7 @@ void BoundingVolume::setSubVolume(BoundingVolume volume) {
 }
 
 // recursively checks for ANY intersection, backs out early
-bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface) {
+bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface) const {
   float lightDistance = ray.getLength();
   float num[7];
   float denom[7];
@@ -96,7 +96,7 @@ bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface) {
   bool anyIntersection = this->anyIntersection(ray, surface);
 
   // then check sub volumes if there are any
-  for (BoundingVolume &volume : subVolumes) {
+  for (const BoundingVolume &volume : subVolumes) {
     anyIntersection |= volume.calculateIntersection(ray);
     if (anyIntersection && ray.getCollision() != surface.getCollision() &&
         ray.getLength() < lightDistance) {
@@ -107,7 +107,7 @@ bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface) {
   return anyIntersection;
 }
 
-bool BoundingVolume::anyIntersection(Ray &ray, Ray &surface) {
+bool BoundingVolume::anyIntersection(Ray &ray, Ray &surface) const {
   bool anyIntersection = false;
   float lightDistance = ray.getLength();
   ray.extendToInfinity();

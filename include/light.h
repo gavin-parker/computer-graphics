@@ -1,21 +1,11 @@
 #pragma once
 
-#define _USE_MATH_DEFINES
-
-#include <SDL.h>
 #include <algorithm>
-#include <cmath>
-#include <math.h>
 
 #include "lerp.h"
+#include "myrand.h"
 #include "ray.h"
 #include "vertex.h"
-
-#ifndef unix
-inline float RAND() { return ((float)rand() / (RAND_MAX)); }
-#else
-inline float RAND() { return drand48(); }
-#endif
 
 typedef struct indexedPixel {
   int x;

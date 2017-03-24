@@ -1,4 +1,5 @@
 #pragma once
+
 #include "light.h"
 
 class SphereLight : public Light {

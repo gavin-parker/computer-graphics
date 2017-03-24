@@ -8,7 +8,6 @@
 #include "lightingengine.h"
 #include "rastlighting.h"
 #include "sdlscreen.h"
-#include "testmodel.h"
 
 using std::numeric_limits;
 using std::max;
@@ -24,11 +23,11 @@ public:
 private:
   vector<float> depthBuffer;
   vector<float> shadowBuffer;
-  const shared_ptr<const vector<Triangle>> triangles;
+  const vector<Triangle> &triangles;
   vector<Triangle> clipped_triangles;
   Camera camera;
-  shared_ptr<Light> light;
-  shared_ptr<LightingEngine> lighting;
+  Light &light;
+  LightingEngine &lighting;
   vector<vector<Pixel>> leftBuffer;
   vector<vector<Pixel>> rightBuffer;
 
@@ -54,6 +53,6 @@ protected:
   void draw(int width, int height) override;
 
 public:
-  Rasteriser(int width, int height, shared_ptr<LightingEngine> lighting,
-             shared_ptr<Scene> scene, bool fullscreen = false);
+  Rasteriser(int width, int height, LightingEngine &lighting, Scene &scene,
+             bool fullscreen = false);
 };

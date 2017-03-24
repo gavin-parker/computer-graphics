@@ -2,23 +2,23 @@
 
 // GlobalIllumination::GlobalIllumination(){};
 
-StandardLighting::StandardLighting(const shared_ptr<Scene> scene)
-    : LightingEngine(scene->triangles, scene->light),
-      boundingVolume(scene->volume){};
+StandardLighting::StandardLighting(const Scene &scene)
+    : LightingEngine(scene.triangles, scene.light),
+      boundingVolume(scene.volume){};
 
 vec3 StandardLighting::calculateLight(Ray &ray, ivec2 pixel) {
   // ClosestIntersection(lightRay);
 
   vec3 lightColour(0, 0, 0);
 
-  vector<Ray> rays = light->calculateRays(ray.collisionLocation());
+  vector<Ray> rays = light.calculateRays(ray.collisionLocation());
 
   // calculate average light at a point -- works with multiple light rays
   for (Ray &lightRay : rays) {
-    if (boundingVolume->calculateAnyIntersection(lightRay, ray) &&
+    if (boundingVolume.calculateAnyIntersection(lightRay, ray) &&
         lightRay.getCollision() == ray.getCollision()) {
 
-      lightColour += light->directLight(ray) * ray.collisionDiffuseColour() +
+      lightColour += light.directLight(ray) * ray.collisionDiffuseColour() +
                      ray.collisionSpecularColour(lightRay.getDirection(),
                                                  vec3(1.0f, 1.0f, 1.0f));
     } else {
@@ -34,7 +34,7 @@ bool StandardLighting::ClosestIntersection(Ray &ray) {
 
   bool anyIntersection = false;
 
-  for (const Triangle &triangle : *triangles) {
+  for (const Triangle &triangle : triangles) {
     anyIntersection |= triangle.calculateIntersection(ray);
   }
 
@@ -46,7 +46,7 @@ bool StandardLighting::anyIntersection(Ray &ray, Ray &surface) {
   bool anyIntersection = false;
   float lightDistance = ray.getLength();
   ray.extendToInfinity();
-  for (const Triangle &triangle : *triangles) {
+  for (const Triangle &triangle : triangles) {
     anyIntersection |= triangle.calculateIntersection(ray);
     if (anyIntersection && ray.getCollision() != surface.getCollision() &&
         ray.getLength() < lightDistance) {

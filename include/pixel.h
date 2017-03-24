@@ -1,7 +1,7 @@
 #pragma once
+
 #include "vertex.h"
-#include <glm/glm.hpp>
-using glm::vec3;
+
 class Pixel {
 public:
   int x, y;
