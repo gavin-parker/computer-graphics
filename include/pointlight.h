@@ -4,7 +4,7 @@
 
 class PointLight : public Light {
 public:
-  const float speed = 10.0f;
+  const float speed = 100.0f;
 
   PointLight(vec3 position, vec3 color, float power);
 
