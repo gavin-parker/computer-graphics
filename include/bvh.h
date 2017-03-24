@@ -1,7 +1,7 @@
 #pragma once
 #include "ray.h"
 
-inline const float R3() { return static_cast<float>(sqrt(3.0) / 3.0); }
+const float R3() { return static_cast<float>(sqrt(3.0) / 3.0); }
 
 // bounding volume is a tighter bounding box, which can contain some geometry
 // as

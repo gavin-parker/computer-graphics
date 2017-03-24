@@ -55,15 +55,15 @@ public:
     }
   }
 
-  inline vec3 getPosition() const { return position; }
+  vec3 getPosition() const { return position; }
 
-  inline vec3 getDirection() const { return direction; }
+  vec3 getDirection() const { return direction; }
 
-  inline float getLength() const { return length; }
+  float getLength() const { return length; }
 
-  inline void extendToInfinity() { length = numeric_limits<float>::max(); }
+  void extendToInfinity() { length = numeric_limits<float>::max(); }
 
-  inline Triangle const *getCollision() const { return collision; }
+  Triangle const *getCollision() const { return collision; }
 
   void updateCollision(Triangle const *newCollision, float newLength) {
     collision = newCollision;
