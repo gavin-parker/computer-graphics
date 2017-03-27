@@ -49,3 +49,9 @@ vec4 Camera::clipSpace(Vertex v) {
 
   return vec4(newPos, newPos.z / 250.0);
 }
+
+vec3 Camera::worldSpace(vec4 cameraCoordinate) {
+	vec3 plain(cameraCoordinate.x, cameraCoordinate.y, cameraCoordinate.z);
+	vec3 newPos = ( rotation * plain) + position;
+	return newPos;
+}

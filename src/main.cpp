@@ -72,7 +72,7 @@ shared_ptr<Scene> sceneB(
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "rast") {
       RastLighting engine(scene_low_quality);
-      Rasteriser screen(500, 500, engine, scene_low_quality, false);
+      Rasteriser screen(500, 500, engine, scene_low_quality);
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "gi") {
@@ -96,17 +96,17 @@ shared_ptr<Scene> sceneB(
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "baked") {
-      BakedGI engine(scene, 5, 100);
-      Rasteriser screen(500, 500, engine, scene, false);
-      screen.run();
-      screen.saveBMP("screenshot.bmp");
+      //BakedGI engine(scene, 5, 100);
+      //Rasteriser screen(500, 500, engine, scene, vec3(277.5f, 277.5f, -480.64), false);
+      //screen.run();
+      //screen.saveBMP("screenshot.bmp");
     }
 
 #ifdef useCL
     else if (mode == "cl") {
-      light->power *= 10;
+      light.power *= 10;
       StandardLighting engine(scene);
-      RayTracerCL screen(1024, 1024, engine, light, geometry, boxBVH, false);
+      RayTracerCL screen(1024, 1024, engine, light, geometry, boxBVH);
       screen.run();
       screen.saveBMP("screenshot.bmp");
     }
@@ -118,7 +118,7 @@ shared_ptr<Scene> sceneB(
     cout << "Please enter a mode:" << endl
          << "\tstars - starts" << endl
          << "\tray - raytracer" << endl
-        //<< "\trast - rasterizer" << endl
+        //<< "\trast - rasterizer" << endl	
         ;
   }
   return EXIT_SUCCESS;

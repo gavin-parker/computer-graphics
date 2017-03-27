@@ -21,8 +21,8 @@ private:
   bool calculateIntersectionSub(Ray &ray, float num[7], float denom[7]) const;
 
 public:
-  BoundingVolume(const shared_ptr<const vector<Triangle>> triangles);
-  bool calculateIntersection(Ray &ray) const;
-  void setSubVolume(BoundingVolume volume);
-  bool calculateAnyIntersection(Ray &ray, Ray &surface) const;
+	BoundingVolume(const shared_ptr<const vector<Triangle>> triangles);
+	bool calculateIntersection(Ray &ray, bool topVolume = false) const;
+	void setSubVolume(BoundingVolume volume);
+	bool calculateAnyIntersection(Ray &ray, Ray &surface, bool topVolume = false) const;
 };

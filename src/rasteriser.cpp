@@ -1,12 +1,9 @@
 #include "rasteriser.h"
 
-Rasteriser::Rasteriser(int width, int height, LightingEngine &lighting,
-                       Scene &scene, bool fullscreen)
-    : SdlScreen(width, height, fullscreen), depthBuffer(width * height),
-      shadowBuffer(6 * 128 * 128), triangles(scene.triangles),
-      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene.light),
-      lighting(lighting), leftBuffer(triangles.size()),
-      rightBuffer(triangles.size()) {}
+Rasteriser::Rasteriser(int width, int height, LightingEngine &lighting, Scene &scene, vec3 cameraPos, bool useShadows, bool fullscreen)
+	: SdlScreen(width, height, fullscreen), depthBuffer(width * height), shadowBuffer(6* 128 * 128),
+	triangles(scene.triangles),
+	camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene.light), lighting(lighting), leftBuffer(triangles.size()), rightBuffer(triangles.size()), clipped_triangles(vector<Triangle>()) {}
 
 void Rasteriser::update(float dt) {
   camera.update(dt);
@@ -105,72 +102,26 @@ Pixel Rasteriser::VertexShader(Vertex v, int width, int height) {
                v);
 }
 
-void Rasteriser::shadowPass(int width, int height, vector<Pixel> &leftPixels,
-                            vector<Pixel> &rightPixels,
-                            const Triangle &triangle) {
-  if (leftPixels.size() < 1) {
-    return;
-  }
-  Pixel *l_pixels = &leftPixels[0];
-  Pixel *r_pixels = &rightPixels[0];
-  // gets the depth in 6 directions from the light source
-  for (int y = 0; y < static_cast<int>(leftPixels.size()); y++) {
-    for (int x = l_pixels[y].x; x <= r_pixels[y].x; x++) {
-      float pixelDepth = lerpF(l_pixels[y].depth, r_pixels[y].depth,
-                               deLerpF(l_pixels[y].x, r_pixels[y].x, x));
-      Vertex pixelVert = lerpV(l_pixels[y].v, r_pixels[y].v, l_pixels[y].depth,
-                               r_pixels[y].depth, pixelDepth,
-                               deLerpF(l_pixels[y].x, r_pixels[y].x, x));
-      float depth = 0;
-      indexedPixel lightPixel = light.projectVertex(pixelVert.position, depth);
-      if (lightPixel.x > -1) {
-        int shadowBufferIndex =
-            lightPixel.i * (128 * 128) + 128 * lightPixel.y + lightPixel.x;
-        // shadowBuffer stores closest depths to light source
-        float d = shadowBuffer[shadowBufferIndex];
-        if (depth < (d + 10.f)) {
-          shadowBuffer[shadowBufferIndex] = depth;
-        }
-      }
-    }
-  }
-}
-
 void Rasteriser::computePolygonRows(const vector<Pixel> &vertexPixels,
                                     vector<Pixel> &leftPixels,
                                     vector<Pixel> &rightPixels,
                                     const Triangle &triangle) {
-
-  int max = -numeric_limits<int>::max();
-  int min = numeric_limits<int>::max();
-
-  for (size_t i = 0; i < vertexPixels.size(); i++) {
-    max = std::max(vertexPixels[i].y, max);
-    min = std::min(vertexPixels[i].y, min);
-  }
-  int rows = max - min + 1;
-  for (int i = 0; i < rows; i++) {
-    leftPixels.push_back(Pixel(numeric_limits<int>::max(), 0, 0.0f));
-    rightPixels.push_back(Pixel(-numeric_limits<int>::max(), 0, 0.0f));
-  }
-  for (int i = 0; i < 3; i++) {
-    const Pixel &start = vertexPixels[i];
-    const Pixel &end = vertexPixels[(i + 1) % 3];
-    float step =
-        1.f / (glm::length(vec2(start.x - end.x, start.y - end.y)) + 1);
-    for (float t = 0; t < 1; t += step) {
-      Pixel pixel = lerpP(vertexPixels[i], vertexPixels[(i + 1) % 3], t);
-
-      int y = pixel.y - min;
-      if (pixel.x < leftPixels[y].x) {
-        leftPixels[y] = pixel;
-      }
-      if (pixel.x > rightPixels[y].x) {
-        rightPixels[y] = pixel;
-      }
-    }
-  }
-}
+		int clippedVerts = 0;
+		int clippings[3] = { 0,0,0 };
+		vec4 lines[3];
+		//for (int i = 0; i < 3; i++) {
+		//	vec4 homA = camera.clipSpace(vertices[i]);
+		//	vec4 homB = camera.clipSpace(vertices[(i+1)%3]);
+		//	vec2 A(homA.x, homA.y);
+		//	vec2 B(homB.x, homB.y);
+		//	vec4 line = CohenSutherland(A, B, ivec2(xMax, yMax));
+		//	//if this vertex not changed
+		//	if (line[0] == A.x && line[1] == A.y) {
+		//
+		//	}
+		//}
+		clipped_triangles.push_back(triangle);
+	}
 
 void Rasteriser::drawPolygonRows(int width, int height,
                                  vector<Pixel> &leftPixels,

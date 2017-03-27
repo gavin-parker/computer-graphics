@@ -7,7 +7,13 @@
 #include "camera.h"
 #include "lightingengine.h"
 #include "rastlighting.h"
+#include "baked_gi.h"
+#include "flatlighting.h"
 #include "sdlscreen.h"
+#include "testmodel.h"
+#include <limits>
+#include <omp.h>
+#include <unordered_set>
 
 using std::numeric_limits;
 using std::max;
@@ -42,6 +48,7 @@ private:
   void shadowPass(int width, int height, vector<Pixel> &leftPixels,
                   vector<Pixel> &rightPixels, const Triangle &triangle);
 
+  bool useShadows;
   void computePolygonRows(const vector<Pixel> &vertexPixels,
                           vector<Pixel> &leftPixels, vector<Pixel> &rightPixels,
                           const Triangle &triangle);
@@ -53,6 +60,23 @@ protected:
   void draw(int width, int height) override;
 
 public:
-  Rasteriser(int width, int height, LightingEngine &lighting, Scene &scene,
-             bool fullscreen = false);
+  Rasteriser(int width, int height, LightingEngine &lighting, Scene &scene, vec3 cameraPos = vec3(277.5f, 277.5f, -480.64) ,bool useShadows = true, bool fullscreen = false);
 };
+
+namespace std {
+	template<>
+	struct hash<vec3>
+	{
+		size_t operator()(const vec3& k)const
+		{
+			return std::hash<float>()(k.x) ^ std::hash<float>()(k.y) ^ std::hash<float>()(k.z);
+		}
+
+		bool operator()(const vec3& a, const vec3& b)const
+		{
+			return a.x == b.x && a.y == b.y && a.z == b.z;
+		}
+	};
+}
+
+

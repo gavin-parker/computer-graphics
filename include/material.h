@@ -9,7 +9,6 @@ private:
   Texture ambientTexture, diffuseTexture, specularTexture,
       specularExponentTexture;
 
-  bool isMirrored;
 
 public:
   Material();
@@ -35,4 +34,7 @@ public:
   float specularExponent() const;
 
   float specularExponent(vec2 uv) const;
+
+  bool isMirrored;
+
 };

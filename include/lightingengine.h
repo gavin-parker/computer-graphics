@@ -1,7 +1,6 @@
 #pragma once
 
 #include <omp.h>
-
 #include "camera.h"
 #include "cube.h"
 #include "cube.h"
@@ -12,6 +11,11 @@
 #include "spherelight.h"
 
 using glm::ivec2;
+
+//bad bodge until I fix triangle pointers for BVH
+inline bool sametriangle(const Triangle* a, const Triangle* b) {
+	return (a->v0 == b->v0) && (a->v1 == b->v1) && (a->v2 == b->v2) && (a->normal == b->normal);
+}
 
 class LightingEngine {
 public:

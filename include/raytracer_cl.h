@@ -4,12 +4,13 @@
 #include <fstream>
 #include <limits>
 #include <omp.h>
-
+#include "clwrapper.h"
 #include "bvh.h"
 #include "camera.h"
 #include "convergent_gi.h"
 #include "sdlscreen.h"
-
+#include "testmodel.h"
+#include "bvh.h"
 #ifdef unix
 #include <sys/resource.h>
 #include <sys/time.h>
@@ -31,69 +32,48 @@ typedef struct CameraStruct {
   cl_float3 position;
   // cl_float3 rotation[3];
 } CameraStruct;
-#pragma pack()
-typedef struct RayStruct {
-  cl_float3 origin;
-  cl_float3 direction;
-  cl_float3 collisionLocation;
-  cl_float length;
-  cl_int collision;
-} RayStruct;
 
-cl_float3 vecToFloat(vec3 vec) {
-  cl_float3 f;
-  f.x = vec.x;
-  f.y = vec.y;
-  f.z = vec.z;
-  return f;
-}
+
+#pragma pack()
+
 
 class RayTracerCL : public SdlScreen {
 private:
   // bool ClosestIntersection(Ray &ray);
-  const shared_ptr<const vector<Triangle>> triangles;
+  const vector<Triangle> &triangles;
   Camera camera;
 
-  const vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
-  const shared_ptr<PointLight> light;
-  shared_ptr<LightingEngine> lighting;
-  const shared_ptr<BoundingVolume> boundingVolume;
-  void create_global_memory(int width, int height);
-  vector<vec3> averageImage;
-  bool refresh = false;
-  int frameCounter = 1;
-  cl::Context context;
-  cl::Device default_device;
-  cl_float3 *cl_triangles;
-  cl::Buffer triangleBuffer;
-  cl::Buffer lightBuffer;
-  cl::Buffer imageBuffer;
-  cl::Buffer cameraBuffer;
-  cl::Buffer pointBuffer;
-  cl::Buffer randBuffer;
-  cl::CommandQueue queue;
-  cl::Kernel castRays;
-  cl::Kernel shader;
-  cl::Program program;
-  cl::Program::Sources sources;
-  std::vector<cl::Device> all_devices;
-  cl::Platform default_platform;
-  std::vector<cl::Platform> all_platforms;
-  std::string sourceCode;
-  cl_float3 *image;
-  cl_uint *rands;
-  CameraStruct cameraStruct;
-  cl_float cameraArray[4] = {0, 0, 0, 0};
+	const vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
+	PointLight &light;
+	LightingEngine &lighting;
+	const BoundingVolume &boundingVolume;
+	void create_global_memory(int width, int height);
+	vector<vec3> averageImage;
+	bool refresh = false;
+	int frameCounter = 1; 
+	Accelerator gpu;
+	cl_float3* cl_triangles;
+	cl::Buffer triangleBuffer;
+	cl::Buffer lightBuffer; 
+	cl::Buffer imageBuffer;
+	cl::Buffer cameraBuffer;
+	cl::Buffer pointBuffer;
+	cl::Buffer randBuffer;
+	cl::Buffer iCantBelieveItsNotBuffer;
+	cl::Kernel castRays;
+	cl::Kernel shader;
+	std::string sourceCode;
+	cl_float3* image;
+	cl_uint* rands;
+	CameraStruct cameraStruct;
+	cl_float cameraArray[4] = { 0,0,0,0 };
 
 protected:
-  void update(float dt) override;
-  void draw(int width, int height) override;
-  void boilerPlate(int width, int height);
-
+	void update(float dt) override;
+	void draw(int width, int height) override;
 public:
-  RayTracerCL(int width, int height, shared_ptr<LightingEngine> lighting,
-              const shared_ptr<PointLight> light,
-              const shared_ptr<const vector<Triangle>> triangles,
-              const shared_ptr<BoundingVolume> boundingVolume,
-              bool fullscreen = false);
+	RayTracerCL(int width, int height, LightingEngine &lighting,
+		PointLight &light,
+		const vector<Triangle> &triangles, const BoundingVolume &boundingVolume, vec3 cameraPos = vec3(277.5f, 277.5f, -480.64),
+		bool fullscreen = false);
 };

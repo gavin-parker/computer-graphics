@@ -10,13 +10,12 @@ vec3 StandardLighting::calculateLight(Ray &ray, ivec2 pixel) {
   // ClosestIntersection(lightRay);
 
   vec3 lightColour(0, 0, 0);
-
   vector<Ray> rays = light.calculateRays(ray.collisionLocation());
+  //calculate average light at a point -- works with multiple li ght rays
+  for (int i = 0; (size_t)i < rays.size(); i++) {
+	  Ray lightRay = rays[i];
 
-  // calculate average light at a point -- works with multiple light rays
-  for (Ray &lightRay : rays) {
-    if (boundingVolume.calculateAnyIntersection(lightRay, ray) &&
-        lightRay.getCollision() == ray.getCollision()) {
+	  if (boundingVolume.calculateAnyIntersection(lightRay, ray, true) && sametriangle(lightRay.getCollision(), ray.getCollision())) {
 
       lightColour += light.directLight(ray) * ray.collisionDiffuseColour() +
                      ray.collisionSpecularColour(lightRay.getDirection(),

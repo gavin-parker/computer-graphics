@@ -1,6 +1,9 @@
 #pragma once
 
+#define _USE_MATH_DEFINES
+
 #include "light.h"
+#include <cmath>
 
 class SphereLight : public Light {
 private:

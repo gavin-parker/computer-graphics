@@ -1,5 +1,5 @@
 #pragma once
-
+#define _USE_MATH_DEFINES
 #include "light.h"
 
 class PointLight : public Light {

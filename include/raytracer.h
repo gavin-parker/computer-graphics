@@ -1,16 +1,15 @@
 #pragma once
-
 #include <limits>
 #include <omp.h>
-
-#include "bvh.h"
 #include "camera.h"
 #include "convergent_gi.h"
+#include "standardlighting.h"
 #include "cube.h"
 #include "light.h"
 #include "lightingengine.h"
 #include "sdlscreen.h"
-#include "standardlighting.h"
+#include "testmodel.h"
+#include "bvh.h"
 
 using std::numeric_limits;
 
@@ -26,7 +25,7 @@ private:
   const BoundingVolume &boundingVolume;
 
   bool antialias;
-
+  int chunkSize = 4000;
 protected:
   void update(float dt) override;
   void draw(int width, int height) override;
