@@ -61,20 +61,19 @@ RayTracerCL::RayTracerCL(int width, int height, LightingEngine &lighting,
 void RayTracerCL::create_global_memory(int width, int height) {
 	cl_triangles = (cl_float3*)malloc(triangles.size() * sizeof(cl_float3)*5);
 	cl_uchar* properties = (cl_uchar*)malloc(triangles.size() * sizeof(cl_uchar));
-	vector<Triangle> tris = triangles;
 	for (int i = 0; i < triangles.size(); i++) {
-		cl_float3 v0 = { tris[i].v0.x, tris[i].v0.y, tris[i].v0.z };
-		cl_float3 v1 = { tris[i].v1.x, tris[i].v1.y, tris[i].v1.z };
-		cl_float3 v2 = { tris[i].v2.x, tris[i].v2.y, tris[i].v2.z };
-		cl_float3 c = { tris[i].colour.x, tris[i].colour.y, tris[i].colour.z };
-		cl_float3 normal = { tris[i].normal.x, tris[i].normal.y, tris[i].normal.z };
+		cl_float3 v0 = { triangles[i].v0.x, triangles[i].v0.y, triangles[i].v0.z };
+		cl_float3 v1 = { triangles[i].v1.x, triangles[i].v1.y, triangles[i].v1.z };
+		cl_float3 v2 = { triangles[i].v2.x, triangles[i].v2.y, triangles[i].v2.z };
+		cl_float3 c = { triangles[i].colour.x, triangles[i].colour.y, triangles[i].colour.z };
+		cl_float3 normal = { triangles[i].normal.x, triangles[i].normal.y, triangles[i].normal.z };
 		cl_triangles[i] = v0;
 		cl_triangles[triangles.size() + i] = v1;
 		cl_triangles[triangles.size()*2 + i] = v2;
 		cl_triangles[triangles.size()*3 + i] = c;
 		cl_triangles[triangles.size()*4 + i] = normal;
 		cl_uchar props = 0;
-		if (tris[i].reflective) {
+		if (triangles[i].reflective) {
 			props = 1;
 		}
 		properties[i] = props;
@@ -105,7 +104,6 @@ void RayTracerCL::update(float dt) {
  
 void RayTracerCL::draw(int width, int height) {
 	cl_float3 lightLoc = vecToFloat(light.position);
-
 	if (refresh) {
 		cl_float viewOffset = (cl_float)camera.viewOffset;
 		cameraArray[0] = camera.position.x;
@@ -156,7 +154,7 @@ void RayTracerCL::draw(int width, int height) {
 		for (int x = 0; x < width; ++x) {
 			cl_float3 pixel = image[(y*height + x)];
 
-			vec3 lightColour(pixel.x, pixel.y, pixel.z);
+			vec3 lightColour(std::min(pixel.x, 1.0f), std::min(pixel.y, 1.0f), std::min(pixel.z,1.0f));
 			if (refresh) {
 				averageImage[(y*height + x)] = lightColour;
 			}
