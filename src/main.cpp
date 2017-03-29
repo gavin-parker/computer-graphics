@@ -91,8 +91,8 @@ shared_ptr<Scene> sceneB(
         string samples(argv[2]);
         sampleCount = atoi(samples.c_str());
       }
-      ConvergentGlobalIllumination engine(scene, sampleCount, 1024, 1024);
-      RayTracer screen(1024, 1024, engine, softLight, geometry, boxBVH, false);
+      ConvergentGlobalIllumination engine(scene, sampleCount, 512, 512);
+      RayTracer screen(512, 512, engine, softLight, geometry, boxBVH, false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "baked") {

@@ -56,7 +56,7 @@ vec3 GlobalIllumination::trace(Ray &ray, int bounces) {
 				sample.x * normalX.y + sample.y * normal.y + sample.z * normalY.y,
 				sample.x * normalX.z + sample.y * normal.z + sample.z * normalY.z);
 
-			Ray bounce(ray.collisionLocation(), ray.getDirection());
+			Ray bounce(ray.collisionLocation() + direction*0.001f, direction);
 			// return this + new collision point 
 			if (boundingVolume.calculateIntersection(bounce)) {
 				indirectLight += r1 * trace(bounce, bounces - 1);
