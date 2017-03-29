@@ -18,9 +18,9 @@ public:
   vec2 vt0, vt1, vt2, et1, et2;
   vec3 vn0, vn1, vn2, en1, en2, normal;
   shared_ptr<const Material> mat;
-  const bool reflective;
-  const bool refractive;
-  const vec3 colour;
+  bool reflective;
+  bool refractive;
+  vec3 colour;
 
   static vec3 calculateNormal(vec3 v0, vec3 v1, vec3 v2);
 

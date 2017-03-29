@@ -20,11 +20,7 @@ int lerpI(int a, int b, float t);
 Vertex lerpV(Vertex a, Vertex b, float a_z, float b_z, float c_z, float t);
 
 Pixel lerpP(Pixel a, Pixel b, float t);
-inline Pixel lerpP(Pixel a, Pixel b, float t) {
-	float c_z = lerpF(a.depth, b.depth, t);
-  return Pixel(lerpI(a.x, b.x, t), lerpI(a.y, b.y, t),
-               c_z, lerpV(a.v, b.v,a.depth, b.depth, c_z, t));
-}
+
 
 //given a line and a new 2d point, finds the new corresponding 3d point on the line
 inline vec4 pointOnLine(Line line, vec2 newPoint) {

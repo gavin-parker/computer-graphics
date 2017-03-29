@@ -10,7 +10,6 @@
 #include "baked_gi.h"
 #include "flatlighting.h"
 #include "sdlscreen.h"
-#include "testmodel.h"
 #include <limits>
 #include <omp.h>
 #include <unordered_set>

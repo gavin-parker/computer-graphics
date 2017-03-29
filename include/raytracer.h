@@ -8,7 +8,6 @@
 #include "light.h"
 #include "lightingengine.h"
 #include "sdlscreen.h"
-#include "testmodel.h"
 #include "bvh.h"
 
 using std::numeric_limits;

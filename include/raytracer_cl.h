@@ -9,7 +9,6 @@
 #include "camera.h"
 #include "convergent_gi.h"
 #include "sdlscreen.h"
-#include "testmodel.h"
 #include "bvh.h"
 #ifdef unix
 #include <sys/resource.h>

@@ -29,7 +29,7 @@ vec3 GlobalIllumination::trace(Ray &ray, int bounces) {
 	vec3 normalX;
 	vec3 normalY;
 
-	if (abs(normal.x) > abs(normal.y)) {
+	if (std::abs(normal.x) > std::abs(normal.y)) {
 		normalX = vec3(normal.z, 0, -normal.x) / sqrtf(normal.x*normal.x + normal.z*normal.z);
 	}
 	else {
