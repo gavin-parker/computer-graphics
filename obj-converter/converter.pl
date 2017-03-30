@@ -1,11 +1,15 @@
 
 :- module(converter, [
+              convert/0,
               convert/2,
               convert/3
           ]).
 
 :- use_module(obj_gen).
 :- use_module(obj).
+
+convert :-
+    convert(["Box"-"box.obj", "Teapot"-"teapot.obj"], "objects.cpp").
 
 convert(Objects, Output) :-
     open(Output, write, Stream),
@@ -32,3 +36,4 @@ objects([Name-Input|Objects]) -->
 object(Name, Input, Codes, Rest) :-
     obj_file(Object, Input),
     generate_object(Name, Object, Codes, Rest).
+

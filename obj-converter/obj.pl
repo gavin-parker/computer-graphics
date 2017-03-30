@@ -6,6 +6,7 @@
 :- use_module(library(dcg/basics)).
 :- use_module(library(pio)).
 
+:- use_module(debug_format).
 :- use_module(diff_list).
 :- use_module(mtl).
 :- use_module(util).
@@ -57,14 +58,14 @@ read_line(o(Vs0, Ts, Ns, G_Current, G_All, M_Current, M_All), o(Vs1, Ts, Ns, G_C
     vertex(V),
     {
 	convert_to_vec3(V, V3),
-        format("vertex: ~w\n", V3),
+        debug_format("vertex: ~w\n", V3),
         diff_list_append(Vs0, V3, Vs1)
     }.
 
 read_line(o(Vs, Ts0, Ns, G_Current, G_All, M_Current, M_All), o(Vs, Ts1, Ns, G_Current, G_All, M_Current, M_All)) -->
     texture_coordinate(T),
     {
-        format("texture coord: ~w\n", T),
+        debug_format("texture coord: ~w\n", T),
         diff_list_append(Ts0, T, Ts1)
     }.
 
@@ -72,14 +73,14 @@ read_line(o(Vs, Ts, Ns0, G_Current, G_All, M_Current, M_All), o(Vs, Ts, Ns1, G_C
     vertex_normal(N),
     {
 	convert_to_vec3(N, N3),
-        format("normal: ~w\n", N3),
+        debug_format("normal: ~w\n", N3),
         diff_list_append(Ns0, N3, Ns1)
     }.
 
 read_line(o(Vs, Ts, Ns, G_Current, G_All0, M_Current, M_All), o(Vs, Ts, Ns, G_Current, G_All1, M_Current, M_All)) -->
     face(F, M_Current),
     {
-        format("face: ~w\n", F),
+        debug_format("face: ~w\n", F),
         add_face(F, G_Current, G_All0, G_All1)
     }.
 
@@ -105,7 +106,7 @@ read_line(State, State) -->
 	string_without("\r\n", Line_Codes),
 	{
 	    string_codes(Line, Line_Codes),
-	    format("Unknown line ~w", [Line])
+	    debug_format("Unknown line ~w", [Line])
 	}.
 
 

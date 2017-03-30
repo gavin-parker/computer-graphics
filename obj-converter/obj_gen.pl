@@ -5,6 +5,7 @@
 
 :- use_module(library(lists)).
 
+:- use_module(debug_format).
 :- use_module(mtl_gen).
 :- use_module(values).
 
@@ -48,7 +49,7 @@ generate_face(Group, Positions, Texture_Coordinates, Normals, f(Vertex0, Vertex1
 	    vertex_info(Positions, Texture_Coordinates, Normals, Vertex0, V0, VT0, VN0),
 	    vertex_info(Positions, Texture_Coordinates, Normals, Vertex1, V1, VT1, VN1),
 	    vertex_info(Positions, Texture_Coordinates, Normals, Vertex2, V2, VT2, VN2),
-	    format("triangle: ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w\n", [Group, V0, V1, V2, VT0, VT1, VT2, VN0, VN1, VN2, Material])
+	    debug_format("triangle: ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w\n", [Group, V0, V1, V2, VT0, VT1, VT2, VN0, VN1, VN2, Material])
 	},
 	"AddFace(",
 	comma_separated_values([string(Group), V0, V1, V2, VT0, VT1, VT2, VN0, VN1, VN2, string(Material)]),
@@ -57,7 +58,7 @@ generate_face(Group, Positions, Texture_Coordinates, Normals, f(Vertex0, Vertex1
 
 vertex_info(Positions, _Texture_Coordinates, _Normals, Position_Index, Position, Texture_Coordinate, Normal) :-
 	integer(Position_Index),
-	nth0(Position_Index, Positions, Position),
+	nth1(Position_Index, Positions, Position),
 	default_texture_coordinate(Texture_Coordinate),
 	default_normal(Normal).
 
