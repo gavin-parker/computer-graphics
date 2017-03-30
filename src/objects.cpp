@@ -1,7 +1,5 @@
 #include "objects.h"
 
-#include "../obj-converter/box.cpp"
-
 BoundingVolume Box::createBoundingVolume() {
   BoundingVolume room(groups["room"]);
 
@@ -9,4 +7,8 @@ BoundingVolume Box::createBoundingVolume() {
   room.setSubVolume(BoundingVolume(groups["tall"]));
 
   return room;
+}
+
+BoundingVolume Teapot::createBoundingVolume() {
+  return BoundingVolume(groups[""]);
 }

@@ -1,7 +1,6 @@
 :- module(obj_gen, [
-              generate_object//2
+              generate_object//1
           ]).
-
 
 :- use_module(library(lists)).
 
@@ -9,15 +8,11 @@
 :- use_module(mtl_gen).
 :- use_module(values).
 
-generate_object(Object_Name, o(V, T, N, G, M)) -->
-	Object_Name,
-	"::",
-	Object_Name,
-	"(){\n",
+generate_object(o(V, T, N, G, M)) -->
 	generate_materials(M),
-	generate_groups(V, T, N, G),
-	"}\n".
-
+	"Groups: ",
+	space_separated_values([list_count(G), eol]),
+	generate_groups(V, T, N, G).
 
 generate_groups(_V, _T, _N, []) -->
 	"",
@@ -30,9 +25,8 @@ generate_groups(V, T, N, [Group|Groups]) -->
 
 
 generate_group(V, T, N, Name-Faces) -->
-	"AddGroup(",
-	comma_separated_values([string(Name)]),
-	");\n",
+	"Group: ",
+	space_separated_values([string(Name), list_count(Faces), eol]),
 	generate_faces(Name, V, T, N, Faces).
 
 generate_faces(_G, _V, _T, _N, []) -->
@@ -51,9 +45,8 @@ generate_face(Group, Positions, Texture_Coordinates, Normals, f(Vertex0, Vertex1
 	    vertex_info(Positions, Texture_Coordinates, Normals, Vertex2, V2, VT2, VN2),
 	    debug_format("triangle: ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w\n", [Group, V0, V1, V2, VT0, VT1, VT2, VN0, VN1, VN2, Material])
 	},
-	"AddFace(",
-	comma_separated_values([string(Group), V0, V1, V2, VT0, VT1, VT2, VN0, VN1, VN2, string(Material)]),
-	");\n".
+	"Face: ",
+	space_separated_values([string(Group), V0, V1, V2, VT0, VT1, VT2, VN0, VN1, VN2, string(Material), eol]).
 
 
 vertex_info(Positions, _Texture_Coordinates, _Normals, Position_Index, Position, Texture_Coordinate, Normal) :-

@@ -18,7 +18,8 @@ using std::string;
 using std::vector;
 
 class Object {
-protected:
+private:
+  string fileName;
   map<string, shared_ptr<Material>> materials;
   map<string, shared_ptr<vector<Triangle>>> groups;
 
@@ -45,10 +46,31 @@ protected:
                                     materials[matName]);
   }
 
+  unsigned readMaterialsCount();
+
+  void readMaterial();
+
+  unsigned readGroupsCount();
+
+  unsigned readFacesCount();
+
+  void readFace();
+
+  string readString();
+
+  vec2 readVec2();
+
+  vec3 readVec3();
+
+protected:
+  BoundingVolume getBoundingVolume(string GroupName);
+
 public:
-  Object() {}
+  Object(string FileName) {}
 
   virtual ~Object() {}
+
+  void load();
 
   vector<Triangle> allTriangles() {
     vector<Triangle> triangles;

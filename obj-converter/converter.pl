@@ -1,39 +1,24 @@
 
 :- module(converter, [
               convert/0,
-              convert/2,
-              convert/3
+              convert/2
           ]).
 
 :- use_module(obj_gen).
 :- use_module(obj).
 
 convert :-
-    convert(["Box"-"box.obj", "Teapot"-"teapot.obj"], "objects.cpp").
+    convert("box.obj", "box.sobj"),
+    convert("teapot.obj", "teapot.sobj").
 
-convert(Objects, Output) :-
+convert(Input, Output) :-
+    object(Input, Object_Codes),
+    string_codes(String, Object_Codes),
     open(Output, write, Stream),
-    objects_file(Objects, Codes, []),
-    string_codes(String, Codes),
     write(Stream, String),
     close(Stream).
 
-convert(Name, Input, Output) :-
-    convert([Name-Input], Output).
-
-objects_file(Objects) -->
-    "#include \"objects.h\"\n\n",
-    objects(Objects).
-
-objects([]) -->
-    "".
-
-objects([Name-Input|Objects]) -->
-    object(Name, Input),
-    !,
-    objects(Objects).
-
-object(Name, Input, Codes, Rest) :-
+object(Input, Object_Codes) :-
     obj_file(Object, Input),
-    generate_object(Name, Object, Codes, Rest).
+    generate_object(Object, Object_Codes, []).
 

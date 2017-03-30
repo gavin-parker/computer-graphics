@@ -8,3 +8,10 @@ public:
 
   BoundingVolume createBoundingVolume();
 };
+
+class Teapot : public Object {
+public:
+  Teapot();
+
+  BoundingVolume createBoundingVolume();
+};

@@ -4,19 +4,23 @@
 
 :- use_module(values).
 
-generate_materials(Materials, Codes, Rest) :-
-    dict_pairs(Materials, _, Pairs),
-    materials(Pairs, Codes, Rest).
+generate_materials(Materials) -->
+    "Materials: ",
+    {
+        dict_pairs(Materials, _, Pairs)
+    },
+    space_separated_values([list_count(Pairs), eol]),
+    materials(Pairs).
 
 materials([]) -->
     "",
     !.
 
 materials([(Name-Material)|Materials]) -->
-          "AddMaterial(",
+          "Material: ",
           {
               Material = M
           },
-          comma_separated_values([string(Name), M.ka, M.kd, M.ks, M.ns, M.map_ka, M.map_kd, M.map_ks, M.map_ks, M.mirror]),
-          ");\n",
+          space_separated_values([string(Name), M.ka, M.kd, M.ks, M.ns, M.map_ka, M.map_kd, M.map_ks, M.map_ks, M.mirror, eol]),
+          !,
           materials(Materials).

@@ -1,36 +1,48 @@
 :- module(values, [
-              comma_separated_values//1,
-              value//1
+	      space_separated_values//1,
+              comma_separated_values//1
           ]).
 
 :- use_module(library(dcg/basics)).
 
-comma_separated_values([]) -->
+space_separated_values(Values) -->
+	separated_values(" ", Values).
+
+
+comma_separated_values(Values) -->
+	separated_values(", ", Values).
+
+
+separated_values(_Separator, []) -->
 	"",
 	!.
 
-comma_separated_values([null|Values]) -->
+separated_values(Separator, [eol|Values]) -->
+	value(eol),
 	!,
-	comma_separated_values(Values).
+	separated_values(Separator, Values).
 
-comma_separated_values([Value|Values]) -->
+separated_values(Separator, [Value|Values]) -->
 	value(Value),
 	!,
-	comma_separated_values_tail(Values).
+	separated_values_tail(Separator, Values).
 
 
-comma_separated_values_tail([]) -->
-	"".
+separated_values_tail(_Separator, []) -->
+	"",
+	!.
 
-comma_separated_values_tail([null|Values]) -->
+separated_values_tail(Separator, [eol|Values]) -->
+	value(eol),
 	!,
-	comma_separated_values_tail(Values).
+	separated_values_tail(Separator, Values).
 
-comma_separated_values_tail([Value|Values]) -->
-	", ",
+separated_values_tail(Separator, [Value|Values]) -->
+	Separator,
 	value(Value),
 	!,
-	comma_separated_values_tail(Values).
+	separated_values_tail(Separator, Values).
+
 
 
 vec2(X, Y) -->
@@ -50,8 +62,18 @@ vec4(X, Y, Z, W) -->
 	comma_separated_values([number(X), number(Y), number(Z), number(W)]),
 	")".
 
+value(null) -->
+	"null".
+
+value(eol) -->
+	"\n".
+
 value(number(N)) -->
 	number(N).
+
+value(list_count(List), Codes, Rest) :-
+	length(List, Length),
+	value(number(Length), Codes, Rest).
 
 value(vt(U, V)) -->
 	vec2(U, V).
@@ -81,12 +103,12 @@ value(file(File)) -->
 	value(string(File)).
 
 value(string(String)) -->
-	"string(\"",
+	"\"",
 	{
 	      value_codes(String, Codes)
 	},
 	Codes,
-	"\")".
+	"\"".
 
 value(bool(true)) -->
 	"true".
