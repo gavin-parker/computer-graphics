@@ -2,9 +2,9 @@
 
 #include "material.h"
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <vector>
-#include <limits>
 
 using std::shared_ptr;
 using std::vector;
@@ -16,11 +16,11 @@ class Cube;
 
 class Cube {
 public:
-	vec3 a,b;
+  vec3 a, b;
 
-	Cube(vec3 a, vec3 b);
+  Cube(vec3 a, vec3 b);
 
-	Cube(const shared_ptr<const vector<Triangle>> triangles);
+  Cube(const Ptr_Triangles &triangles);
 
-	bool calculateIntersection(Ray &ray) const;
+  bool calculateIntersection(Ray &ray) const;
 };

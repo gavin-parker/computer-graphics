@@ -19,7 +19,7 @@ void BakedGI::constructImage() {
                                 static_cast<float>(y) / resolution));
         triangle.calculateIntersection(ray);
         image[i][y * resolution + x] = trace(ray, total_bounces);
-      }s	
+      }s
     }
   }*/
   cout << "Done! \n";

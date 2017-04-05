@@ -23,7 +23,7 @@ using std::vector;
 class Object {
 private:
   map<string, shared_ptr<const Material>> materials;
-  map<string, shared_ptr<vector<Triangle>>> groups;
+  map<string, Ptr_Triangles> groups;
 
   void readMaterials(FILE *file);
 
@@ -59,7 +59,7 @@ public:
 
   virtual ~Object();
 
-  vector<Triangle> allTriangles();
+  Ptr_Triangles allTriangles();
 
   virtual BoundingVolume createBoundingVolume() = 0;
 };

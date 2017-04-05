@@ -43,6 +43,8 @@ bool Triangle::calculateIntersection(Ray &ray) const {
 
 // Position
 
+vector<vec3> Triangle::getVertices() const { return {v0, v1, v2}; }
+
 vec3 Triangle::getPosition(vec2 uv) const { return v0 + uv.x * e1 + uv.y * e2; }
 
 vec3 Triangle::getPosition(vec3 bary) const {
@@ -138,3 +140,5 @@ vec3 Triangle::specularColour(vec3 bary, vec3 lightIncidentDirection,
                             lightIncidentDirection, getNormal(bary),
                             lightColour, cameraIncidentDirection);
 }
+
+bool Triangle::isMirrored() const { return mat->isMirrored; }

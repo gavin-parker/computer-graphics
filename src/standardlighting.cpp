@@ -11,11 +11,12 @@ vec3 StandardLighting::calculateLight(Ray &ray, ivec2 pixel) {
 
   vec3 lightColour(0, 0, 0);
   vector<Ray> rays = light.calculateRays(ray.collisionLocation());
-  //calculate average light at a point -- works with multiple li ght rays
+  // calculate average light at a point -- works with multiple li ght rays
   for (int i = 0; (size_t)i < rays.size(); i++) {
-	  Ray lightRay = rays[i];
+    Ray lightRay = rays[i];
 
-	  if (boundingVolume.calculateAnyIntersection(lightRay, ray, true) && sametriangle(lightRay.getCollision(), ray.getCollision())) {
+    if (boundingVolume.calculateAnyIntersection(lightRay, ray, true) &&
+        lightRay.getCollision() == ray.getCollision()) {
 
       lightColour += light.directLight(ray) * ray.collisionDiffuseColour() +
                      ray.collisionSpecularColour(lightRay.getDirection(),
@@ -33,8 +34,8 @@ bool StandardLighting::ClosestIntersection(Ray &ray) {
 
   bool anyIntersection = false;
 
-  for (const Triangle &triangle : triangles) {
-    anyIntersection |= triangle.calculateIntersection(ray);
+  for (const Ptr_Triangle &triangle : triangles) {
+    anyIntersection |= triangle->calculateIntersection(ray);
   }
 
   return anyIntersection;
@@ -45,8 +46,8 @@ bool StandardLighting::anyIntersection(Ray &ray, Ray &surface) {
   bool anyIntersection = false;
   float lightDistance = ray.getLength();
   ray.extendToInfinity();
-  for (const Triangle &triangle : triangles) {
-    anyIntersection |= triangle.calculateIntersection(ray);
+  for (const Ptr_Triangle &triangle : triangles) {
+    anyIntersection |= triangle->calculateIntersection(ray);
     if (anyIntersection && ray.getCollision() != surface.getCollision() &&
         ray.getLength() < lightDistance) {
       return anyIntersection;

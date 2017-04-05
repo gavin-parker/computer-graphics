@@ -4,11 +4,11 @@
 #include <omp.h>
 
 #include "baked_gi.h"
+#include "baked_gi.h"
 #include "camera.h"
+#include "flatlighting.h"
 #include "lightingengine.h"
 #include "rastlighting.h"
-#include "baked_gi.h"
-#include "flatlighting.h"
 #include "sdlscreen.h"
 #include <limits>
 #include <omp.h>
@@ -28,8 +28,8 @@ public:
 private:
   vector<float> depthBuffer;
   vector<float> shadowBuffer;
-  const vector<Triangle> &triangles;
-  vector<Triangle> clipped_triangles;
+  const Ptr_Triangles &triangles;
+  Ptr_Triangles clipped_triangles;
   Camera camera;
   Light &light;
   LightingEngine &lighting;
@@ -59,23 +59,20 @@ protected:
   void draw(int width, int height) override;
 
 public:
-  Rasteriser(int width, int height, LightingEngine &lighting, Scene &scene, vec3 cameraPos = vec3(277.5f, 277.5f, -480.64) ,bool useShadows = true, bool fullscreen = false);
+  Rasteriser(int width, int height, LightingEngine &lighting, Scene &scene,
+             vec3 cameraPos = vec3(277.5f, 277.5f, -480.64),
+             bool useShadows = true, bool fullscreen = false);
 };
 
 namespace std {
-	template<>
-	struct hash<vec3>
-	{
-		size_t operator()(const vec3& k)const
-		{
-			return std::hash<float>()(k.x) ^ std::hash<float>()(k.y) ^ std::hash<float>()(k.z);
-		}
+template <> struct hash<vec3> {
+  size_t operator()(const vec3 &k) const {
+    return std::hash<float>()(k.x) ^ std::hash<float>()(k.y) ^
+           std::hash<float>()(k.z);
+  }
 
-		bool operator()(const vec3& a, const vec3& b)const
-		{
-			return a.x == b.x && a.y == b.y && a.z == b.z;
-		}
-	};
+  bool operator()(const vec3 &a, const vec3 &b) const {
+    return a.x == b.x && a.y == b.y && a.z == b.z;
+  }
+};
 }
-
-

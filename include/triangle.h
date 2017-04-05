@@ -10,17 +10,17 @@ using glm::reflect;
 
 class Triangle;
 
+typedef shared_ptr<const Triangle> Ptr_Triangle;
+typedef vector<Ptr_Triangle> Ptr_Triangles;
+
 #include "ray.h"
 
 class Triangle {
 public:
-  vec3 v0, v1, v2, e1, e2;
-  vec2 vt0, vt1, vt2, et1, et2;
-  vec3 vn0, vn1, vn2, en1, en2, normal;
-  shared_ptr<const Material> mat;
-  bool reflective;
-  bool refractive;
-  vec3 colour;
+  const vec3 v0, v1, v2, e1, e2;
+  const vec2 vt0, vt1, vt2, et1, et2;
+  const vec3 vn0, vn1, vn2, en1, en2, normal;
+  const shared_ptr<const Material> mat;
 
   static vec3 calculateNormal(vec3 v0, vec3 v1, vec3 v2);
 
@@ -35,6 +35,8 @@ public:
   bool calculateIntersection(Ray &ray) const;
 
   // Position
+
+  vector<vec3> getVertices() const;
 
   vec3 getPosition(vec2 uv) const;
 
@@ -85,4 +87,6 @@ public:
 
   vec3 specularColour(vec3 bary, vec3 lightIncidentDirection, vec3 lightColour,
                       vec3 cameraIncidentDirection) const;
+
+  bool isMirrored() const;
 };
