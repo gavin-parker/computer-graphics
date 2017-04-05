@@ -1,19 +1,22 @@
 #include "material.h"
 
-Material::Material() {}
+Material::Material()
+    : Material(vec3(0.1, 0.1, 0.1), vec3(0.75, 0.75, 0.75),
+               vec3(0.75, 0.75, 0.75), 500, false, false) {}
 
 Material::Material(vec3 ka, vec3 kd, vec3 ks, vec4::value_type ns,
-                   bool isMirrored)
-    : Material(ka, kd, ks, ns, "", "", "", "", isMirrored) {}
+                   bool isMirrored, bool isRefractive)
+    : Material(ka, kd, ks, ns, "", "", "", "", isMirrored, isRefractive) {}
 
 Material::Material(vec3 ka, vec3 kd, vec3 ks, vec4::value_type ns,
                    const string &mapKa, const string &mapKd,
-                   const string &mapKs, const string &mapNs, bool isMirrored)
+                   const string &mapKs, const string &mapNs, bool isMirrored,
+                   bool isRefractive)
     : ambientTexture(vec4(ka, 1.0f), mapKa),
       diffuseTexture(vec4(kd, 1.0f), mapKd),
       specularTexture(vec4(ka, 1.0f), mapKa),
       specularExponentTexture(vec4(1.0f, 1.0f, 1.0f, ns), mapNs),
-      isMirrored(isMirrored) {}
+      isMirrored(isMirrored), isRefractive(isRefractive) {}
 
 vec3 Material::ambient() const { return vec3(ambientTexture.getScale()); }
 

@@ -84,6 +84,11 @@ read_line(Current_Materials, New_Materials, Current_Material, Current_Material) 
 	mirror,
 	update_material_property(Current_Materials, Current_Material, mirror, bool(true), New_Materials).
 
+read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
+	refractive,
+	update_material_property(Current_Materials, Current_Material, refractive, bool(true), New_Materials).
+
+
 read_line(Materials, Materials, Material, Material) -->
 	comment.
 
@@ -118,16 +123,21 @@ new_material(Name) -->
 
 
 default_material(
-    mtl{ka:Ka, kd:Kd, ks:Ks, ns:Ns, map_ka:Map_Ka, map_kd:Map_Kd, map_ks:Map_Ks, map_ns:Map_Ns, mirror:Mirror}) :-
+    mtl{
+	ka:Ka,
+	kd:Kd,
+	ks:Ks,
+	ns:number(0),
+	map_ka:file(""),
+	map_kd:file(""),
+	map_ks:file(""),
+	map_ns:file(""),
+	mirror:bool(false),
+	refractive:bool(false)
+    }) :-
 	white(Ka),
 	white(Kd),
-	black(Ks),
-	Ns = number(0),
-	Map_Ka = file(""),
-	Map_Kd = file(""),
-	Map_Ks = file(""),
-	Map_Ns = file(""),
-	Mirror = bool(false).
+	black(Ks).
 
 
 black(rgb(0.0, 0.0, 0.0)).
@@ -202,4 +212,9 @@ k_map(Name, file(File)) -->
 mirror -->
 	whites,
 	"mirror",
+	white_eol.
+
+refractive -->
+	whites,
+	"refractive",
 	white_eol.

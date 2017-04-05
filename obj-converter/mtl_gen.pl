@@ -21,6 +21,6 @@ materials([(Name-Material)|Materials]) -->
           {
               Material = M
           },
-          space_separated_values([string(Name), M.ka, M.kd, M.ks, M.ns, M.map_ka, M.map_kd, M.map_ks, M.map_ks, M.mirror, eol]),
+          space_separated_values([string(Name), M.ka, M.kd, M.ks, M.ns, M.map_ka, M.map_kd, M.map_ks, M.map_ns, M.mirror, M.refractive, eol]),
           !,
           materials(Materials).

@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     /*const shared_ptr<const vector<Triangle>> geometry = loadTestModel();
     const shared_ptr<BoundingVolume> cornelBVH = loadTestModelBVH();*/
 
-    Box box;
+    Teapot box;
 
     vector<Triangle> geometry = box.allTriangles();
 
@@ -118,7 +118,7 @@ shared_ptr<Scene> sceneB(
     cout << "Please enter a mode:" << endl
          << "\tstars - starts" << endl
          << "\tray - raytracer" << endl
-        //<< "\trast - rasterizer" << endl	
+        //<< "\trast - rasterizer" << endl
         ;
   }
   return EXIT_SUCCESS;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdio>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -11,6 +12,8 @@
 #include "lodepng.h"
 #include "triangle.h"
 
+using std::cerr;
+using std::endl;
 using std::make_shared;
 using std::map;
 using std::shared_ptr;
@@ -19,69 +22,44 @@ using std::vector;
 
 class Object {
 private:
-  string fileName;
-  map<string, shared_ptr<Material>> materials;
+  map<string, shared_ptr<const Material>> materials;
   map<string, shared_ptr<vector<Triangle>>> groups;
 
-  template <typename... MatArgs>
-  void AddMaterial(const string &Name, MatArgs &&... matArgs) {
-    materials.emplace(Name,
-                      make_shared<Material>(std::forward<MatArgs>(matArgs)...));
-  }
+  void readMaterials(FILE *file);
 
-  void AddGroup(const string &groupName) {
-    groups.emplace(groupName, make_shared<vector<Triangle>>());
-  }
+  void readMaterial(FILE *file);
 
-  void AddFace(const string &groupName, vec3 v0, vec3 v1, vec3 v2, vec2 vt0,
-               vec2 vt1, vec2 vt2, string matName) {
-    groups[groupName]->emplace_back(v0, v1, v2, vt0, vt1, vt2,
-                                    materials[matName]);
-  }
+  void readGroups(FILE *file);
 
-  void AddFace(const string &groupName, vec3 v0, vec3 v1, vec3 v2, vec2 vt0,
-               vec2 vt1, vec2 vt2, vec3 vn0, vec3 vn1, vec3 vn2,
-               string matName) {
-    groups[groupName]->emplace_back(v0, v1, v2, vt0, vt1, vt2, vn0, vn1, vn2,
-                                    materials[matName]);
-  }
+  void readGroup(FILE *file);
 
-  unsigned readMaterialsCount();
+  void readFace(FILE *file);
 
-  void readMaterial();
+  void skipText(FILE *file, const string &text);
 
-  unsigned readGroupsCount();
+  bool readBool(FILE *file);
 
-  unsigned readFacesCount();
+  unsigned readCount(FILE *file);
 
-  void readFace();
+  vec4::value_type readScalar(FILE *file);
 
-  string readString();
+  string readString(FILE *file);
 
-  vec2 readVec2();
+  vec2 readVec2(FILE *file);
 
-  vec3 readVec3();
+  vec3 readVec3(FILE *file);
 
 protected:
-  BoundingVolume getBoundingVolume(string GroupName);
+  BoundingVolume getBoundingVolume(string groupName);
+
+  void load(string fileName);
 
 public:
-  Object(string FileName) {}
+  Object();
 
-  virtual ~Object() {}
+  virtual ~Object();
 
-  void load();
-
-  vector<Triangle> allTriangles() {
-    vector<Triangle> triangles;
-
-    for (const auto &group : groups) {
-      triangles.insert(triangles.end(), group.second->begin(),
-                       group.second->end());
-    }
-
-    return triangles;
-  }
+  vector<Triangle> allTriangles();
 
   virtual BoundingVolume createBoundingVolume() = 0;
 };

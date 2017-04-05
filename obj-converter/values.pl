@@ -46,21 +46,15 @@ separated_values_tail(Separator, [Value|Values]) -->
 
 
 vec2(X, Y) -->
-	"vec2(",
-	comma_separated_values([number(X), number(Y)]),
-	")".
+	space_separated_values([number(X), number(Y)]).
 
 
 vec3(X, Y, Z) -->
-	"vec3(",
-	comma_separated_values([number(X), number(Y), number(Z)]),
-	")".
+	space_separated_values([number(X), number(Y), number(Z)]).
 
 
 vec4(X, Y, Z, W) -->
-	"vec4(",
-	comma_separated_values([number(X), number(Y), number(Z), number(W)]),
-	")".
+	comma_separated_values([number(X), number(Y), number(Z), number(W)]).
 
 value(null) -->
 	"null".
@@ -103,18 +97,22 @@ value(file(File)) -->
 	value(string(File)).
 
 value(string(String)) -->
-	"\"",
+	"s(",
 	{
-	      value_codes(String, Codes)
+	    value_codes(String, String_Codes),
+	    length(String_Codes, String_Length)
 	},
-	Codes,
-	"\"".
+	integer(String_Length),
+	",",
+	String_Codes,
+	")".
+
 
 value(bool(true)) -->
-	"true".
+	"1".
 
 value(bool(false)) -->
-	"false".
+	"0".
 
 value_codes(Value, Codes) :-
 	atom(Value),

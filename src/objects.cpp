@@ -1,14 +1,16 @@
 #include "objects.h"
 
-BoundingVolume Box::createBoundingVolume() {
-  BoundingVolume room(groups["room"]);
+Box::Box() { load("obj-converter/box.sobj"); }
 
-  room.setSubVolume(BoundingVolume(groups["short"]));
-  room.setSubVolume(BoundingVolume(groups["tall"]));
+BoundingVolume Box::createBoundingVolume() {
+  BoundingVolume room = getBoundingVolume("room");
+
+  room.setSubVolume(getBoundingVolume("short"));
+  room.setSubVolume(getBoundingVolume("tall"));
 
   return room;
 }
 
-BoundingVolume Teapot::createBoundingVolume() {
-  return BoundingVolume(groups[""]);
-}
+Teapot::Teapot() { load("obj-converter/teapot.sobj"); }
+
+BoundingVolume Teapot::createBoundingVolume() { return getBoundingVolume(""); }

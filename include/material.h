@@ -13,11 +13,11 @@ private:
 public:
   Material();
 
-  Material(vec3 ka, vec3 kd, vec3 ks, vec4::value_type ns, bool isMirrored);
+  Material(vec3 ka, vec3 kd, vec3 ks, vec4::value_type ns, bool isMirrored, bool isRefractive);
 
   Material(vec3 ka, vec3 kd, vec3 ks, vec4::value_type ns, const string &mapKa,
            const string &mapKd, const string &mapKs, const string &mapNs,
-           bool isMirrored);
+           bool isMirrored, bool isRefractive);
 
   vec3 ambient() const;
 
@@ -37,4 +37,5 @@ public:
 
   bool isMirrored;
 
+  bool isRefractive;
 };
