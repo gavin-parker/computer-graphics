@@ -9,11 +9,11 @@ private:
   Texture ambientTexture, diffuseTexture, specularTexture,
       specularExponentTexture;
 
-
 public:
   Material();
 
-  Material(vec3 ka, vec3 kd, vec3 ks, vec4::value_type ns, bool isMirrored, bool isRefractive);
+  Material(vec3 ka, vec3 kd, vec3 ks, vec4::value_type ns, bool isMirrored,
+           bool isRefractive);
 
   Material(vec3 ka, vec3 kd, vec3 ks, vec4::value_type ns, const string &mapKa,
            const string &mapKd, const string &mapKs, const string &mapNs,
@@ -39,3 +39,5 @@ public:
 
   bool isRefractive;
 };
+
+typedef const Material *Ptr_Material;

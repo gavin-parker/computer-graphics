@@ -2,7 +2,6 @@
 
 #include "material.h"
 #include <algorithm>
-#include <memory>
 
 using glm::dot;
 using glm::normalize;
@@ -10,7 +9,7 @@ using glm::reflect;
 
 class Triangle;
 
-typedef shared_ptr<const Triangle> Ptr_Triangle;
+typedef const Triangle *Ptr_Triangle;
 typedef vector<Ptr_Triangle> Ptr_Triangles;
 
 #include "ray.h"
@@ -20,17 +19,19 @@ public:
   const vec3 v0, v1, v2, e1, e2;
   const vec2 vt0, vt1, vt2, et1, et2;
   const vec3 vn0, vn1, vn2, en1, en2, normal;
-  const shared_ptr<const Material> mat;
+  const Ptr_Material mat;
 
   static vec3 calculateNormal(vec3 v0, vec3 v1, vec3 v2);
 
   Triangle();
 
+  Triangle(const Triangle &other) = delete;
+
   Triangle(vec3 v0, vec3 v1, vec3 v2, vec2 vt0, vec2 vt1, vec2 vt2,
-           shared_ptr<const Material> mat);
+           const Material *const mat);
 
   Triangle(vec3 v0, vec3 v1, vec3 v2, vec2 vt0, vec2 vt1, vec2 vt2, vec3 vn0,
-           vec3 vn1, vec3 vn2, shared_ptr<const Material> mat);
+           vec3 vn1, vec3 vn2, const Material *const mat);
 
   bool calculateIntersection(Ray &ray) const;
 
