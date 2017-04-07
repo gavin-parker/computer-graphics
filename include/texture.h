@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "lodepng.h"
-#include "scale.h"
 
 using glm::vec2;
 using glm::vec4;

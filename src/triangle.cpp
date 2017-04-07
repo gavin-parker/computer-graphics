@@ -72,7 +72,7 @@ vec3 Triangle::getNormal(vec3 bary) const {
 // Ambient Colour
 
 vec3 Triangle::ambientColourNorm(vec2 uv, vec3 lightColour) const {
-  return scaleVec(lightColour, mat->ambient(uv));
+  return lightColour * mat->ambient(uv);
 }
 
 vec3 Triangle::ambientColour(vec2 uv, vec3 lightColour) const {
@@ -87,8 +87,8 @@ vec3 Triangle::ambientColour(vec3 bary, vec3 lightColour) const {
 
 vec3 Triangle::diffuseColourNorm(vec2 uv, vec3 lightIncidentDirection,
                                  vec3 surfaceNormal, vec3 lightColour) const {
-  return scaleVec(lightColour, dot(lightIncidentDirection, surfaceNormal) *
-                                   mat->diffuse(uv));
+  return dot(lightIncidentDirection, surfaceNormal) *
+         (lightColour * mat->diffuse(uv));
 }
 
 vec3 Triangle::diffuseColour(vec2 uv, vec3 lightIncidentDirection,
@@ -113,7 +113,7 @@ vec3 Triangle::specularColourNorm(vec3 specular, float specularExponent,
   auto specularCoefficient =
       glm::pow(dot(cameraIncidentDirection, reflection), specularExponent);
 
-  return scaleVec(lightColour, specularCoefficient * specular);
+  return lightColour * (specularCoefficient * specular);
 }
 
 vec3 Triangle::specularColour(vec3 lightIncidentDirection, vec3 lightColour,
