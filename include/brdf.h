@@ -1,9 +1,25 @@
 #pragma once
-#include "lightingengine.h"
+#include <glm/glm.hpp>
+#include "stdlib.h"
+#include "math.h"
+#include "stdio.h"
+#include <string>
+#include <iostream>
+using glm::vec3;
+using glm::length;
+
+#define BRDF_SAMPLING_RES_THETA_H       90
+#define BRDF_SAMPLING_RES_THETA_D       90
+#define BRDF_SAMPLING_RES_PHI_D         360
+
+#define RED_SCALE (1.0/1500.0)
+#define GREEN_SCALE (1.15/1500.0)
+#define BLUE_SCALE (1.66/1500.0)
+#define M_PI	3.1415926535897932384626433832795
 
 class BRDF {
 private: 
-	vec3 diffuse;
+	double* brdf;
 
 public:
 	//returns the reflection
@@ -18,6 +34,6 @@ public:
 	//shadowing factor
 	vec3 sf(float incidence, float view);
 
-	BRDF(vec3 diffuse);
+	BRDF(const char* filename);
 
 };

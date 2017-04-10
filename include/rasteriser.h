@@ -3,8 +3,6 @@
 #include <limits>
 #include <omp.h>
 
-#include "baked_gi.h"
-#include "baked_gi.h"
 #include "camera.h"
 #include "flatlighting.h"
 #include "lightingengine.h"

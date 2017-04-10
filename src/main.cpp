@@ -95,12 +95,6 @@ shared_ptr<Scene> sceneB(
       RayTracer screen(512, 512, engine, softLight, geometry, boxBVH, false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
-    } else if (mode == "baked") {
-      // BakedGI engine(scene, 5, 100);
-      // Rasteriser screen(500, 500, engine, scene, vec3(277.5f, 277.5f,
-      // -480.64), false);
-      // screen.run();
-      // screen.saveBMP("screenshot.bmp");
     }
 
 #ifdef useCL
