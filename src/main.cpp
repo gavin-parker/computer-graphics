@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     /*const shared_ptr<const vector<Triangle>> geometry = loadTestModel();
     const shared_ptr<BoundingVolume> cornelBVH = loadTestModelBVH();*/
 
-    Box box;
+    Teapot box;
 
     Ptr_Triangles geometry = box.allTriangles();
 
