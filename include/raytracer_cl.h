@@ -39,8 +39,8 @@ typedef struct CameraStruct {
 class RayTracerCL : public SdlScreen {
 private:
   // bool ClosestIntersection(Ray &ray);
-  const vector<Triangle> &triangles;
-  Camera camera;
+	const Ptr_Triangles &triangles;
+	Camera camera;
 
 	const vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
 	PointLight &light;
@@ -73,6 +73,6 @@ protected:
 public:
 	RayTracerCL(int width, int height, LightingEngine &lighting,
 		PointLight &light,
-		const vector<Triangle> &triangles, const BoundingVolume &boundingVolume, vec3 cameraPos = vec3(277.5f, 277.5f, -480.64),
+		const Ptr_Triangles &triangles, const BoundingVolume &boundingVolume, vec3 cameraPos = vec3(277.5f, 277.5f, -480.64),
 		bool fullscreen = false);
 };

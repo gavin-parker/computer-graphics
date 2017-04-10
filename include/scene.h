@@ -5,6 +5,6 @@
 
 struct Scene {
   Light &light;
-  const vector<Triangle> &triangles;
+  const Ptr_Triangles &triangles;
   const BoundingVolume &volume;
 };

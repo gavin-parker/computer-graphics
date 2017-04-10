@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 
     Teapot box;
 
-    vector<Triangle> geometry = box.allTriangles();
+    Ptr_Triangles geometry = box.allTriangles();
 
     BoundingVolume boxBVH = box.createBoundingVolume();
 
@@ -96,10 +96,11 @@ shared_ptr<Scene> sceneB(
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "baked") {
-      //BakedGI engine(scene, 5, 100);
-      //Rasteriser screen(500, 500, engine, scene, vec3(277.5f, 277.5f, -480.64), false);
-      //screen.run();
-      //screen.saveBMP("screenshot.bmp");
+      // BakedGI engine(scene, 5, 100);
+      // Rasteriser screen(500, 500, engine, scene, vec3(277.5f, 277.5f,
+      // -480.64), false);
+      // screen.run();
+      // screen.saveBMP("screenshot.bmp");
     }
 
 #ifdef useCL

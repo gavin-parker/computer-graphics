@@ -23,8 +23,8 @@ bool RastLighting::ClosestIntersection(Ray &ray) {
 
   bool anyIntersection = false;
 
-  for (const Triangle &triangle : triangles) {
-    anyIntersection |= triangle.calculateIntersection(ray);
+  for (const Ptr_Triangle &triangle : triangles) {
+    anyIntersection |= triangle->calculateIntersection(ray);
   }
 
   return anyIntersection;
@@ -35,8 +35,8 @@ bool RastLighting::anyIntersection(Ray &ray, Ray &surface) {
   bool anyIntersection = false;
   float lightDistance = ray.getLength();
   ray.extendToInfinity();
-  for (const Triangle &triangle : triangles) {
-    anyIntersection |= triangle.calculateIntersection(ray);
+  for (const Ptr_Triangle &triangle : triangles) {
+    anyIntersection |= triangle->calculateIntersection(ray);
     if (anyIntersection && ray.getCollision() != surface.getCollision() &&
         ray.getLength() < lightDistance) {
       return anyIntersection;

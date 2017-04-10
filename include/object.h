@@ -3,7 +3,6 @@
 #include <cstdio>
 #include <iostream>
 #include <map>
-#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,16 +13,14 @@
 
 using std::cerr;
 using std::endl;
-using std::make_shared;
 using std::map;
-using std::shared_ptr;
 using std::string;
 using std::vector;
 
 class Object {
 private:
-  map<string, shared_ptr<const Material>> materials;
-  map<string, shared_ptr<vector<Triangle>>> groups;
+  map<string, const Material *> materials;
+  map<string, Ptr_Triangles> groups;
 
   void readMaterials(FILE *file);
 
@@ -59,7 +56,7 @@ public:
 
   virtual ~Object();
 
-  vector<Triangle> allTriangles();
+  Ptr_Triangles allTriangles();
 
   virtual BoundingVolume createBoundingVolume() = 0;
 };

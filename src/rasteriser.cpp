@@ -5,7 +5,7 @@ Rasteriser::Rasteriser(int width, int height, LightingEngine &lighting,
                        bool fullscreen)
     : SdlScreen(width, height, fullscreen), depthBuffer(width * height),
       shadowBuffer(6 * 128 * 128), triangles(scene.triangles),
-      clipped_triangles(vector<Triangle>()),
+      clipped_triangles(Ptr_Triangles()),
       camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene.light),
       lighting(lighting), leftBuffer(triangles.size()),
       rightBuffer(triangles.size()) {}
@@ -73,14 +73,13 @@ vec4 Rasteriser::CohenSutherland(vec2 A, vec2 B, ivec2 bounds) {
 }
 
 void Rasteriser::clip(int width, int height) {
-  for (size_t t = 0; t < triangles.size(); t++) {
-    const Triangle &triangle = triangles[t];
-    vector<Vertex> vertices = {Vertex(triangle.v0, triangle.normal, vec2(1, 1),
-                                      triangle.mat->diffuse()),
-                               Vertex(triangle.v1, triangle.normal, vec2(1, 1),
-                                      triangle.mat->diffuse()),
-                               Vertex(triangle.v2, triangle.normal, vec2(1, 1),
-                                      triangle.mat->diffuse())};
+  for (const Ptr_Triangle &triangle : triangles) {
+    vector<Vertex> vertices = {Vertex(triangle->v0, triangle->normal,
+                                      vec2(1, 1), triangle->mat->diffuse()),
+                               Vertex(triangle->v1, triangle->normal,
+                                      vec2(1, 1), triangle->mat->diffuse()),
+                               Vertex(triangle->v2, triangle->normal,
+                                      vec2(1, 1), triangle->mat->diffuse())};
 
     float xMax = (float)width / 2.0;
     float yMax = (float)height / 2.0;
@@ -224,13 +223,13 @@ void Rasteriser::draw(int width, int height) {
   }
   for (size_t t = 0; t < clipped_triangles.size(); t++) {
 
-    const Triangle &triangle = (clipped_triangles)[t];
-    vector<Vertex> vertices = {Vertex(triangle.v0, triangle.normal, vec2(1, 1),
-                                      triangle.mat->diffuse()),
-                               Vertex(triangle.v1, triangle.normal, vec2(1, 1),
-                                      triangle.mat->diffuse()),
-                               Vertex(triangle.v2, triangle.normal, vec2(1, 1),
-                                      triangle.mat->diffuse())};
+    const Ptr_Triangle &triangle = (clipped_triangles)[t];
+    vector<Vertex> vertices = {Vertex(triangle->v0, triangle->normal,
+                                      vec2(1, 1), triangle->mat->diffuse()),
+                               Vertex(triangle->v1, triangle->normal,
+                                      vec2(1, 1), triangle->mat->diffuse()),
+                               Vertex(triangle->v2, triangle->normal,
+                                      vec2(1, 1), triangle->mat->diffuse())};
 
     vector<vec2> uvs = {vec2(0.0f, 0.0f), vec2(1.0f, 0.0f), vec2(0.0f, 1.0f)};
 
@@ -239,7 +238,7 @@ void Rasteriser::draw(int width, int height) {
     // here is where we do our vertex shading
     for (size_t i = 0; i < vertices.size(); i++) {
       Ray ray(camera.position, camera.position - vertices[i].position);
-      ray.updateCollision(&triangle, numeric_limits<float>::max(), uvs[i]);
+      ray.updateCollision(&*triangle, numeric_limits<float>::max(), uvs[i]);
       vec3 illumination = lighting.calculateLight(ray);
       proj[i] = VertexShader(vertices[i], width, height);
       proj[i].v.illumination = illumination;
@@ -253,18 +252,18 @@ void Rasteriser::draw(int width, int height) {
     if (projE1X * projE2Y > projE2X * projE1Y) {
       vector<Pixel> leftPixels;
       vector<Pixel> rightPixels;
-      computePolygonRows(proj, leftPixels, rightPixels, triangle);
+      computePolygonRows(proj, leftPixels, rightPixels, *triangle);
       // drawPolygonRows(width, height, leftPixels, rightPixels, triangle);
-      shadowPass(width, height, leftPixels, rightPixels, triangle);
+      shadowPass(width, height, leftPixels, rightPixels, *triangle);
       leftBuffer[t] = leftPixels;
       rightBuffer[t] = rightPixels;
     }
   }
   for (size_t t = 0; t < clipped_triangles.size(); t++) {
-    const Triangle &triangle = (clipped_triangles)[t];
+    const Ptr_Triangle &triangle = (clipped_triangles)[t];
     vector<Pixel> leftPixels = leftBuffer[t];
     vector<Pixel> rightPixels = rightBuffer[t];
-    drawPolygonRows(width, height, leftPixels, rightPixels, triangle);
+    drawPolygonRows(width, height, leftPixels, rightPixels, *triangle);
   }
 }
 
