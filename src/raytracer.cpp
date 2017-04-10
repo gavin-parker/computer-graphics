@@ -40,8 +40,6 @@ void RayTracer::draw(int width, int height) {
 
           // cameraRay.getLength() = numeric_limits<float>::max();
           if (boundingVolume.calculateIntersection(cameraRay, true)) {
-            shared_ptr<const Material> mat = cameraRay.getCollision()->mat;
-
             vec3 spec(0, 0, 0);
 
             vec3 lightColour =

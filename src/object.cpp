@@ -25,8 +25,8 @@ void Object::readMaterial(FILE *file) {
   bool isRefractive = readBool(file);
 
   materials.emplace(materialName,
-                    make_shared<Material>(ka, kd, ks, ns, mapKa, mapKd, mapKs,
-                                          mapNs, isMirror, isRefractive));
+                    new Material(ka, kd, ks, ns, mapKa, mapKd, mapKs, mapNs,
+                                 isMirror, isRefractive));
 }
 
 void Object::readGroups(FILE *file) {
@@ -81,10 +81,10 @@ void Object::readFace(FILE *file) {
   string materialName = readString(file);
 
   if (calculateNormals) {
-    groups[groupName].push_back(make_shared<const Triangle>(
-        v0, v1, v2, vt0, vt1, vt2, materials[materialName]));
+    groups[groupName].push_back(
+        new Triangle(v0, v1, v2, vt0, vt1, vt2, materials[materialName]));
   } else {
-    groups[groupName].push_back(make_shared<const Triangle>(
+    groups[groupName].push_back(new Triangle(
         v0, v1, v2, vt0, vt1, vt2, vn0, vn1, vn2, materials[materialName]));
   }
 }
@@ -181,9 +181,19 @@ void Object::load(string fileName) {
   fclose(file);
 }
 
-Object::Object() { materials.emplace("", make_shared<Material>()); }
+Object::Object() { materials.emplace("", new Material()); }
 
-Object::~Object() {}
+Object::~Object() {
+  for (const auto &group : groups) {
+    for (const auto triangle : group.second) {
+      delete triangle;
+    }
+  }
+
+  for (auto material : materials) {
+    delete material.second;
+  }
+}
 
 Ptr_Triangles Object::allTriangles() {
   Ptr_Triangles triangles;
