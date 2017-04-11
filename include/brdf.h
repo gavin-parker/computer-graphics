@@ -22,7 +22,7 @@ private:
 	double* brdf;
 
 public:
-	//returns the reflection
+	//returns the reflection amount
 	vec3 getLight(vec3 incident, vec3 view, vec3 normal);
 	
 	//microfacet distribution function
@@ -36,4 +36,5 @@ public:
 
 	BRDF(const char* filename);
 
+	BRDF();
 };

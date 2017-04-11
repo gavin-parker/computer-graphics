@@ -181,6 +181,8 @@ void Object::load(string fileName) {
   fclose(file);
 }
 
+Object::Object(BRDF &brdf) { materials.emplace("", new Material(brdf)); }
+
 Object::Object() { materials.emplace("", new Material()); }
 
 Object::~Object() {

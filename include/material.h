@@ -1,6 +1,7 @@
 #pragma once
 
 #include "texture.h"
+#include "brdf.h"
 
 using glm::vec3;
 
@@ -8,7 +9,8 @@ class Material {
 private:
   Texture ambientTexture, diffuseTexture, specularTexture,
       specularExponentTexture;
-
+  BRDF &brdf;
+  bool useBRDF = false;
 public:
   Material();
 
@@ -18,6 +20,10 @@ public:
   Material(vec3 ka, vec3 kd, vec3 ks, vec4::value_type ns, const string &mapKa,
            const string &mapKd, const string &mapKs, const string &mapNs,
            bool isMirrored, bool isRefractive);
+
+  Material(BRDF &brdf);
+
+  vec3 getReflection(vec3 incidence, vec3 view, vec3 normal) const;
 
   vec3 ambient() const;
 

@@ -280,7 +280,7 @@ kernel void pathTrace(global const float3 *triangles, float3 lightLoc,
 	float3 bounceLight = directLightHere / (float)M_PI;
 
 	// calculate the direct & indirect light for each bounce and accumulate
-	for (int i = bounceCount - 2; i >= 0; i--) {
+	for (int i = (bounceCount - 2); i >= 0; i--) {
 		Ray bounceLightRay =
 			castRayLocal(lightLoc, bounces[i].collisionLocation - lightLoc,
 				triangles);

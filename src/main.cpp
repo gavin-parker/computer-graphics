@@ -32,8 +32,9 @@ int main(int argc, char *argv[]) {
 
     /*const shared_ptr<const vector<Triangle>> geometry = loadTestModel();
     const shared_ptr<BoundingVolume> cornelBVH = loadTestModelBVH();*/
+	BRDF pvc("pvc.binary");
 
-    Teapot box;
+    Box box(pvc);
 
     Ptr_Triangles geometry = box.allTriangles();
 
@@ -86,7 +87,8 @@ shared_ptr<Scene> sceneB(
       screen.run();
       screen.saveBMP("screenshot.bmp");
     } else if (mode == "conv") {
-      int sampleCount = 10;
+      int sampleCount = 1;
+	  light.power /= 10;
       if (argc > 2) {
         string samples(argv[2]);
         sampleCount = atoi(samples.c_str());
@@ -95,13 +97,11 @@ shared_ptr<Scene> sceneB(
       RayTracer screen(512, 512, engine, softLight, geometry, boxBVH, false);
       screen.run();
       screen.saveBMP("screenshot.bmp");
-    }
-
+	}
 #ifdef useCL
     else if (mode == "cl") {
       light.power *= 10;
-      StandardLighting engine(scene);
-      RayTracerCL screen(1024, 1024, engine, light, geometry, boxBVH);
+      RayTracerCL screen(1024, 1024, light, geometry, boxBVH);
       screen.run();
       screen.saveBMP("screenshot.bmp");
     }

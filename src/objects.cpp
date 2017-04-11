@@ -1,6 +1,7 @@
 #include "objects.h"
 
 Box::Box() { load("obj-converter/box.sobj"); }
+Box::Box(BRDF &brdf) : Object(brdf){ load("obj-converter/box.sobj"); }
 
 BoundingVolume Box::createBoundingVolume() {
   BoundingVolume room = getBoundingVolume("room");

@@ -9,6 +9,7 @@ BRDF::BRDF(const char* filename){
 	read_brdf(filename, brdf);
 }
 
+BRDF::BRDF() {}
 
 float angleBetween(vec3 a, vec3 b) {
 	return acosf(dot(a, b) / length(a)*length(b));
@@ -26,7 +27,6 @@ vec3 BRDF::getLight(vec3 incident, vec3 view, vec3 normal) {
 	lookup_brdf_val(brdf, thetaL, thetaL, thetaV, thetaV, r, g, b);
 	return vec3((float)r, (float)g, (float)b);
 }
-
 
 //microfacet distribution function
 vec3 BRDF::mdf(float angle) {

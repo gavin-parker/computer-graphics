@@ -130,7 +130,7 @@ bool BoundingVolume::anyIntersection(Ray &ray, Ray &surface) const {
   bool anyIntersection = false;
   float lightDistance = ray.getLength();
   ray.extendToInfinity();
-  for (Ptr_Triangle triangle : triangles) {
+  for (auto const & triangle : triangles) {
     anyIntersection |= triangle->calculateIntersection(ray);
     if (anyIntersection && ray.getCollision() != surface.getCollision() &&
         ray.getLength() < lightDistance) {

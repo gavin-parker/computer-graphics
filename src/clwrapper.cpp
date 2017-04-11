@@ -65,12 +65,12 @@ Accelerator getGPU(int triangleCount) {
 	if (err != 0) {
 		cout << "error creating program: " << err << "\n";
 	}
-	char* options = " -Werror -cl-fast-relaxed-math -cl-mad-enable -cl-unsafe-math-optimizations -cl-denorms-are-zero";
+	char* options = " -cl-fast-relaxed-math -cl-mad-enable -cl-unsafe-math-optimizations -cl-denorms-are-zero";
 	if (gpu.program.build({ gpu.device }, options) != CL_SUCCESS) {
 		std::cout << " Error building: " << gpu.program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(gpu.device) << "\n";
 		exit(1);
 	}
-	//create_global_memory(width, height);
+	//create_global_memory(width, height);a
 	gpu.queue = cl::CommandQueue(gpu.context, gpu.device, 0Ui64, &err);
 	if (err != 0) {
 		cout << "error creating queue: " << err << "\n";

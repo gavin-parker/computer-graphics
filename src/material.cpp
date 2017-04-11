@@ -16,7 +16,7 @@ Material::Material(vec3 ka, vec3 kd, vec3 ks, vec4::value_type ns,
       diffuseTexture(vec4(kd, 1.0f), mapKd),
       specularTexture(vec4(ka, 1.0f), mapKa),
       specularExponentTexture(vec4(1.0f, 1.0f, 1.0f, ns), mapNs),
-      isMirrored(isMirrored), isRefractive(isRefractive) {}
+      isMirrored(isMirrored), isRefractive(isRefractive), brdf(BRDF()){}
 
 vec3 Material::ambient() const { return vec3(ambientTexture.getScale()); }
 
@@ -30,6 +30,19 @@ vec3 Material::specular() const { return vec3(specularTexture.getScale()); }
 
 vec3 Material::specular(vec2 uv) const { return vec3(specularTexture[uv]); }
 
+
+Material::Material(BRDF &brdf) : brdf(brdf) {
+	useBRDF = true;
+};
+
+vec3 Material::getReflection(vec3 incidence, vec3 view, vec3 normal) const {
+	if (useBRDF) {
+		return brdf.getLight(incidence, view, normal);
+	}
+	else {
+		return glm::normalize(diffuse());
+	}
+}
 float Material::specularExponent() const {
   return specularExponentTexture.getScale().a;
 }

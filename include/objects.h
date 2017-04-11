@@ -5,6 +5,7 @@
 class Box : public Object {
 public:
   Box();
+  Box(BRDF &brdf);
 
   BoundingVolume createBoundingVolume();
 };

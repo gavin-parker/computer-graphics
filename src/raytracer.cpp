@@ -10,7 +10,8 @@ RayTracer::RayTracer(int width, int height, LightingEngine &lighting,
       antialias(antialias) {}
 
 void RayTracer::update(float dt) {
-  light.update(dt);
+  bool test = light.update(dt);
+  cout << test;
   camera.update(dt);
 }
 

@@ -54,6 +54,8 @@ protected:
 public:
   Object();
 
+  Object(BRDF &brdf);
+
   virtual ~Object();
 
   Ptr_Triangles allTriangles();

@@ -1,13 +1,14 @@
 #ifdef useCL
 #include "raytracer_cl.h"
 
-RayTracerCL::RayTracerCL(int width, int height, LightingEngine &lighting,
-	PointLight &light,
+RayTracerCL::RayTracerCL(int width, int height,
+	Light &light,
 	const Ptr_Triangles &triangles, const BoundingVolume &boundingVolume, vec3 cameraPos,
 	bool fullscreen)
 	: SdlScreen(width, height, fullscreen), triangles(triangles),
-	camera(cameraPos, 0.0f, 30.0f), light(light),
-	lighting(lighting), boundingVolume(boundingVolume), averageImage(vector<vec3>(width*height)) { 
+	light(light),
+	camera(cameraPos, 0.0f, 30.0f), 
+	boundingVolume(boundingVolume), averageImage(vector<vec3>(width*height)) { 
 
 	gpu = getGPU(triangles.size());
 	create_global_memory(width, height);
@@ -93,9 +94,10 @@ void RayTracerCL::create_global_memory(int width, int height) {
 }
 
 void RayTracerCL::update(float dt) {
-	if (light.update(dt)) {
-		refresh = true;
-	}
+	//if (light.update(dt)) {
+		//refresh = true;
+	//}
+	//light.update(dt);
 	if (camera.update(dt)) {
 		refresh = true;
 	}

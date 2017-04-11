@@ -43,8 +43,7 @@ private:
 	Camera camera;
 
 	const vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
-	PointLight &light;
-	LightingEngine &lighting;
+	Light &light;
 	const BoundingVolume &boundingVolume;
 	void create_global_memory(int width, int height);
 	vector<vec3> averageImage;
@@ -71,8 +70,8 @@ protected:
 	void update(float dt) override;
 	void draw(int width, int height) override;
 public:
-	RayTracerCL(int width, int height, LightingEngine &lighting,
-		PointLight &light,
+	RayTracerCL(int width, int height,
+		Light &light,
 		const Ptr_Triangles &triangles, const BoundingVolume &boundingVolume, vec3 cameraPos = vec3(277.5f, 277.5f, -480.64),
 		bool fullscreen = false);
 };
