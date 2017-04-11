@@ -1,31 +1,25 @@
 #include "standardlighting.h"
 
-// GlobalIllumination::GlobalIllumination(){};
-
 StandardLighting::StandardLighting(const Scene &scene)
     : LightingEngine(scene.triangles, scene.light),
       boundingVolume(scene.volume){};
 
-vec3 StandardLighting::calculateLight(Ray &ray, ivec2 pixel) {
-  // ClosestIntersection(lightRay);
+vec3 StandardLighting::calculateLight(Ray &cameraRay, ivec2 pixel) {
+  vec3 lightColour = cameraRay.collisionAmbientColour(ambientColour);
 
-  vec3 lightColour(0, 0, 0);
-  vector<Ray> rays = light.calculateRays(ray.collisionLocation());
-  // calculate average light at a point -- works with multiple li ght rays
-  for (int i = 0; (size_t)i < rays.size(); i++) {
-    Ray lightRay = rays[i];
+  // calculate average light at a point -- works with multiple light rays
+  for (Ray &lightRay : light.calculateRays(cameraRay.collisionLocation())) {
+    if (boundingVolume.calculateAnyIntersection(lightRay, cameraRay, true) &&
+        lightRay.getCollision() == cameraRay.getCollision()) {
 
-    if (boundingVolume.calculateAnyIntersection(lightRay, ray, true) &&
-        lightRay.getCollision() == ray.getCollision()) {
-
-      lightColour += light.directLight(ray) * ray.collisionDiffuseColour() +
-                     ray.collisionSpecularColour(lightRay.getDirection(),
-                                                 vec3(1.0f, 1.0f, 1.0f));
+      lightColour +=
+          light.directLight(cameraRay) * cameraRay.collisionDiffuseColour() +
+          ray.collisionSpecularColour(lightRay.getDirection(),
+                                      vec3(1.0f, 1.0f, 1.0f));
     } else {
-      lightColour += ambientLight * ray.collisionDiffuseColour();
+      lightColour += ambientLight * cameraRay.collisionDiffuseColour();
     }
   }
-  lightColour /= rays.size();
   return ray.collisionDiffuseColour() * lightColour;
 }
 

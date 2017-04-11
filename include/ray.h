@@ -64,6 +64,8 @@ public:
 
   vec3 collisionAmbientColour() const;
 
+  vec3 collisionAmbientColour(vec3 lightColour) const;
+
   vec3 collisionDiffuseColour() const;
 
   vec3 collisionSpecularColour(vec3 lightDirection, vec3 lightColour) const;

@@ -86,6 +86,10 @@ vec3 Ray::collisionAmbientColour() const {
   }
 }
 
+vec3 collisionAmbientColour(vec3 lightColour) const {
+  return scaleVec(lightColour, collisionAmbientColour());
+}
+
 vec3 Ray::collisionDiffuseColour() const {
   switch (coordinate) {
   case Coordinate::UV:

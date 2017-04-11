@@ -1,7 +1,8 @@
 #pragma once
 
-#include "material.h"
 #include <algorithm>
+
+#include "material.h"
 
 using glm::dot;
 using glm::normalize;
