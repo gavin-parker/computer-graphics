@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cube.h"
 #include "gi.h"
 
 using glm::ivec2;
@@ -7,7 +8,7 @@ using glm::ivec2;
 class ConvergentGlobalIllumination : public LightingEngine {
 private:
   vec3 environment = vec3(1, 1, 1) * 0.2f;
-  const shared_ptr<const Cube> boundingBox;
+  const Cube boundingBox;
   GlobalIllumination gi;
   vector<vec3> image;
   int width;

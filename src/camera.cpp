@@ -4,6 +4,19 @@ Camera::Camera(vec3 position, float yaw, float viewAngle)
     : position(position), yaw(yaw),
       viewOffset(static_cast<float>(tan(viewAngle * M_PI / 180.f))) {}
 
+Camera::Camera(const Cube &bounds, float viewAngle)
+    : Camera(calculatePosition(bounds, viewAngle), 0.0f, viewAngle) {}
+
+vec3 Camera::calculatePosition(const Cube &bounds, float viewAngle) {
+  vec3 faceCenter = vec3(0.5f, 0.5f, 0.0f) * (bounds.a + bounds.b);
+
+  float t = static_cast<float>(tan(viewAngle * M_PI / 180.f));
+
+  float width = bounds.b.x - bounds.a.x;
+
+  return faceCenter - vec3(0.0f, 0.0f, width / (2.0f * t));
+}
+
 bool Camera::update(float dt) {
   Uint8 *keystate = SDL_GetKeyState(0);
 
@@ -22,12 +35,9 @@ bool Camera::update(float dt) {
        static_cast<float>(keystate[SDLK_e] - keystate[SDLK_q]) * upwards +
        static_cast<float>(keystate[SDLK_w] - keystate[SDLK_s]) * forwards);
 
-  if ((keystate[SDLK_a] - keystate[SDLK_d]) != 0 ||
-      (keystate[SDLK_e] - keystate[SDLK_q]) != 0 ||
-      (keystate[SDLK_w] - keystate[SDLK_s]) != 0) {
-    return true;
-  }
-  return false;
+  return ((keystate[SDLK_a] - keystate[SDLK_d]) != 0 ||
+          (keystate[SDLK_e] - keystate[SDLK_q]) != 0 ||
+          (keystate[SDLK_w] - keystate[SDLK_s]) != 0);
 }
 
 Ray Camera::calculateRay(float x, float y) {
@@ -51,7 +61,7 @@ vec4 Camera::clipSpace(Vertex v) {
 }
 
 vec3 Camera::worldSpace(vec4 cameraCoordinate) {
-	vec3 plain(cameraCoordinate.x, cameraCoordinate.y, cameraCoordinate.z);
-	vec3 newPos = ( rotation * plain) + position;
-	return newPos;
+  vec3 plain(cameraCoordinate.x, cameraCoordinate.y, cameraCoordinate.z);
+  vec3 newPos = (rotation * plain) + position;
+  return newPos;
 }

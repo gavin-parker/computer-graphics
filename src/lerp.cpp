@@ -11,6 +11,8 @@ float deLerp(vec3 a, vec3 b, float t) {
 
 vec3 lerp(vec3 a, vec3 b, float t) { return a + (b - a) * t; }
 
+vec3 lerp(vec3 a, vec3 b, vec3 t) { return a + (b - a) * t; }
+
 int lerpI(int a, int b, float t) {
   return static_cast<int>(
       lerpF(static_cast<float>(a), static_cast<float>(b), t));

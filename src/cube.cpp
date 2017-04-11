@@ -1,6 +1,8 @@
 #include "cube.h"
 
-Cube::Cube(vec3 a, vec3 b) : a(a), b(b){};
+Cube::Cube() : Cube(vec3(), vec3()) {}
+
+Cube::Cube(vec3 a, vec3 b) : a(a), b(b) {}
 
 Cube::Cube(const Ptr_Triangles &triangles) {
   float maxFloat = numeric_limits<float>::max();
@@ -20,7 +22,7 @@ Cube::Cube(const Ptr_Triangles &triangles) {
 
   a = minBound;
   b = maxBound;
-};
+}
 
 bool Cube::calculateIntersection(Ray &ray) const {
   float tmin = (a.x - ray.getPosition().x) / ray.getDirection().x;
@@ -69,4 +71,4 @@ bool Cube::calculateIntersection(Ray &ray) const {
   }
 
   return true;
-};
+}

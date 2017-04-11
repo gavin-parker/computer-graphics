@@ -4,7 +4,7 @@ BoundingVolume::BoundingVolume(const Ptr_Triangles &triangles)
     : triangles(triangles) {
   for (int i = 0; i < 7; i++) {
     d[i][0] = numeric_limits<float>::max();
-    d[i][1] = -numeric_limits<float>::max();
+    d[i][1] = numeric_limits<float>::min();
     for (Ptr_Triangle triangle : triangles) {
       for (const vec3 vertex : triangle->getVertices()) {
         float D = normals[i].x * vertex.x + normals[i].y * vertex.y +

@@ -1,27 +1,13 @@
 #pragma once
 
-#include <limits>
-#include <omp.h>
-
-#include "baked_gi.h"
-#include "baked_gi.h"
-#include "camera.h"
-#include "flatlighting.h"
-#include "lightingengine.h"
-#include "rastlighting.h"
-#include "sdlscreen.h"
-#include <limits>
-#include <omp.h>
 #include <unordered_set>
 
-using std::numeric_limits;
-using std::max;
+#include "objectscreen.h"
+
 using glm::ivec2;
-using glm::vec2;
-using glm::vec4;
 using glm::ivec4;
 
-class Rasteriser : public SdlScreen {
+class Rasteriser : public ObjectScreen {
 public:
   enum Clipping : int { INSIDE = 0, LEFT = 1, RIGHT = 2, BOTTOM = 4, TOP = 8 };
 
@@ -55,13 +41,11 @@ private:
                        vector<Pixel> &rightPixels, const Triangle &triangle);
 
 protected:
-  void update(float dt) override;
   void draw(int width, int height) override;
 
 public:
-  Rasteriser(int width, int height, LightingEngine &lighting, Scene &scene,
-             vec3 cameraPos = vec3(277.5f, 277.5f, -480.64),
-             bool useShadows = true, bool fullscreen = false);
+  Rasteriser(int width, int height, float viewAngle, LightingEngine &lighting,
+             Scene &scene, bool useShadows = true, bool fullscreen = false);
 };
 
 namespace std {

@@ -1,14 +1,12 @@
 #pragma once
 
-#include "camera.h"
-#include "cube.h"
-#include "cube.h"
+#include <omp.h>
+
 #include "light.h"
 #include "pointlight.h"
 #include "scene.h"
 #include "sdlscreen.h"
 #include "spherelight.h"
-#include <omp.h>
 
 using glm::ivec2;
 
@@ -24,6 +22,8 @@ public:
   LightingEngine(const LightingEngine &other) = delete;
 
   LightingEngine(const Ptr_Triangles &triangles, const Light &light);
+
+  virtual ~LightingEngine();
 
   virtual vec3 calculateLight(Ray &ray, ivec2 pixel = ivec2(0, 0)) = 0;
 };

@@ -6,6 +6,7 @@
 #include <cmath>
 #include <iostream>
 
+#include "cube.h"
 #include "lerp.h"
 #include "ray.h"
 #include "vertex.h"
@@ -21,7 +22,11 @@ public:
   mat3 rotation;
   const float viewOffset;
   bool moved = false;
+
   Camera(vec3 position, float yaw, float viewAngle);
+  Camera(const Cube &bounds, float viewAngle);
+
+  static vec3 calculatePosition(const Cube &bounds, float viewAngle);
 
   bool update(float dt);
 

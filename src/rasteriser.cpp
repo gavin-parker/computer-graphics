@@ -1,19 +1,14 @@
 #include "rasteriser.h"
 
-Rasteriser::Rasteriser(int width, int height, LightingEngine &lighting,
-                       Scene &scene, vec3 cameraPos, bool useShadows,
+Rasteriser::Rasteriser(int width, int height, float viewAngle,
+                       LightingEngine &lighting, Scene &scene, bool useShadows,
                        bool fullscreen)
-    : SdlScreen(width, height, fullscreen), depthBuffer(width * height),
-      shadowBuffer(6 * 128 * 128), triangles(scene.triangles),
-      clipped_triangles(Ptr_Triangles()),
+    : ObjectScreen(width, height, viewAngle, lighting, scene, fullscreen),
+      depthBuffer(width * height), shadowBuffer(6 * 128 * 128),
+      triangles(scene.triangles), clipped_triangles(Ptr_Triangles()),
       camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene.light),
       lighting(lighting), leftBuffer(triangles.size()),
       rightBuffer(triangles.size()) {}
-
-void Rasteriser::update(float dt) {
-  camera.update(dt);
-  light.update(dt);
-}
 
 int Rasteriser::computeClipping(float x, float y, int xMax, int yMax) {
   int clipping = INSIDE;

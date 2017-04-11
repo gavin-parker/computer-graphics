@@ -18,6 +18,8 @@ class Cube {
 public:
   vec3 a, b;
 
+  Cube();
+
   Cube(vec3 a, vec3 b);
 
   Cube(const Ptr_Triangles &triangles);
