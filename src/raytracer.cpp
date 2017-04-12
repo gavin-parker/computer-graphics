@@ -4,7 +4,6 @@ RayTracer::RayTracer(int width, int height, float viewAngle,
                      LightingEngine &lighting, Scene &scene, bool fullscreen,
                      bool antialias)
     : ObjectScreen(width, height, viewAngle, lighting, scene, fullscreen),
-      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f),
       triangles(scene.triangles), boundingVolume(scene.volume),
       antialias(antialias) {}
 

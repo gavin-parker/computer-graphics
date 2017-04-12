@@ -16,9 +16,6 @@ private:
   vector<float> shadowBuffer;
   const Ptr_Triangles &triangles;
   Ptr_Triangles clipped_triangles;
-  Camera camera;
-  Light &light;
-  LightingEngine &lighting;
   vector<vector<Pixel>> leftBuffer;
   vector<vector<Pixel>> rightBuffer;
 

@@ -6,9 +6,7 @@ Rasteriser::Rasteriser(int width, int height, float viewAngle,
     : ObjectScreen(width, height, viewAngle, lighting, scene, fullscreen),
       depthBuffer(width * height), shadowBuffer(6 * 128 * 128),
       triangles(scene.triangles), clipped_triangles(Ptr_Triangles()),
-      camera(vec3(277.5f, 277.5f, -480.64), 0.0f, 30.0f), light(scene.light),
-      lighting(lighting), leftBuffer(triangles.size()),
-      rightBuffer(triangles.size()) {}
+      leftBuffer(triangles.size()), rightBuffer(triangles.size()) {}
 
 int Rasteriser::computeClipping(float x, float y, int xMax, int yMax) {
   int clipping = INSIDE;

@@ -14,10 +14,6 @@ using std::numeric_limits;
 
 class RayTracer : public ObjectScreen {
 private:
-  Camera camera;
-
-  const vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
-
   const Ptr_Triangles &triangles;
   const BoundingVolume &boundingVolume;
 

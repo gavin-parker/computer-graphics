@@ -51,7 +51,8 @@ Ray Camera::calculateRay(float x, float y) {
 vec3 Camera::projectVertex(Vertex v) {
   vec3 newPos = (v.position - position) * rotation;
 
-  return vec3((newPos.x / newPos.z), (newPos.y / newPos.z), newPos.z);
+  return vec3(newPos.x / (viewOffset * newPos.z),
+              newPos.y / (viewOffset * newPos.z), newPos.z);
 }
 
 vec4 Camera::clipSpace(Vertex v) {
