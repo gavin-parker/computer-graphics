@@ -3,8 +3,8 @@
 Ray::Ray() : Ray(vec3(), vec3()){};
 
 Ray::Ray(vec3 initPosition, vec3 initDirection, float initLength)
-    : position(initPosition), direction(initDirection), length(initLength),
-      coordinate(Coordinate::None), collision(nullptr) {}
+    : position(initPosition), direction(glm::normalize(initDirection)),
+      length(initLength), coordinate(Coordinate::None), collision(nullptr) {}
 
 Ray::Ray(const Ray &other)
     : position(other.position), direction(other.direction),
@@ -86,10 +86,6 @@ vec3 Ray::collisionAmbientColour() const {
   }
 }
 
-vec3 Ray::collisionAmbientColour(vec3 lightColour) const {
-  return lightColour * collisionAmbientColour();
-}
-
 vec3 Ray::collisionDiffuseColour() const {
   switch (coordinate) {
   case Coordinate::UV:
@@ -101,15 +97,24 @@ vec3 Ray::collisionDiffuseColour() const {
   }
 }
 
-vec3 Ray::collisionSpecularColour(vec3 lightDirection, vec3 lightColour) const {
+vec3 Ray::collisionDiffuseColour(vec3 lightDirection) const {
   switch (coordinate) {
   case Coordinate::UV:
-    return collision->specularColour(uv, lightDirection, lightColour,
-                                     direction);
+    return collision->diffuseColour(uv, lightDirection);
   case Coordinate::BARY:
-    return collision->specularColour(uv, lightDirection, lightColour,
-                                     direction);
+    return collision->diffuseColour(bary, lightDirection);
   default:
-    return collision->specularColour(lightDirection, lightColour, direction);
+    return collision->mat->diffuse();
+  }
+}
+
+vec3 Ray::collisionSpecularColour(vec3 lightDirection) const {
+  switch (coordinate) {
+  case Coordinate::UV:
+    return collision->specularColour(uv, lightDirection, direction);
+  case Coordinate::BARY:
+    return collision->specularColour(bary, lightDirection, direction);
+  default:
+    return collision->specularColour(lightDirection, direction);
   }
 }

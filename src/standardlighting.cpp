@@ -5,7 +5,7 @@ StandardLighting::StandardLighting(const Scene &scene)
       boundingVolume(scene.volume){};
 
 vec3 StandardLighting::calculateLight(Ray &cameraRay, ivec2 pixel) {
-  vec3 lightColour = cameraRay.collisionAmbientColour(ambientLight);
+  vec3 lightColour = ambientLight * cameraRay.collisionAmbientColour();
 
   // calculate average light at a point -- works with multiple light rays
   for (Ray &lightRay : light.calculateRays(cameraRay.collisionLocation())) {
@@ -13,11 +13,9 @@ vec3 StandardLighting::calculateLight(Ray &cameraRay, ivec2 pixel) {
         lightRay.getCollision() == cameraRay.getCollision()) {
 
       lightColour +=
-          light.directLight(cameraRay) * cameraRay.collisionDiffuseColour() +
-          cameraRay.collisionSpecularColour(lightRay.getDirection(),
-                                            vec3(1.0f, 1.0f, 1.0f));
-    } else {
-      lightColour += ambientLight * cameraRay.collisionDiffuseColour();
+          light.directLight(cameraRay) *
+          (cameraRay.collisionDiffuseColour(lightRay.getDirection()) +
+           cameraRay.collisionSpecularColour(lightRay.getDirection()));
     }
   }
   return lightColour;

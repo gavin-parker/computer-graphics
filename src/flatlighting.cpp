@@ -7,7 +7,6 @@ FlatLighting::FlatLighting(Scene &scene)
       boundingVolume(scene.volume){};
 
 vec3 FlatLighting::calculateLight(Ray ray, ivec2 pixel) {
-
   return ray.collisionDiffuseColour();
 }
 

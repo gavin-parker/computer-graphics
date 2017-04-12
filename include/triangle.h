@@ -58,36 +58,34 @@ public:
 
   // Ambient Colour
 
-  vec3 ambientColourNorm(vec2 uv, vec3 lightColour) const;
+  vec3 ambientColourNorm(vec2 uv) const;
 
-  vec3 ambientColour(vec2 uv, vec3 lightColour) const;
+  vec3 ambientColour(vec2 uv) const;
 
-  vec3 ambientColour(vec3 bary, vec3 lightColour) const;
+  vec3 ambientColour(vec3 bary) const;
 
   // Diffuse Colour
 
   vec3 diffuseColourNorm(vec2 uv, vec3 lightIncidentDirection,
-                         vec3 surfaceNormal, vec3 lightColour) const;
+                         vec3 surfaceNormal) const;
 
-  vec3 diffuseColour(vec2 uv, vec3 lightIncidentDirection,
-                     vec3 lightColour) const;
+  vec3 diffuseColour(vec2 uv, vec3 lightIncidentDirection) const;
 
-  vec3 diffuseColour(vec3 bary, vec3 lightIncidentDirection,
-                     vec3 lightColour) const;
+  vec3 diffuseColour(vec3 bary, vec3 lightIncidentDirection) const;
 
   // Specular Colour
 
   vec3 specularColourNorm(vec3 specular, float specularExponent,
                           vec3 lightIncidentDirection, vec3 surfaceNormal,
-                          vec3 lightColour, vec3 cameraIncidentDirection) const;
+                          vec3 cameraIncidentDirection) const;
 
-  vec3 specularColour(vec3 lightIncidentDirection, vec3 lightColour,
+  vec3 specularColour(vec3 lightIncidentDirection,
                       vec3 cameraIncidentDirection) const;
 
-  vec3 specularColour(vec2 uv, vec3 lightIncidentDirection, vec3 lightColour,
+  vec3 specularColour(vec2 uv, vec3 lightIncidentDirection,
                       vec3 cameraIncidentDirection) const;
 
-  vec3 specularColour(vec3 bary, vec3 lightIncidentDirection, vec3 lightColour,
+  vec3 specularColour(vec3 bary, vec3 lightIncidentDirection,
                       vec3 cameraIncidentDirection) const;
 
   bool isMirrored() const;

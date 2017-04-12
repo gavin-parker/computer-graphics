@@ -12,9 +12,7 @@ vec3 RastLighting::calculateLight(Ray &ray, ivec2 pixel) {
 
   lightColour +=
       light.directLight(ray) * ray.collisionDiffuseColour() +
-      ray.collisionSpecularColour(ray.collisionLocation() - light.position,
-                                  vec3(1.0f, 1.0f, 1.0f));
-
+      ray.collisionSpecularColour(ray.collisionLocation() - light.position);
   return lightColour;
 }
 

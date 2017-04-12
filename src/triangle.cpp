@@ -71,74 +71,64 @@ vec3 Triangle::getNormal(vec3 bary) const {
 
 // Ambient Colour
 
-vec3 Triangle::ambientColourNorm(vec2 uv, vec3 lightColour) const {
-  return lightColour * mat->ambient(uv);
+vec3 Triangle::ambientColourNorm(vec2 uv) const { return mat->ambient(uv); }
+
+vec3 Triangle::ambientColour(vec2 uv) const {
+  return ambientColourNorm(getTexUV(uv));
 }
 
-vec3 Triangle::ambientColour(vec2 uv, vec3 lightColour) const {
-  return ambientColourNorm(getTexUV(uv), lightColour);
-}
-
-vec3 Triangle::ambientColour(vec3 bary, vec3 lightColour) const {
-  return ambientColourNorm(getTexUV(bary), lightColour);
+vec3 Triangle::ambientColour(vec3 bary) const {
+  return ambientColourNorm(getTexUV(bary));
 }
 
 // Diffuse Colour
 
 vec3 Triangle::diffuseColourNorm(vec2 uv, vec3 lightIncidentDirection,
-                                 vec3 surfaceNormal, vec3 lightColour) const {
-  return dot(lightIncidentDirection, surfaceNormal) *
-         (lightColour * mat->diffuse(uv));
+                                 vec3 surfaceNormal) const {
+  return dot(-lightIncidentDirection, surfaceNormal) * mat->diffuse(uv);
 }
 
-vec3 Triangle::diffuseColour(vec2 uv, vec3 lightIncidentDirection,
-                             vec3 lightColour) const {
-  return diffuseColourNorm(getTexUV(uv), lightIncidentDirection, getNormal(uv),
-                           lightColour);
+vec3 Triangle::diffuseColour(vec2 uv, vec3 lightIncidentDirection) const {
+  return diffuseColourNorm(getTexUV(uv), lightIncidentDirection, getNormal(uv));
 }
 
-vec3 Triangle::diffuseColour(vec3 bary, vec3 lightIncidentDirection,
-                             vec3 lightColour) const {
+vec3 Triangle::diffuseColour(vec3 bary, vec3 lightIncidentDirection) const {
   return diffuseColourNorm(getTexUV(bary), lightIncidentDirection,
-                           getNormal(bary), lightColour);
+                           getNormal(bary));
 }
 
 // Specular Colour
 
 vec3 Triangle::specularColourNorm(vec3 specular, float specularExponent,
                                   vec3 lightIncidentDirection,
-                                  vec3 surfaceNormal, vec3 lightColour,
+                                  vec3 surfaceNormal,
                                   vec3 cameraIncidentDirection) const {
   auto reflection = normalize(reflect(lightIncidentDirection, surfaceNormal));
   auto specularCoefficient =
       glm::pow(dot(cameraIncidentDirection, reflection), specularExponent);
 
-  return lightColour * (specularCoefficient * specular);
+  return specularCoefficient * specular;
 }
 
-vec3 Triangle::specularColour(vec3 lightIncidentDirection, vec3 lightColour,
+vec3 Triangle::specularColour(vec3 lightIncidentDirection,
                               vec3 cameraIncidentDirection) const {
   return specularColourNorm(mat->specular(), mat->specularExponent(),
-                            lightIncidentDirection, normal, lightColour,
+                            lightIncidentDirection, normal,
                             cameraIncidentDirection);
 }
 
 vec3 Triangle::specularColour(vec2 uv, vec3 lightIncidentDirection,
-                              vec3 lightColour,
                               vec3 cameraIncidentDirection) const {
-  return specularColourNorm(mat->specular(getTexUV(uv)),
-                            mat->specularExponent(getTexUV(uv)),
-                            lightIncidentDirection, getNormal(uv), lightColour,
-                            cameraIncidentDirection);
+  return specularColourNorm(
+      mat->specular(getTexUV(uv)), mat->specularExponent(getTexUV(uv)),
+      lightIncidentDirection, getNormal(uv), cameraIncidentDirection);
 }
 
 vec3 Triangle::specularColour(vec3 bary, vec3 lightIncidentDirection,
-                              vec3 lightColour,
                               vec3 cameraIncidentDirection) const {
-  return specularColourNorm(mat->specular(getTexUV(bary)),
-                            mat->specularExponent(getTexUV(bary)),
-                            lightIncidentDirection, getNormal(bary),
-                            lightColour, cameraIncidentDirection);
+  return specularColourNorm(
+      mat->specular(getTexUV(bary)), mat->specularExponent(getTexUV(bary)),
+      lightIncidentDirection, getNormal(bary), cameraIncidentDirection);
 }
 
 bool Triangle::isMirrored() const { return mat->isMirrored; }
