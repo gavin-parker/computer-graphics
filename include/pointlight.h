@@ -1,18 +1,14 @@
 #pragma once
-#define _USE_MATH_DEFINES
+
 #include "light.h"
 
 class PointLight : public Light {
 public:
   const float speed = 100.0f;
 
-  PointLight(vec3 position, vec3 color, float power);
+  PointLight(vec3 position, vec3 colour, float power);
 
   bool update(float dt) override;
 
   vector<Ray> calculateRays(vec3 target) const override;
-
-  vec3 directLight(const Ray &ray) const override;
-
-  vec3 vertexLight(Vertex v) const override;
 };

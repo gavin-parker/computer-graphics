@@ -1,6 +1,7 @@
 #pragma once
 
 #define _USE_MATH_DEFINES
+
 #include <SDL.h>
 #include <cmath>
 #include <glm/glm.hpp>
@@ -21,7 +22,7 @@ private:
   bool noQuitMessageSDL();
 
 protected:
-  void drawPixel(int x, int y, vec3 color);
+  void drawPixel(int x, int y, vec3 colour);
 
   virtual void update(float dt) = 0;
   virtual void draw(int width, int height) = 0;

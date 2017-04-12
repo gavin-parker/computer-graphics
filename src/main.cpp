@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 
     vec3 lightColour(1.0f, 1.0f, 1.0f);
 
-    float lightPower = 1.0f * pow(glm::distance(bounds.a, bounds.b), 2.0f);
+    float lightPower = 8.0f * pow(glm::distance(bounds.a, bounds.b), 2.0f);
 
     PointLight light(lightPosition, lightColour, lightPower);
     SphereLight softLight(lightPosition, lightColour, lightPower, 4.0f, 5);
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
       screen = new StarScreen(500, 500, 1000, 0.5);
     } else if (mode == "ray") {
       engine = new StandardLighting(scene_low_quality);
-      screen = new RayTracer(150, 150, viewAngle, *engine, scene_low_quality);
+      screen = new RayTracer(250, 250, viewAngle, *engine, scene_low_quality);
     } else if (mode == "rast") {
       engine = new RastLighting(scene_low_quality);
       screen = new Rasteriser(500, 500, viewAngle, *engine, scene_low_quality);

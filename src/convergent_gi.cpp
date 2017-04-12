@@ -8,7 +8,6 @@ ConvergentGlobalIllumination::ConvergentGlobalIllumination(const Scene &scene,
       image(vector<vec3>(width * height)), width(width), height(height){};
 
 vec3 ConvergentGlobalIllumination::calculateLight(Ray &ray, ivec2 pixel) {
-  vec3 color = gi.calculateLight(ray);
-  image[width * pixel.y + pixel.x] += color;
+  image[width * pixel.y + pixel.x] += gi.calculateLight(ray);
   return image[width * pixel.y + pixel.x] / static_cast<float>(countedSamples);
 }

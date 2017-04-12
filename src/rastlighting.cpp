@@ -1,7 +1,5 @@
 #include "rastlighting.h"
 
-// GlobalIllumination::GlobalIllumination(){};
-
 RastLighting::RastLighting(const Scene &scene, int lightMapResolution)
     : LightingEngine(scene.triangles, scene.light),
       boundingVolume(scene.volume), lightMapResolution(lightMapResolution),

@@ -34,8 +34,8 @@ void StarScreen::draw(int width, int height) {
   for (const vec3 &star : stars) {
     int u = focal_length * (star.x / star.z) + width / 2.0f;
     int v = focal_length * (star.y / star.z) + height / 2.0f;
-    vec3 color = 0.2f * vec3(1, 1, 1) / (star.z * star.z);
+    vec3 colour = 0.2f * vec3(1, 1, 1) / (star.z * star.z);
 
-    drawPixel(u, v, color);
+    drawPixel(u, v, colour);
   }
 }

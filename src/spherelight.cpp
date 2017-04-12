@@ -1,8 +1,8 @@
 #include "spherelight.h"
 
-SphereLight::SphereLight(vec3 position, vec3 color, float power, float radius,
+SphereLight::SphereLight(vec3 position, vec3 colour, float power, float radius,
                          int res)
-    : Light(position, color, power, res), radius(radius) {}
+    : Light(position, colour, power, res), radius(radius) {}
 
 bool SphereLight::update(float dt) {
   Uint8 *keystate = SDL_GetKeyState(0);
@@ -33,28 +33,4 @@ vector<Ray> SphereLight::calculateRays(vec3 target) const {
     rays.emplace_back(point, target - point);
   }
   return rays;
-}
-
-// Uses equation 27 on
-// https://www.cs.bris.ac.uk/Teaching/Resources/COMS30115/Assignment/2017-COMS30115-1.pdf
-// To calculate power of light at an intersection
-vec3 SphereLight::directLight(const Ray &ray) const {
-  vec3 offset = position - ray.collisionLocation();
-
-  vec3 light_direction = glm::normalize(offset);
-  float radius = glm::length(offset);
-
-  return (std::max(glm::dot(light_direction, ray.collisionNormal()), 0.0f) *
-          power / (4.0f * (static_cast<float>(M_PI)) * radius * radius)) *
-         color;
-}
-
-vec3 SphereLight::vertexLight(Vertex v) const {
-  vec3 offset = position - v.position;
-  vec3 light_direction = glm::normalize(offset);
-  float radius = glm::length(offset);
-
-  return (std::max(glm::dot(light_direction, v.normal), 0.0f) * power /
-          (4.0f * (static_cast<float>(M_PI)) * radius * radius)) *
-         color * v.illumination;
 }

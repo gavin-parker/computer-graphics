@@ -6,7 +6,7 @@ Kd 0.75 0.75 0.75
 map_Kd marble.png
 Ks 0.75 0.75 0.75
 map_Ks marble.png
-Ns 500
+Ns 50
 
 newmtl red
 
@@ -16,7 +16,7 @@ Kd 0.75 0.15 0.15
 map_Kd marble.png
 Ks 0.75 0.15 0.15
 map_Ks marble.png
-Ns 500
+Ns 50
 
 newmtl green
 
@@ -26,7 +26,7 @@ Kd 0.15 0.75 0.15
 map_Kd marble.png
 Ks 0.15 0.75 0.15
 map_Ks marble.png
-Ns 500
+Ns 50
 
 newmtl short
 
@@ -36,7 +36,7 @@ Kd 0.75 0.75 0.75
 map_Kd red.png
 Ks 0.75 0.75 0.75
 map_Ks red.png
-Ns 500
+Ns 50
 
 newmtl tall
 
@@ -46,4 +46,4 @@ Kd 0.75 0.75 0.75
 map_Kd green.png
 Ks 0.75 0.75 0.75
 map_Ks green.png
-Ns 500
+Ns 50
