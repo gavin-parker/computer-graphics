@@ -52,7 +52,5 @@ public:
 
   vec3 directLight(const Ray &ray) const;
 
-  vec3 vertexLight(Vertex v) const;
-
   indexedPixel projectVertex(vec3 vert, float &depth);
 };

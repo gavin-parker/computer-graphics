@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 
     vec3 lightColour(1.0f, 1.0f, 1.0f);
 
-    float lightPower = 8.0f * pow(glm::distance(bounds.a, bounds.b), 2.0f);
+    float lightPower = 0.5f * pow(glm::distance(bounds.a, bounds.b), 2.0f);
 
     PointLight light(lightPosition, lightColour, lightPower);
     SphereLight softLight(lightPosition, lightColour, lightPower, 4.0f, 5);
@@ -65,7 +65,8 @@ int main(int argc, char *argv[]) {
       screen = new StarScreen(500, 500, 1000, 0.5);
     } else if (mode == "ray") {
       engine = new StandardLighting(scene_low_quality);
-      screen = new RayTracer(250, 250, viewAngle, *engine, scene_low_quality);
+      screen =
+          new RayTracer(500, 500, viewAngle, 4, *engine, scene_low_quality);
     } else if (mode == "rast") {
       engine = new RastLighting(scene_low_quality);
       screen = new Rasteriser(500, 500, viewAngle, *engine, scene_low_quality);
@@ -76,7 +77,8 @@ int main(int argc, char *argv[]) {
         sampleCount = atoi(samples.c_str());
       }
       engine = new GlobalIllumination(scene, sampleCount);
-      screen = new RayTracer(500, 500, viewAngle, *engine, scene_low_quality);
+      screen =
+          new RayTracer(500, 500, viewAngle, 4, *engine, scene_low_quality);
     } else if (mode == "conv") {
       int sampleCount = 10;
       if (argc > 2) {
@@ -84,7 +86,7 @@ int main(int argc, char *argv[]) {
         sampleCount = atoi(samples.c_str());
       }
       engine = new ConvergentGlobalIllumination(scene, sampleCount, 512, 512);
-      screen = new RayTracer(512, 512, viewAngle, *engine, scene);
+      screen = new RayTracer(512, 512, viewAngle, 4, *engine, scene);
     }
 #ifdef useCL
     else if (mode == "cl") {

@@ -5,12 +5,15 @@ RastLighting::RastLighting(const Scene &scene, int lightMapResolution)
       boundingVolume(scene.volume), lightMapResolution(lightMapResolution),
       depthMap(vector<float>(lightMapResolution * lightMapResolution)){};
 
-vec3 RastLighting::calculateLight(Ray &ray, ivec2 pixel) {
-  vec3 lightColour(0, 0, 0);
+vec3 RastLighting::calculateLight(Ray &cameraRay, ivec2 pixel) {
+  vec3 lightColour = vec3(0.0f, 0.0f, 0.0f);
 
-  lightColour +=
-      light.directLight(ray) * ray.collisionDiffuseColour() +
-      ray.collisionSpecularColour(ray.collisionLocation() - light.position);
+  for (Ray &lightRay : light.calculateRays(cameraRay.collisionLocation())) {
+    lightRay.updateCollision(cameraRay);
+    lightColour += light.directLight(lightRay) *
+                   (cameraRay.collisionDiffuseColour(lightRay.getDirection()) +
+                    cameraRay.collisionSpecularColour(lightRay.getDirection()));
+  }
   return lightColour;
 }
 

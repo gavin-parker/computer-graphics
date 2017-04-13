@@ -2,7 +2,7 @@
 
 #include "lightingengine.h"
 
-class GlobalIllumination : public LightingEngine {
+class GlobalIllumination final : public LightingEngine {
 private:
   vec3 trace(Ray &ray, int bounces);
 

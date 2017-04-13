@@ -20,10 +20,13 @@ private:
   bool antialias;
   int chunkSize = 4000;
 
+  unsigned subPixelCount;
+
 protected:
   void draw(int width, int height) override;
 
 public:
-  RayTracer(int width, int height, float viewAngle, LightingEngine &lighting,
-            Scene &scene, bool fullscreen = false, bool antialias = true);
+  RayTracer(int width, int height, float viewAngle, unsigned subPixelCount,
+            LightingEngine &lighting, Scene &scene, bool fullscreen = false,
+            bool antialias = true);
 };

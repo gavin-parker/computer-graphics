@@ -10,16 +10,6 @@ vec3 Light::directLight(const Ray &ray) const {
                            ray.getLength());
 }
 
-vec3 Light::vertexLight(Vertex v) const {
-  vec3 offset = position - v.position;
-  vec3 light_direction = glm::normalize(offset);
-  float radius = glm::length(offset);
-
-  return (std::max(glm::dot(light_direction, v.normal), 0.0f) * power /
-          (4.0f * (static_cast<float>(M_PI)) * radius * radius)) *
-         colour * v.illumination;
-}
-
 indexedPixel Light::projectVertex(vec3 vert, float &depth) {
   depth = numeric_limits<float>::max();
   for (int i = 0; i < 6; i++) {

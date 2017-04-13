@@ -5,7 +5,7 @@
 #include "light.h"
 #include <cmath>
 
-class SphereLight : public Light {
+class SphereLight final : public Light {
 private:
   const float velocity = 1.0f;
 

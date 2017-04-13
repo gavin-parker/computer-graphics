@@ -4,9 +4,11 @@
 #include <limits>
 #include <utility>
 
+using glm::distance;
 using glm::vec2;
 using glm::vec3;
 using glm::mat3;
+using glm::normalize;
 
 using std::numeric_limits;
 
@@ -57,6 +59,8 @@ public:
 
   void updateCollision(Triangle const *newCollision, float newLength,
                        vec3 newBary);
+
+  void updateCollision(const Ray &other);
 
   vec3 collisionLocation() const;
 

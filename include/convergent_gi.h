@@ -5,7 +5,7 @@
 
 using glm::ivec2;
 
-class ConvergentGlobalIllumination : public LightingEngine {
+class ConvergentGlobalIllumination final: public LightingEngine {
 private:
   vec3 environment = vec3(1, 1, 1) * 0.2f;
   const Cube boundingBox;

@@ -3,7 +3,7 @@
 #include "gi.h"
 #include "lightingengine.h"
 
-class BakedGI : public LightingEngine {
+class BakedGI final: public LightingEngine {
 private:
   vec3 trace(Ray &ray, int bounces);
 

@@ -2,7 +2,7 @@
 
 #include "light.h"
 
-class PointLight : public Light {
+class PointLight final : public Light {
 public:
   const float speed = 100.0f;
 

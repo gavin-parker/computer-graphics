@@ -1,11 +1,11 @@
 #include "raytracer.h"
 
 RayTracer::RayTracer(int width, int height, float viewAngle,
-                     LightingEngine &lighting, Scene &scene, bool fullscreen,
-                     bool antialias)
+                     unsigned subPixelCount, LightingEngine &lighting,
+                     Scene &scene, bool fullscreen, bool antialias)
     : ObjectScreen(width, height, viewAngle, lighting, scene, fullscreen),
       triangles(scene.triangles), boundingVolume(scene.volume),
-      antialias(antialias) {}
+      antialias(antialias), subPixelCount(subPixelCount) {}
 
 void RayTracer::draw(int width, int height) {
 
@@ -23,29 +23,23 @@ void RayTracer::draw(int width, int height) {
   for (int y = 0; y < margin_y; ++y) {
     for (int x = 0; x < margin_x; ++x) {
       vec3 average(0, 0, 0);
-      float step = 0.25f;
-      for (float i = 0; i < 1; i += step) {
-        for (float j = 0; j < 1; j += step) {
-          float super_x = static_cast<float>(x) + i;
-          float super_y = static_cast<float>(y) + j;
+      for (unsigned i = 0; i < subPixelCount; ++i) {
+        for (unsigned j = 0; j < subPixelCount; ++j) {
+          float super_x =
+              static_cast<float>(x) + i / static_cast<float>(subPixelCount);
+          float super_y =
+              static_cast<float>(y) + j / static_cast<float>(subPixelCount);
           Ray cameraRay =
               camera.calculateRay(super_x / width, super_y / height);
 
-          // cameraRay.getLength() = numeric_limits<float>::max();
           if (boundingVolume.calculateIntersection(cameraRay, true)) {
-            vec3 spec(0, 0, 0);
-
-            vec3 lightColour =
-                lighting.calculateLight(cameraRay, glm::ivec2(x, y));
-
-            average += lightColour;
+            average += lighting.calculateLight(cameraRay, glm::ivec2(x, y));
           }
         }
-        average /= 16.f;
-        drawPixel(x, y,
-                  vec3(std::min(average.r, 1.0f), std::min(average.g, 1.0f),
-                       std::min(average.b, 1.0f)));
       }
+      average /= subPixelCount * subPixelCount;
+      drawPixel(x, y, vec3(std::min(average.r, 1.0f), std::min(average.g, 1.0f),
+                           std::min(average.b, 1.0f)));
     }
 #pragma omp critical
     {

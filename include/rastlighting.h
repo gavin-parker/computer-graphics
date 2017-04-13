@@ -2,7 +2,7 @@
 
 #include "lightingengine.h"
 
-class RastLighting : public LightingEngine {
+class RastLighting final : public LightingEngine {
 private:
   bool ClosestIntersection(Ray &ray);
   bool anyIntersection(Ray &ray, Ray &surface);
@@ -17,6 +17,5 @@ protected:
 public:
   RastLighting(const Scene &scene, int lightMapResolution = 2000);
   RastLighting();
-  virtual vec3 calculateLight(Ray &ray, ivec2 pixel = ivec2(0, 0)) override;
+  vec3 calculateLight(Ray &cameraRay, ivec2 pixel = ivec2(0, 0)) override;
 };
-#pragma once

@@ -13,7 +13,7 @@ vec3 StandardLighting::calculateLight(Ray &cameraRay, ivec2 pixel) {
         lightRay.getCollision() == cameraRay.getCollision()) {
 
       lightColour +=
-          light.directLight(cameraRay) *
+          light.directLight(lightRay) *
           (cameraRay.collisionDiffuseColour(lightRay.getDirection()) +
            cameraRay.collisionSpecularColour(lightRay.getDirection()));
     }

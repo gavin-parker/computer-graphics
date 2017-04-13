@@ -12,6 +12,9 @@ public:
   enum Clipping : int { INSIDE = 0, LEFT = 1, RIGHT = 2, BOTTOM = 4, TOP = 8 };
 
 private:
+  static const int SHADOW_DIRECTION_COUNT = 6;
+  static const int SHADOW_RESOLUTION = 128;
+
   vector<float> depthBuffer;
   vector<float> shadowBuffer;
   const Ptr_Triangles &triangles;
