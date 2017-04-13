@@ -13,7 +13,7 @@ public:
 
 private:
   static const int SHADOW_DIRECTION_COUNT = 6;
-  static const int SHADOW_RESOLUTION = 128;
+  static const ptrdiff_t SHADOW_RESOLUTION = 128;
 
   vector<float> depthBuffer;
   vector<float> shadowBuffer;
@@ -29,6 +29,8 @@ private:
   void clip(int width, int height);
 
   Pixel VertexShader(Vertex v, int width, int height);
+
+  ptrdiff_t shadowBufferIndex(indexedPixel pixel);
 
   void shadowPass(int width, int height, vector<Pixel> &leftPixels,
                   vector<Pixel> &rightPixels, const Triangle &triangle);

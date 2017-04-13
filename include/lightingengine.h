@@ -12,6 +12,8 @@ using glm::ivec2;
 
 class LightingEngine {
 public:
+  const vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
+
   const Ptr_Triangles &triangles;
   const Light &light;
 

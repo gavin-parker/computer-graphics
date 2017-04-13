@@ -7,7 +7,6 @@ private:
   bool ClosestIntersection(Ray &ray);
   bool anyIntersection(Ray &ray, Ray &surface);
   int sampleCount = 5;
-  vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
   const BoundingVolume &boundingVolume;
   int lightMapResolution;
   vector<float> depthMap;

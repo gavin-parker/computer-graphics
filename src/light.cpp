@@ -14,10 +14,10 @@ indexedPixel Light::projectVertex(vec3 vert, float &depth) {
   depth = numeric_limits<float>::max();
   for (int i = 0; i < 6; i++) {
     vec3 newPos = (vert - position) * rotations[i];
-    float xf = static_cast<float>((newPos.x / newPos.z));
-    float yf = static_cast<float>((newPos.y / newPos.z));
-    int x = static_cast<int>(width * (1 - xf) / 2.0);
-    int y = static_cast<int>(height * (1 - yf) / 2.0);
+    float xf = newPos.x / newPos.z;
+    float yf = newPos.y / newPos.z;
+    int x = static_cast<int>(round(width * (1 - xf) / 2.0));
+    int y = static_cast<int>(round(height * (1 - yf) / 2.0));
     if (x >= 0 && x < width && y >= 0 && y < height &&
         newPos.z < numeric_limits<float>::max() && newPos.z > 0.f) {
       depth = newPos.z;
