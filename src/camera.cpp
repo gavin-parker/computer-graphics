@@ -1,11 +1,15 @@
 #include "camera.h"
 
-Camera::Camera(vec3 position, float yaw, float viewAngle)
-    : position(position), yaw(yaw),
+Camera::Camera(vec3 position, float speed, float yaw, float yawPeriod,
+               float viewAngle)
+    : position(position), speed(speed), yaw(yaw),
+      yawSpeed(calculateYawSpeed(yawPeriod)),
       viewOffset(static_cast<float>(tan(viewAngle * M_PI / 180.f))) {}
 
-Camera::Camera(const Cube &bounds, float viewAngle)
-    : Camera(calculatePosition(bounds, viewAngle), 0.0f, viewAngle) {}
+Camera::Camera(const Cube &bounds, float timePeriod, float yawPeriod,
+               float viewAngle)
+    : Camera(calculatePosition(bounds, viewAngle),
+             calculateSpeed(bounds, timePeriod), 0.0f, yawPeriod, viewAngle) {}
 
 vec3 Camera::calculatePosition(const Cube &bounds, float viewAngle) {
   vec3 faceCenter = vec3(0.5f, 0.5f, 0.0f) * (bounds.a + bounds.b);
@@ -17,10 +21,20 @@ vec3 Camera::calculatePosition(const Cube &bounds, float viewAngle) {
   return faceCenter - vec3(0.0f, 0.0f, width / (2.0f * t));
 }
 
+float Camera::calculateSpeed(const Cube &bounds, float timePeriod) {
+  float width = bounds.b.x - bounds.a.x;
+
+  return width / timePeriod;
+}
+
+float Camera::calculateYawSpeed(float yawPeriod) {
+  return 2.0f * M_PI / yawPeriod;
+}
+
 bool Camera::update(float dt) {
   Uint8 *keystate = SDL_GetKeyState(0);
 
-  yaw += (keystate[SDLK_RIGHT] - keystate[SDLK_LEFT]) * yawVeclocity * dt;
+  yaw += (keystate[SDLK_RIGHT] - keystate[SDLK_LEFT]) * yawSpeed * dt;
 
   rotation = mat3(cos(yaw), 0.0f, sin(yaw), 0.0f, 1.0f, 0.0f, -sin(yaw), 0.0f,
                   cos(yaw));
@@ -30,7 +44,7 @@ bool Camera::update(float dt) {
   const vec3 forwards = vec3(0.0f, 0.0f, 1.0f);
 
   position +=
-      velocity * dt * rotation *
+      speed * dt * rotation *
       (static_cast<float>(keystate[SDLK_a] - keystate[SDLK_d]) * right +
        static_cast<float>(keystate[SDLK_e] - keystate[SDLK_q]) * upwards +
        static_cast<float>(keystate[SDLK_w] - keystate[SDLK_s]) * forwards);

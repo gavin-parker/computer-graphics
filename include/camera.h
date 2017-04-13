@@ -12,21 +12,25 @@
 #include "vertex.h"
 
 class Camera {
-private:
-  const float velocity = 200.0f;
-  const float yawVeclocity = 2.0f;
-
 public:
   vec3 position;
+  const float speed;
   float yaw;
+  const float yawSpeed;
   mat3 rotation;
   const float viewOffset;
   bool moved = false;
 
-  Camera(vec3 position, float yaw, float viewAngle);
-  Camera(const Cube &bounds, float viewAngle);
+  Camera(vec3 position, float speed, float yaw, float yawPeriod,
+         float viewAngle);
+  Camera(const Cube &bounds, float timePeriod, float yawPeriod,
+         float viewAngle);
 
   static vec3 calculatePosition(const Cube &bounds, float viewAngle);
+
+  static float calculateSpeed(const Cube &bounds, float timePeriod);
+
+  static float calculateYawSpeed(float yawPeriod);
 
   bool update(float dt);
 
