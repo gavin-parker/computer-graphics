@@ -18,8 +18,7 @@ indexedPixel Light::projectVertex(vec3 vert, float &depth) {
     float yf = newPos.y / newPos.z;
     int x = static_cast<int>(round(width * (1 - xf) / 2.0));
     int y = static_cast<int>(round(height * (1 - yf) / 2.0));
-    if (x >= 0 && x < width && y >= 0 && y < height &&
-        newPos.z < numeric_limits<float>::max() && newPos.z > 0.f) {
+    if (x >= 0 && x < width && y >= 0 && y < height && newPos.z > 0.f) {
       depth = newPos.z;
       return {x, y, i};
     }

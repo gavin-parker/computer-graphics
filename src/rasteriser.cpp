@@ -155,12 +155,14 @@ void Rasteriser::shadowPass(int width, int height, vector<Pixel> &leftPixels,
       vec3 pixelPosition = lerpV(l_pixels[y].position, r_pixels[y].position,
                                  deLerpI(l_pixels[y].x, r_pixels[y].x, x));
 
-      float depth = 0.0f;
-      indexedPixel lightPixel = light.projectVertex(pixelPosition, depth);
-      if (lightPixel.i >= 0) {
-        // shadowBuffer stores closest depths to light source
-        if (depth < (shadowBuffer[shadowBufferIndex(lightPixel)])) {
-          shadowBuffer[shadowBufferIndex(lightPixel)] = depth;
+      if (glm::dot(triangle.normal, pixelPosition - light.position) < 0.0f) {
+        float depth = 0.0f;
+        indexedPixel lightPixel = light.projectVertex(pixelPosition, depth);
+        if (lightPixel.i >= 0) {
+          // shadowBuffer stores closest depths to light source
+          if (depth < (shadowBuffer[shadowBufferIndex(lightPixel)])) {
+            shadowBuffer[shadowBufferIndex(lightPixel)] = depth;
+          }
         }
       }
     }
@@ -209,7 +211,8 @@ void Rasteriser::drawPolygonRows(int width, int height,
           float depth = 0.f;
           indexedPixel lightPixel = light.projectVertex(pixel.position, depth);
 
-          vec3 lightColour = lighting.ambientLight;
+          vec3 lightColour =
+              lighting.ambientLight * cameraRay.collisionAmbientColour();
 
           if (lightPixel.i >= 0) {
             float d = shadowBuffer[shadowBufferIndex(lightPixel)];

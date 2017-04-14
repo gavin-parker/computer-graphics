@@ -8,11 +8,11 @@
 #include "myrand.h"
 #include "ray.h"
 
-typedef struct indexedPixel {
+struct indexedPixel {
   int x;
   int y;
   int i;
-} indexedPixel;
+};
 
 using glm::ivec2;
 using glm::vec3;
