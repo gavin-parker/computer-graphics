@@ -25,28 +25,22 @@ f 6/1 2/3 1/4
 
 # Left
 
-usemtl green
-
 f 5/2 7/1 6/4
 f 6/4 7/1 8/3
 
 # Right
-
-usemtl red
 
 f 3/3 1/4 2/2
 f 4/1 3/3 2/2
 
 # Ceiling
 
-usemtl white
-
 f 7/1 3/3 8/2
 f 3/3 4/4 8/2
 
 # Back
 
-usemtl white
+usemtl mirror
 
 f 8/1 2/4 6/2
 f 8/1 4/3 2/4

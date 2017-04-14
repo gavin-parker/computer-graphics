@@ -11,22 +11,20 @@ Ns 50
 newmtl red
 
 Ka 0.75 0.15 0.15
-map_Ka marble.png
 Kd 0.75 0.15 0.15
-map_Kd marble.png
 Ks 0.75 0.15 0.15
-map_Ks marble.png
 Ns 50
 
-newmtl green
+newmtl mirror
 
-Ka 0.15 0.75 0.15
+Ka 0.75 0.75 0.75
 map_Ka marble.png
-Kd 0.15 0.75 0.15
+Kd 0.75 0.75 0.75
 map_Kd marble.png
-Ks 0.15 0.75 0.15
+Ks 0.75 0.75 0.75
 map_Ks marble.png
 Ns 50
+mirror
 
 newmtl short
 

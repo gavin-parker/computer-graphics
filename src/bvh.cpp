@@ -25,10 +25,8 @@ bool BoundingVolume::calculateIntersection(Ray &ray, bool topVolume) const {
   }
   bool intersection = calculateIntersectionSub(ray, num, denom);
   if (intersection && topVolume && ray.getCollision()->isMirrored()) {
-    vec3 reflection = ray.getDirection() -
-                      2.f * (ray.getCollision()->normal * ray.getDirection()) *
-                          ray.getCollision()->normal;
-    Ray reflectedRay(ray.collisionLocation(), reflection);
+    Ray reflectedRay(ray.collisionLocation(),
+                     glm::reflect(ray.getDirection(), ray.collisionNormal()));
     bool bounce = calculateIntersection(reflectedRay, true);
     ray.updateCollision(reflectedRay.getCollision(), reflectedRay.getLength());
     return bounce;
@@ -114,10 +112,8 @@ bool BoundingVolume::calculateAnyIntersection(Ray &ray, Ray &surface,
     }
   }
   if (anyIntersection && topVolume && ray.getCollision()->isMirrored()) {
-    vec3 reflection = ray.getDirection() -
-                      2.f * (ray.getCollision()->normal * ray.getDirection()) *
-                          ray.getCollision()->normal;
-    Ray reflectedRay(ray.collisionLocation(), reflection);
+    Ray reflectedRay(ray.collisionLocation(),
+                     glm::reflect(ray.getDirection(), ray.collisionNormal()));
     bool bounce = calculateAnyIntersection(reflectedRay, surface, true);
     ray.updateCollision(reflectedRay.getCollision(), reflectedRay.getLength());
     return bounce;
