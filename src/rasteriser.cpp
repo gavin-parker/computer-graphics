@@ -4,9 +4,6 @@ Rasteriser::Rasteriser(int width, int height, float viewAngle,
                        LightingEngine &lighting, Scene &scene, bool useShadows,
                        bool fullscreen)
     : ObjectScreen(width, height, viewAngle, lighting, scene, fullscreen),
-      depthBuffer(width * height),
-      shadowBuffer(SHADOW_DIRECTION_COUNT * SHADOW_RESOLUTION *
-                   SHADOW_RESOLUTION),
       triangles(scene.triangles), clipped_triangles(Ptr_Triangles()),
       leftBuffer(triangles.size()), rightBuffer(triangles.size()) {}
 
@@ -96,7 +93,8 @@ Pixel Rasteriser::VertexShader(vec3 v, int width, int height) {
                v);
 }
 
-void Rasteriser::computePolygonRows(const vector<Pixel> &vertexPixels,
+void Rasteriser::computePolygonRows(int width, int height,
+                                    const vector<Pixel> &vertexPixels,
                                     vector<Pixel> &leftPixels,
                                     vector<Pixel> &rightPixels,
                                     const Triangle &triangle) {
@@ -123,6 +121,18 @@ void Rasteriser::computePolygonRows(const vector<Pixel> &vertexPixels,
         1.f / (glm::length(vec2(start.x - end.x, start.y - end.y)) + 1);
     for (float t = 0; t < 1; t += step) {
       Pixel pixel = lerpP(start, end, t);
+
+      if (pixel.x < 0) {
+        pixel.x = 0;
+      } else if (pixel.x > width) {
+        pixel.x = width;
+      }
+      if (pixel.y < 0) {
+        pixel.y = 0;
+      } else if (pixel.y > height) {
+        pixel.y = height;
+      }
+
       int y = pixel.y - min;
       if (pixel.x < leftPixels[y].x) {
         leftPixels[y] = pixel;
@@ -155,12 +165,12 @@ void Rasteriser::shadowPass(int width, int height, vector<Pixel> &leftPixels,
       vec3 pixelPosition = lerpV(l_pixels[y].position, r_pixels[y].position,
                                  deLerpI(l_pixels[y].x, r_pixels[y].x, x));
 
-      if (glm::dot(triangle.normal, pixelPosition - light.position) < 0.0f) {
+      if (glm::dot(triangle.normal, light.position - pixelPosition) > 0.0f) {
         float depth = 0.0f;
         indexedPixel lightPixel = light.projectVertex(pixelPosition, depth);
         if (lightPixel.i >= 0) {
           // shadowBuffer stores closest depths to light source
-          if (depth < (shadowBuffer[shadowBufferIndex(lightPixel)])) {
+          if (depth < shadowBuffer[shadowBufferIndex(lightPixel)]) {
             shadowBuffer[shadowBufferIndex(lightPixel)] = depth;
           }
         }
@@ -235,17 +245,13 @@ void Rasteriser::draw(int width, int height) {
   clipped_triangles.clear();
   clip(width, height);
 
-  float *depth_ptr = depthBuffer.data();
-#pragma omp parallel for
-  for (size_t i = 0; i < depthBuffer.size(); ++i) {
-    depth_ptr[i] = numeric_limits<float>::max();
-  }
+  depthBuffer.clear();
+  depthBuffer.resize(width * height, numeric_limits<float>::max());
 
-  float *shadow_ptr = shadowBuffer.data();
-#pragma omp parallel for
-  for (size_t i = 0; i < shadowBuffer.size(); ++i) {
-    shadow_ptr[i] = numeric_limits<float>::max();
-  }
+  shadowBuffer.clear();
+  shadowBuffer.resize(SHADOW_DIRECTION_COUNT * SHADOW_RESOLUTION *
+                          SHADOW_RESOLUTION,
+                      numeric_limits<float>::max());
 
   for (size_t t = 0; t < clipped_triangles.size(); t++) {
     const Ptr_Triangle &triangle = clipped_triangles[t];
@@ -265,7 +271,8 @@ void Rasteriser::draw(int width, int height) {
     int projE2Y = proj[2].y - proj[0].y;
 
     if (projE1X * projE2Y > projE2X * projE1Y) {
-      computePolygonRows(proj, leftBuffer[t], rightBuffer[t], *triangle);
+      computePolygonRows(width, height, proj, leftBuffer[t], rightBuffer[t],
+                         *triangle);
       shadowPass(width, height, leftBuffer[t], rightBuffer[t], *triangle);
     }
   }

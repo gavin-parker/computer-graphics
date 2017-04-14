@@ -34,7 +34,8 @@ private:
                   vector<Pixel> &rightPixels, const Triangle &triangle);
 
   bool useShadows;
-  void computePolygonRows(const vector<Pixel> &vertexPixels,
+  void computePolygonRows(int width, int height,
+                          const vector<Pixel> &vertexPixels,
                           vector<Pixel> &leftPixels, vector<Pixel> &rightPixels,
                           const Triangle &triangle);
   void drawPolygonRows(int width, int height, vector<Pixel> &leftPixels,
