@@ -9,7 +9,6 @@
 #include "cube.h"
 #include "lerp.h"
 #include "ray.h"
-#include "vertex.h"
 
 class Camera {
 public:
@@ -36,9 +35,9 @@ public:
 
   Ray calculateRay(float x, float y);
 
-  vec3 projectVertex(Vertex v);
+  vec3 projectVertex(vec3 v);
 
-  vec4 clipSpace(Vertex v);
+  vec4 clipSpace(vec3 v);
 
   vec3 worldSpace(vec4 cameraCoordinate);
 };

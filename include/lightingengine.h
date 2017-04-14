@@ -27,5 +27,5 @@ public:
 
   virtual ~LightingEngine();
 
-  virtual vec3 calculateLight(Ray &cameraRay, ivec2 pixel = ivec2(0, 0)) = 0;
+  virtual vec3 calculateLight(Ray &cameraRay, ivec2 pixel) = 0;
 };

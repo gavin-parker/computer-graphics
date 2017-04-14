@@ -2,6 +2,7 @@
 #include <ctime>
 #include <string>
 
+#include "flatlighting.h"
 #include "objects.h"
 #include "rasteriser.h"
 #include "rastlighting.h"
@@ -35,7 +36,7 @@ int main(int argc, char *argv[]) {
 
     Cube bounds(geometry);
 
-    vec3 lightPosition = lerp(bounds.a, bounds.b, vec3(0.6, 0.8, 0.2));
+    vec3 lightPosition = lerpV(bounds.a, bounds.b, vec3(0.6, 0.8, 0.2));
 
     vec3 lightColour(1.0f, 1.0f, 1.0f);
 

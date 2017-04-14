@@ -7,7 +7,6 @@
 #include "lerp.h"
 #include "myrand.h"
 #include "ray.h"
-#include "vertex.h"
 
 typedef struct indexedPixel {
   int x;

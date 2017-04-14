@@ -1,7 +1,5 @@
 #pragma once
 
-#include <unordered_set>
-
 #include "objectscreen.h"
 
 using glm::ivec2;
@@ -28,7 +26,7 @@ private:
 
   void clip(int width, int height);
 
-  Pixel VertexShader(Vertex v, int width, int height);
+  Pixel VertexShader(vec3 v, int width, int height);
 
   ptrdiff_t shadowBufferIndex(indexedPixel pixel);
 
@@ -49,16 +47,3 @@ public:
   Rasteriser(int width, int height, float viewAngle, LightingEngine &lighting,
              Scene &scene, bool useShadows = true, bool fullscreen = false);
 };
-
-namespace std {
-template <> struct hash<vec3> {
-  size_t operator()(const vec3 &k) const {
-    return std::hash<float>()(k.x) ^ std::hash<float>()(k.y) ^
-           std::hash<float>()(k.z);
-  }
-
-  bool operator()(const vec3 &a, const vec3 &b) const {
-    return a.x == b.x && a.y == b.y && a.z == b.z;
-  }
-};
-}
