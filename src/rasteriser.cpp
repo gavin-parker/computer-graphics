@@ -108,12 +108,12 @@ void Rasteriser::computePolygonRows(const vector<Pixel> &vertexPixels,
   }
   int rows = max - min + 1;
 
-  leftPixels.reserve(rows);
-  rightPixels.reserve(rows);
+  leftPixels.resize(rows);
+  rightPixels.resize(rows);
 
   for (int i = 0; i < rows; i++) {
-    leftPixels.emplace_back(numeric_limits<int>::max());
-    rightPixels.emplace_back(numeric_limits<int>::min());
+    leftPixels[i].x = numeric_limits<int>::max();
+    rightPixels[i].x = numeric_limits<int>::min();
   }
 
   for (size_t i = 0; i < vertexPixels.size(); i++) {
@@ -262,18 +262,12 @@ void Rasteriser::draw(int width, int height) {
     int projE2Y = proj[2].y - proj[0].y;
 
     if (projE1X * projE2Y > projE2X * projE1Y) {
-      vector<Pixel> leftPixels;
-      vector<Pixel> rightPixels;
-      computePolygonRows(proj, leftPixels, rightPixels, *triangle);
-      shadowPass(width, height, leftPixels, rightPixels, *triangle);
-      leftBuffer[t] = leftPixels;
-      rightBuffer[t] = rightPixels;
+      computePolygonRows(proj, leftBuffer[t], rightBuffer[t], *triangle);
+      shadowPass(width, height, leftBuffer[t], rightBuffer[t], *triangle);
     }
   }
   for (size_t t = 0; t < clipped_triangles.size(); t++) {
-    const Ptr_Triangle &triangle = (clipped_triangles)[t];
-    vector<Pixel> leftPixels = leftBuffer[t];
-    vector<Pixel> rightPixels = rightBuffer[t];
-    drawPolygonRows(width, height, leftPixels, rightPixels, *triangle);
+    drawPolygonRows(width, height, leftBuffer[t], rightBuffer[t],
+                    *clipped_triangles[t]);
   }
 }
