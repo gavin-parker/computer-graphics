@@ -134,3 +134,9 @@ vec3 Ray::collisionSpecularColour(vec3 lightDirection) const {
     return collision->specularColour(lightDirection, direction);
   }
 }
+
+void Ray::reflect() {
+  position = collisionLocation();
+
+  direction = glm::reflect(direction, collisionNormal());
+}

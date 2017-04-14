@@ -73,4 +73,6 @@ public:
   vec3 collisionDiffuseColour(vec3 lightDirection) const;
 
   vec3 collisionSpecularColour(vec3 lightDirection) const;
+
+  void reflect();
 };

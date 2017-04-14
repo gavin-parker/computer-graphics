@@ -40,10 +40,15 @@ f 3/3 4/4 8/2
 
 # Back
 
-usemtl mirror
-
 f 8/1 2/4 6/2
 f 8/1 4/3 2/4
+
+# Front
+
+usemtl red
+
+f 1/2 3/1 7/1
+f 1/2 7/1 5/3
 
 g short
 
@@ -80,7 +85,7 @@ f 15/1 16/3 14/4
 
 g tall
 
-usemtl tall
+usemtl mirror
 
 v 423 0 247
 v 265 0 296
