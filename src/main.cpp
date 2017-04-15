@@ -28,11 +28,17 @@ int main(int argc, char *argv[]) {
   if (argc >= 2) {
     string mode(argv[1]);
 
-    Teapot box;
+    Object *object;
 
-    Ptr_Triangles geometry = box.allTriangles();
+    if (argc >= 3 && string(argv[2]) == "teapot") {
+      object = new Teapot();
+    } else {
+      object = new Box;
+    }
 
-    BoundingVolume bvh = box.createBoundingVolume();
+    Ptr_Triangles geometry = object->allTriangles();
+
+    BoundingVolume bvh = object->createBoundingVolume();
 
     Cube bounds(geometry);
 
@@ -108,6 +114,7 @@ int main(int argc, char *argv[]) {
 
     delete screen;
     delete engine;
+    delete object;
 
     return EXIT_SUCCESS;
   } else {
