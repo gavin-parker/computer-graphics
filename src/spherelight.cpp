@@ -1,24 +1,8 @@
 #include "spherelight.h"
 
-SphereLight::SphereLight(vec3 position, vec3 colour, float power, float radius,
-                         int res)
-    : Light(position, colour, power, res), radius(radius) {}
-
-bool SphereLight::update(float dt) {
-  Uint8 *keystate = SDL_GetKeyState(0);
-
-  position += velocity * dt *
-              vec3(static_cast<float>(keystate[SDLK_j] - keystate[SDLK_l]),
-                   static_cast<float>(keystate[SDLK_o] - keystate[SDLK_u]),
-                   static_cast<float>(keystate[SDLK_i] - keystate[SDLK_k]));
-
-  if ((keystate[SDLK_j] - keystate[SDLK_l]) != 0 ||
-      (keystate[SDLK_o] - keystate[SDLK_u]) != 0 ||
-      (keystate[SDLK_i] - keystate[SDLK_k]) != 0) {
-    return true;
-  }
-  return false;
-}
+SphereLight::SphereLight(vec3 position, const Cube &bounds, float timePeriod,
+                         vec3 colour, float power, float radius, int res)
+    : Light(position, bounds, timePeriod, colour, power, res), radius(radius) {}
 
 vector<Ray> SphereLight::calculateRays(vec3 target) const {
   vector<Ray> rays;

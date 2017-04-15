@@ -6,11 +6,11 @@
 #include <cmath>
 #include <iostream>
 
-#include "cube.h"
+#include "hasspeed.h"
 #include "lerp.h"
 #include "ray.h"
 
-class Camera {
+class Camera : public HasSpeed {
 public:
   vec3 position;
   const float speed;
@@ -26,8 +26,6 @@ public:
          float viewAngle);
 
   static vec3 calculatePosition(const Cube &bounds, float viewAngle);
-
-  static float calculateSpeed(const Cube &bounds, float timePeriod);
 
   static float calculateYawSpeed(float yawPeriod);
 

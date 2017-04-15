@@ -4,6 +4,7 @@
 
 #include <algorithm>
 
+#include "hasspeed.h"
 #include "lerp.h"
 #include "myrand.h"
 #include "ray.h"
@@ -19,7 +20,7 @@ using glm::vec3;
 using std::numeric_limits;
 using std::vector;
 
-class Light {
+class Light : public HasSpeed {
 protected:
   const vec3 RIGHT = vec3(1.f, 0.f, 0.f);
   const vec3 LEFT = vec3(-1.f, 0.f, 0.f);
@@ -42,10 +43,10 @@ public:
   int width;
   int height;
 
-  Light(vec3 position, vec3 colour, float power, int rayCount, int width = 128,
-        int height = 128);
+  Light(vec3 position, const Cube &bounds, float timePeriod, vec3 colour,
+        float power, int rayCount, int width = 128, int height = 128);
 
-  virtual bool update(float dt) = 0;
+  bool update(float dt);
 
   virtual vector<Ray> calculateRays(vec3 target) const = 0;
 

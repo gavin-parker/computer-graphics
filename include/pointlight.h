@@ -4,11 +4,8 @@
 
 class PointLight final : public Light {
 public:
-  const float speed = 100.0f;
-
-  PointLight(vec3 position, vec3 colour, float power);
-
-  bool update(float dt) override;
+  PointLight(vec3 position, const Cube &bounds, float timePeriod, vec3 colour,
+             float power);
 
   vector<Ray> calculateRays(vec3 target) const override;
 };

@@ -2,7 +2,7 @@
 
 Camera::Camera(vec3 position, float speed, float yaw, float yawPeriod,
                float viewAngle)
-    : position(position), speed(speed), yaw(yaw),
+    : HasSpeed(speed), position(position), speed(speed), yaw(yaw),
       yawSpeed(calculateYawSpeed(yawPeriod)),
       viewOffset(static_cast<float>(tan(viewAngle * M_PI / 180.f))) {}
 
@@ -19,12 +19,6 @@ vec3 Camera::calculatePosition(const Cube &bounds, float viewAngle) {
   float width = bounds.b.x - bounds.a.x;
 
   return faceCenter - vec3(0.0f, 0.0f, width / (2.0f * t));
-}
-
-float Camera::calculateSpeed(const Cube &bounds, float timePeriod) {
-  float width = bounds.b.x - bounds.a.x;
-
-  return width / timePeriod;
 }
 
 float Camera::calculateYawSpeed(float yawPeriod) {

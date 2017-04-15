@@ -7,14 +7,11 @@
 
 class SphereLight final : public Light {
 private:
-  const float velocity = 1.0f;
-
   const float radius = 1.0f;
 
 public:
-  SphereLight(vec3 position, vec3 colour, float power, float radius, int res);
-
-  bool update(float dt) override;
+  SphereLight(vec3 position, const Cube &bounds, float timePeriod, vec3 colour,
+              float power, float radius, int res);
 
   vector<Ray> calculateRays(vec3 target) const override;
 };

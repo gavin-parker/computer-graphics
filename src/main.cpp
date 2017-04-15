@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
   if (argc >= 2) {
     string mode(argv[1]);
 
-    Box box;
+    Teapot box;
 
     Ptr_Triangles geometry = box.allTriangles();
 
@@ -36,14 +36,15 @@ int main(int argc, char *argv[]) {
 
     Cube bounds(geometry);
 
-    vec3 lightPosition = lerpV(bounds.a, bounds.b, vec3(0.6, 0.8, 0.2));
+    vec3 lightPosition = lerpV(bounds.a, bounds.b, vec3(0.8, 0.8, 0.1));
 
     vec3 lightColour(1.0f, 1.0f, 1.0f);
 
     float lightPower = 0.5f * pow(glm::distance(bounds.a, bounds.b), 2.0f);
 
-    PointLight light(lightPosition, lightColour, lightPower);
-    SphereLight softLight(lightPosition, lightColour, lightPower, 4.0f, 5);
+    PointLight light(lightPosition, bounds, 5.0f, lightColour, lightPower);
+    SphereLight softLight(lightPosition, bounds, 5.0f, lightColour, lightPower,
+                          4.0f, 5);
 
     Scene scene_low_quality = {light, geometry, bvh, bounds};
     Scene scene = {softLight, geometry, bvh, bounds};
