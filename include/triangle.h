@@ -56,6 +56,8 @@ public:
 
   vec3 getNormal(vec3 bary) const;
 
+  vec3 calculateSurfaceNormal(vec2 texUV, vec3 normal) const;
+
   // Ambient Colour
 
   vec3 ambientColourNorm(vec2 uv) const;

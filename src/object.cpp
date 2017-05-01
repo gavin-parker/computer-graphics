@@ -21,12 +21,13 @@ void Object::readMaterial(FILE *file) {
   string mapKd = readString(file);
   string mapKs = readString(file);
   string mapNs = readString(file);
+  string mapNormal = readString(file);
   bool isMirror = readBool(file);
   bool isRefractive = readBool(file);
 
   materials.emplace(materialName,
                     new Material(ka, kd, ks, ns, mapKa, mapKd, mapKs, mapNs,
-                                 isMirror, isRefractive));
+                                 mapNormal, isMirror, isRefractive));
 }
 
 void Object::readGroups(FILE *file) {

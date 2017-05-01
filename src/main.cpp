@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 #pragma omp master
       {
         int threads = omp_get_num_threads();
-        cout << "running on " << threads << " threads";
+        cout << "running on " << threads << " threads" << endl;
       }
     }
 
@@ -73,8 +73,10 @@ int main(int argc, char *argv[]) {
       screen = new StarScreen(500, 500, 1000, 0.5);
     } else if (mode == "ray") {
       engine = new StandardLighting(scene);
-      screen =
-          new RayTracer(500, 500, viewAngle, 4, *engine, scene_low_quality);
+      screen = new RayTracer(500, 500, viewAngle, 4, *engine, scene);
+    } else if (mode == "raysmall") {
+      engine = new StandardLighting(scene);
+      screen = new RayTracer(150, 150, viewAngle, 4, *engine, scene);
     } else if (mode == "rast") {
       engine = new RastLighting(scene_low_quality);
       screen = new Rasteriser(500, 500, viewAngle, *engine, scene_low_quality);
@@ -93,7 +95,8 @@ int main(int argc, char *argv[]) {
     else if (mode == "cl") {
       light.power *= 10;
       engine = new StandardLighting(scene);
-      screen = new RayTracerCL(1024, 1024, *engine, light, geometry, bvh, scene);
+      screen =
+          new RayTracerCL(1024, 1024, *engine, light, geometry, bvh, scene);
     }
 #endif
     else {

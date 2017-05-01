@@ -8,6 +8,16 @@ Ks 0.75 0.75 0.75
 map_Ks marble.png
 Ns 50
 
+newmtl whiteSpecTest
+
+Ka 0.75 0.75 0.75
+map_Ka marble.png
+Kd 0.75 0.75 0.75
+map_Kd marble.png
+Ks 0.75 0.75 0.75
+map_Ks checkerboard.png
+Ns 50
+
 newmtl red
 
 Ka 0.75 0.15 0.15
@@ -34,6 +44,7 @@ Kd 0.75 0.75 0.75
 map_Kd red.png
 Ks 0.75 0.75 0.75
 map_Ks red.png
+map_Knorm checkernormal.png
 Ns 50
 
 newmtl tall
