@@ -18,7 +18,7 @@ vec3 GlobalIllumination::trace(Ray &ray, int bounces) {
 			lightHere += vec3(0, 0, 0);
 		}
 		else if (directLightRay.getCollision() == ray.getCollision()) {
-			lightHere += light.directLight(ray)*ray.collisionDiffuseColour();
+			lightHere += light.directLight(directLightRay)*ray.collisionDiffuseColour();
 		}
 	}
 	lightHere /= rays.size();
@@ -56,7 +56,7 @@ vec3 GlobalIllumination::trace(Ray &ray, int bounces) {
 				sample.x * normalX.y + sample.y * normal.y + sample.z * normalY.y,
 				sample.x * normalX.z + sample.y * normal.z + sample.z * normalY.z);
 
-			Ray bounce(ray.collisionLocation() + direction*0.001f, direction);
+			Ray bounce(ray.collisionLocation(), glm::normalize(direction));
 			// return this + new collision point 
 			if (boundingVolume.calculateIntersection(bounce)) {
 				indirectLight += r1 * trace(bounce, bounces - 1);

@@ -79,18 +79,15 @@ int main(int argc, char *argv[]) {
       engine = new RastLighting(scene_low_quality);
       screen = new Rasteriser(500, 500, viewAngle, *engine, scene_low_quality);
     } else if (mode == "gi") {
-      int sampleCount = 10;
-      if (argc > 2) {
-        string samples(argv[2]);
-        sampleCount = atoi(samples.c_str());
-      }
-      engine = new GlobalIllumination(scene, sampleCount);
+      int sampleCount = 1;
+      engine = new GlobalIllumination(scene_low_quality, sampleCount);
       screen =
           new RayTracer(500, 500, viewAngle, 4, *engine, scene_low_quality);
     } else if (mode == "conv") {
       int sampleCount = 1;
+	  scene.light.power /= 10;
       engine = new ConvergentGlobalIllumination(scene, sampleCount, 512, 512);
-      screen = new RayTracer(512, 512, viewAngle, 4, *engine, scene);
+      screen = new RayTracer(512, 512, viewAngle, 4, *engine, scene, false, false);
     }
 #ifdef useCL
     else if (mode == "cl") {
