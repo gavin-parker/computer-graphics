@@ -72,21 +72,26 @@ vec3 Triangle::getNormal(vec3 bary) const {
 }
 
 vec3 Triangle::calculateSurfaceNormal(vec2 texUV, vec3 normal) const {
-  float f = 1.0f / (et1.x * et2.y - et2.x * et1.y);
+  if (abs(et1.x * et2.y - et2.x * et1.y) < 0.01f) {
+    return normal;
+  } else {
 
-  vec3 tangent = normalize(f * vec3(et2.y * e1.x - et1.y * e2.x,
-                                    et2.y * e1.y - et1.y * e2.y,
-                                    et2.y * e1.z - et1.y * e2.z));
+    float f = 1.0f / (et1.x * et2.y - et2.x * et1.y);
 
-  vec3 bitangent = normalize(f * vec3(et2.x * e1.x - et1.x * e2.x,
-                                      et2.x * e1.y - et1.x * e2.y,
-                                      et2.x * e1.z - et1.x * e2.z));
+    vec3 tangent = normalize(f * vec3(et2.y * e1.x - et1.y * e2.x,
+                                      et2.y * e1.y - et1.y * e2.y,
+                                      et2.y * e1.z - et1.y * e2.z));
 
-  vec3 tangentSpaceNormal = mat->normal(texUV);
+    vec3 bitangent = normalize(f * vec3(et2.x * e1.x - et1.x * e2.x,
+                                        et2.x * e1.y - et1.x * e2.y,
+                                        et2.x * e1.z - et1.x * e2.z));
 
-  return normalize(tangentSpaceNormal.x * tangent +
-                   tangentSpaceNormal.y * bitangent +
-                   tangentSpaceNormal.z * normal);
+    vec3 tangentSpaceNormal = mat->normal(texUV);
+
+    return normalize(tangentSpaceNormal.x * tangent +
+                     tangentSpaceNormal.y * bitangent +
+                     tangentSpaceNormal.z * normal);
+  }
 }
 
 // Ambient Colour
