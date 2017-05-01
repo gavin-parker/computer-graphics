@@ -64,12 +64,10 @@ v 240 165 272
 v 82 165 225
 
 # front
-usemtl shortCheckerSpec
 f 13/1 10/4 09/2
 f 13/1 14/3 10/4
 
 # right
-usemtl short
 f 14/1 12/4 10/2
 f 14/1 16/3 12/4
 

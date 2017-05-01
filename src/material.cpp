@@ -16,7 +16,7 @@ Material::Material(vec3 ka, vec3 kd, vec3 ks, vec4::value_type ns,
       diffuseTexture(vec4(kd, 1.0f), mapKd),
       specularTexture(vec4(ks, 1.0f), mapKs),
       specularExponentTexture(vec4(1.0f, 1.0f, 1.0f, ns), mapNs),
-      normalMap(vec4(0.0f, 0.0f, 1.0f, 1.0f), mapNorm), isMirrored(isMirrored),
+      normalMap(vec4(0.5f, 0.5f, 1.0f, 1.0f), mapNorm), isMirrored(isMirrored),
       isRefractive(isRefractive) {}
 
 vec3 Material::ambient() const { return vec3(ambientTexture.getScale()); }
@@ -40,7 +40,7 @@ float Material::specularExponent(vec2 uv) const {
 }
 
 vec3 Material::mapNormal(vec3 normal) {
-  return 0.5f * (normal - vec3(1.0f, 1.0f, 1.0f));
+  return 2.0f * normal - vec3(1.0f, 1.0f, 1.0f);
 }
 
 vec3 Material::normal() const { return mapNormal(vec3(normalMap.getScale())); }

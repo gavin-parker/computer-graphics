@@ -73,8 +73,7 @@ int main(int argc, char *argv[]) {
       screen = new StarScreen(500, 500, 1000, 0.5);
     } else if (mode == "ray") {
       engine = new StandardLighting(scene);
-      screen =
-          new RayTracer(500, 500, viewAngle, 4, *engine, scene_low_quality);
+      screen = new RayTracer(500, 500, viewAngle, 4, *engine, scene);
     } else if (mode == "rast") {
       engine = new RastLighting(scene_low_quality);
       screen = new Rasteriser(500, 500, viewAngle, *engine, scene_low_quality);

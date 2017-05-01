@@ -44,16 +44,6 @@ Kd 0.75 0.75 0.75
 map_Kd red.png
 Ks 0.75 0.75 0.75
 map_Ks red.png
-Ns 50
-
-newmtl shortCheckerSpec
-
-Ka 0.75 0.75 0.75
-map_Ka red.png
-Kd 0.75 0.75 0.75
-map_Kd red.png
-Ks 0.75 0.75 0.75
-map_Ks checkerboard.png
 map_Knorm checkernormal.png
 Ns 50
 

@@ -78,9 +78,9 @@ vec3 Triangle::calculateSurfaceNormal(vec2 texUV, vec3 normal) const {
                                     et2.y * e1.y - et1.y * e2.y,
                                     et2.y * e1.z - et1.y * e2.z));
 
-  vec3 bitangent = normalize(f * vec3(-et2.x * e1.x + et1.x * e2.x,
-                                      -et2.x * e1.y + et1.x * e2.y,
-                                      -et2.x * e1.z + et1.x * e2.z));
+  vec3 bitangent = normalize(f * vec3(et2.x * e1.x - et1.x * e2.x,
+                                      et2.x * e1.y - et1.x * e2.y,
+                                      et2.x * e1.z - et1.x * e2.z));
 
   vec3 tangentSpaceNormal = mat->normal(texUV);
 
