@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 #pragma omp master
       {
         int threads = omp_get_num_threads();
-        cout << "running on " << threads << " threads";
+        cout << "running on " << threads << " threads" << endl;
       }
     }
 
@@ -96,7 +96,8 @@ int main(int argc, char *argv[]) {
     else if (mode == "cl") {
       light.power *= 10;
       engine = new StandardLighting(scene);
-      screen = new RayTracerCL(1024, 1024, *engine, light, geometry, bvh, scene);
+      screen =
+          new RayTracerCL(1024, 1024, *engine, light, geometry, bvh, scene);
     }
 #endif
     else {

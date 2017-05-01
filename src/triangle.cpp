@@ -62,11 +62,31 @@ vec2 Triangle::getTexUV(vec3 bary) const {
 // Normals
 
 vec3 Triangle::getNormal(vec2 uv) const {
-  return normalize(vn0 + uv.x * en1 + uv.y * en2);
+  return calculateSurfaceNormal(getTexUV(uv),
+                                normalize(vn0 + uv.x * en1 + uv.y * en2));
 }
 
 vec3 Triangle::getNormal(vec3 bary) const {
-  return normalize(bary.x * vn0 + bary.y * vn1 + bary.z * vn2);
+  return calculateSurfaceNormal(
+      getTexUV(bary), normalize(bary.x * vn0 + bary.y * vn1 + bary.z * vn2));
+}
+
+vec3 Triangle::calculateSurfaceNormal(vec2 texUV, vec3 normal) const {
+  float f = 1.0f / (et1.x * et2.y - et2.x * et1.y);
+
+  vec3 tangent = normalize(f * vec3(et2.y * e1.x - et1.y * e2.x,
+                                    et2.y * e1.y - et1.y * e2.y,
+                                    et2.y * e1.z - et1.y * e2.z));
+
+  vec3 bitangent = normalize(f * vec3(-et2.x * e1.x + et1.x * e2.x,
+                                      -et2.x * e1.y + et1.x * e2.y,
+                                      -et2.x * e1.z + et1.x * e2.z));
+
+  vec3 tangentSpaceNormal = mat->normal(texUV);
+
+  return normalize(tangentSpaceNormal.x * tangent +
+                   tangentSpaceNormal.y * bitangent +
+                   tangentSpaceNormal.z * normal);
 }
 
 // Ambient Colour

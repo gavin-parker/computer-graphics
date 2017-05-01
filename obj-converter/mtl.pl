@@ -74,11 +74,15 @@ read_line(Current_Materials, New_Materials, Current_Material, Current_Material) 
 
 read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
 	specular_colour_map(Map_Ks),
-	update_material_property(Current_Materials, Current_Material, map_kd, Map_Ks, New_Materials).
+	update_material_property(Current_Materials, Current_Material, map_ks, Map_Ks, New_Materials).
 
 read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
 	specular_exponent_map(Map_Ns),
-	update_material_property(Current_Materials, Current_Material, map_kd, Map_Ns, New_Materials).
+	update_material_property(Current_Materials, Current_Material, map_ns, Map_Ns, New_Materials).
+
+read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
+	normal_map(Map_Norm),
+	update_material_property(Current_Materials, Current_Material, map_norm, Map_Norm, New_Materials).
 
 read_line(Current_Materials, New_Materials, Current_Material, Current_Material) -->
 	mirror,
@@ -132,6 +136,7 @@ default_material(
 	map_kd:file(""),
 	map_ks:file(""),
 	map_ns:file(""),
+	map_norm:file(""),
 	mirror:bool(false),
 	refractive:bool(false)
     }) :-
@@ -196,6 +201,9 @@ specular_exponent_map(File) -->
 	    atom_codes(File, File_Codes)
 	},
 	white_eol.
+
+normal_map(File) -->
+	k_map("norm", File).
 
 k_map(Name, file(File)) -->
 	whites,
