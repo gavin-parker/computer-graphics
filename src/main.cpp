@@ -88,11 +88,7 @@ int main(int argc, char *argv[]) {
       screen =
           new RayTracer(500, 500, viewAngle, 4, *engine, scene_low_quality);
     } else if (mode == "conv") {
-      int sampleCount = 10;
-      if (argc > 2) {
-        string samples(argv[2]);
-        sampleCount = atoi(samples.c_str());
-      }
+      int sampleCount = 1;
       engine = new ConvergentGlobalIllumination(scene, sampleCount, 512, 512);
       screen = new RayTracer(512, 512, viewAngle, 4, *engine, scene);
     }
