@@ -3,10 +3,10 @@
 
 RayTracerCL::RayTracerCL(int width, int height, LightingEngine &lighting,
 	PointLight &light,
-	const vector<Triangle> &triangles, const BoundingVolume &boundingVolume, vec3 cameraPos,
+	Ptr_Triangles triangles, const BoundingVolume &boundingVolume, Scene scene, vec3 cameraPos,
 	bool fullscreen)
 	: SdlScreen(width, height, fullscreen), triangles(triangles),
-	camera(cameraPos, 0.0f, 30.0f), light(light),
+	camera(scene.bounds, 2.0f, 6.0f, 30.0f), light(light),
 	lighting(lighting), boundingVolume(boundingVolume), averageImage(vector<vec3>(width*height)) { 
 
 	gpu = getGPU(triangles.size());
@@ -62,18 +62,18 @@ void RayTracerCL::create_global_memory(int width, int height) {
 	cl_triangles = (cl_float3*)malloc(triangles.size() * sizeof(cl_float3)*5);
 	cl_uchar* properties = (cl_uchar*)malloc(triangles.size() * sizeof(cl_uchar));
 	for (int i = 0; i < triangles.size(); i++) {
-		cl_float3 v0 = { triangles[i].v0.x, triangles[i].v0.y, triangles[i].v0.z };
-		cl_float3 v1 = { triangles[i].v1.x, triangles[i].v1.y, triangles[i].v1.z };
-		cl_float3 v2 = { triangles[i].v2.x, triangles[i].v2.y, triangles[i].v2.z };
-		cl_float3 c = { triangles[i].colour.x, triangles[i].colour.y, triangles[i].colour.z };
-		cl_float3 normal = { triangles[i].normal.x, triangles[i].normal.y, triangles[i].normal.z };
+		cl_float3 v0 = { triangles[i]->v0.x, triangles[i]->v0.y, triangles[i]->v0.z };
+		cl_float3 v1 = { triangles[i]->v1.x, triangles[i]->v1.y, triangles[i]->v1.z };
+		cl_float3 v2 = { triangles[i]->v2.x, triangles[i]->v2.y, triangles[i]->v2.z };
+		cl_float3 c = { triangles[i]->mat->diffuse().x, triangles[i]->mat->diffuse().y, triangles[i]->mat->diffuse().z };
+		cl_float3 normal = { triangles[i]->normal.x, triangles[i]->normal.y, triangles[i]->normal.z };
 		cl_triangles[i] = v0;
 		cl_triangles[triangles.size() + i] = v1;
 		cl_triangles[triangles.size()*2 + i] = v2;
 		cl_triangles[triangles.size()*3 + i] = c;
 		cl_triangles[triangles.size()*4 + i] = normal;
 		cl_uchar props = 0;
-		if (triangles[i].reflective) {
+		if (triangles[i]->isMirrored()) {
 			props = 1;
 		}
 		properties[i] = props;

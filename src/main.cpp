@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
     if (mode == "stars") {
       screen = new StarScreen(500, 500, 1000, 0.5);
     } else if (mode == "ray") {
-      engine = new StandardLighting(scene_low_quality);
+      engine = new StandardLighting(scene);
       screen =
           new RayTracer(500, 500, viewAngle, 4, *engine, scene_low_quality);
     } else if (mode == "rast") {
@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
     else if (mode == "cl") {
       light.power *= 10;
       engine = new StandardLighting(scene);
-      screen = new RayTracerCL(1024, 1024, *engine, light, geometry, bvh);
+      screen = new RayTracerCL(1024, 1024, *engine, light, geometry, bvh, scene);
     }
 #endif
     else {

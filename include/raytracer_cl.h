@@ -18,18 +18,18 @@
 #endif
 
 struct TriangleStruct {
-  cl_float3 v0;
-  cl_float3 v1;
-  cl_float3 v2;
-  cl_float3 color;
-  cl_float3 normal;
+	cl_float3 v0;
+	cl_float3 v1;
+	cl_float3 v2;
+	cl_float3 color;
+	cl_float3 normal;
 };
 
 #pragma pack(1)
 typedef struct CameraStruct {
-  cl_float viewOffset;
-  cl_float3 position;
-  // cl_float3 rotation[3];
+	cl_float viewOffset;
+	cl_float3 position;
+	// cl_float3 rotation[3];
 } CameraStruct;
 
 
@@ -38,9 +38,9 @@ typedef struct CameraStruct {
 
 class RayTracerCL : public SdlScreen {
 private:
-  // bool ClosestIntersection(Ray &ray);
-  const vector<Triangle> &triangles;
-  Camera camera;
+	// bool ClosestIntersection(Ray &ray);
+	Ptr_Triangles triangles;
+	Camera camera;
 
 	const vec3 ambientLight = vec3(0.1f, 0.1f, 0.1f);
 	PointLight &light;
@@ -49,11 +49,11 @@ private:
 	void create_global_memory(int width, int height);
 	vector<vec3> averageImage;
 	bool refresh = false;
-	int frameCounter = 1; 
+	int frameCounter = 1;
 	Accelerator gpu;
 	cl_float3* cl_triangles;
 	cl::Buffer triangleBuffer;
-	cl::Buffer lightBuffer; 
+	cl::Buffer lightBuffer;
 	cl::Buffer imageBuffer;
 	cl::Buffer cameraBuffer;
 	cl::Buffer pointBuffer;
@@ -73,6 +73,6 @@ protected:
 public:
 	RayTracerCL(int width, int height, LightingEngine &lighting,
 		PointLight &light,
-		const vector<Triangle> &triangles, const BoundingVolume &boundingVolume, vec3 cameraPos = vec3(277.5f, 277.5f, -480.64),
+		Ptr_Triangles triangles, const BoundingVolume &boundingVolume, Scene scene, vec3 cameraPos = vec3(277.5f, 277.5f, -480.64),
 		bool fullscreen = false);
 };
