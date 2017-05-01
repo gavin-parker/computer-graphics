@@ -9,7 +9,7 @@ vec3 StandardLighting::calculateLight(Ray &cameraRay, ivec2 pixel) {
 
   // calculate average light at a point -- works with multiple light rays
   for (Ray &lightRay : light.calculateRays(cameraRay.collisionLocation())) {
-    if (boundingVolume.calculateAnyIntersection(lightRay, cameraRay, true) &&
+    if (boundingVolume.calculateAnyIntersection(lightRay, cameraRay, false) &&
         lightRay.getCollision() == cameraRay.getCollision()) {
 
       lightColour +=
